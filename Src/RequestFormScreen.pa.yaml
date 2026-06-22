@@ -1,11 +1,3 @@
-# ************************************************************************************************
-# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
-# Use the maker portal to create and edit your Power Apps.
-# 
-# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
-# 
-# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
-# ************************************************************************************************
 Screens:
   RequestFormScreen:
     Properties:
@@ -124,14 +116,14 @@ Screens:
                                                             Procurement_Requests,
                                                             Defaults(Procurement_Requests),
                                                             {
-                                                                'Tiêu đề': gCurrentEmployee.'Tiêu đề' & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
-                                                                RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                                                Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
+                                                                RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                                                 RequesterEmail: User().Email,
                                                                 Department: ddDepartment_1.Selected.Value,
                                                                 ProcurementDescription: txtDescription_1.Value,
                                                                 BudgetReference: txtBudgetRef_1.Value,
                                                                 DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
-                                                                PreferredSupplier: ddPreferredSupplier_1.Selected.'Tiêu đề',
+                                                                PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
                                                                 Category: {Value: ddCategory_1.Selected.Value},
                                                                 PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
                                                                 InvoiceRegion: {Value: ddInvoiceRegion.Selected.Value},
@@ -168,9 +160,10 @@ Screens:
                                                         IsBlank(wNewRequest.ID),
                                                         Notify("Failed to submit request. Please try again.", NotificationType.Error),
                                                         Set(gPendingAttachments, DataCardValue15.Attachments);
+                                                        Set(gCurrentRequest, wNewRequest);
                                                         Set(gSelectedRequest, wNewRequest);
                                                         EditForm(Form1);
-                                                        SubmitForm(Form1)
+                                                        SubmitForm(Form1);
                                                     )
                                                 )
                                             )
@@ -237,7 +230,7 @@ Screens:
                         PaddingRight: =0
                         PaddingTop: =0
                         Size: =12
-                        Text: =gCurrentEmployee.'Tiêu đề'
+                        Text: =gCurrentEmployee.Title
                         Width: =525
             - rowDeptCategory:
                 Control: GroupContainer@1.5.0
@@ -439,8 +432,8 @@ Screens:
                             Properties:
                               BorderColor: =RGBA(0, 18, 107, 1)
                               DataField: ="{Attachments}"
-                              Default: =ThisItem.'Tệp đính kèm'
-                              DisplayName: =DataSourceInfo([@Procurement_Requests],DataSourceInfo.DisplayName,'Tệp đính kèm')
+                              Default: =ThisItem.Attachments
+                              DisplayName: =DataSourceInfo([@Procurement_Requests],DataSourceInfo.DisplayName,Attachments)
                               Required: =false
                               Update: =DataCardValue15.Attachments
                               Width: =Parent.Width
@@ -773,7 +766,7 @@ Screens:
                             Properties:
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
-                              Items: =Sort(Suppliers, 'Tiêu đề', SortOrder.Ascending)
+                              Items: =Sort(Suppliers, Title, SortOrder.Ascending)
                               Width: =Parent.Width
                             Children:
                               - Title_PS:

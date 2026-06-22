@@ -1,11 +1,3 @@
-# ************************************************************************************************
-# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
-# Use the maker portal to create and edit your Power Apps.
-# 
-# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
-# 
-# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
-# ************************************************************************************************
 Screens:
   GoodsReceiptScreen:
     Properties:
@@ -82,7 +74,7 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.'Tiêu đề'
+                        Text: =gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_GR:
                       Control: Label@2.5.1
@@ -218,7 +210,6 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Checkbox"
                         Width: =32
                   - lblChkGR1:
                       Control: Label@2.5.1
@@ -252,7 +243,6 @@ Screens:
                   - chkGR2:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Checkbox"
                         Width: =32
                   - lblChkGR2:
                       Control: Label@2.5.1
@@ -286,7 +276,6 @@ Screens:
                   - chkGR3:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Checkbox"
                         Width: =32
                   - lblChkGR3:
                       Control: Label@2.5.1
@@ -320,7 +309,6 @@ Screens:
                   - chkGR4:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Checkbox"
                         Width: =32
                   - lblChkGR4:
                       Control: Label@2.5.1
@@ -354,7 +342,6 @@ Screens:
                   - chkGR5:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Checkbox"
                         Width: =32
                   - lblChkGR5:
                       Control: Label@2.5.1
@@ -409,7 +396,7 @@ Screens:
                             Properties:
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
-                              Items: =Sort('Employee List', 'Tiêu đề', SortOrder.Ascending)
+                              Items: =Sort('Employee List', Title, SortOrder.Ascending)
                               Width: =Parent.Width
                             Children:
                               - Title_RB:
@@ -605,7 +592,7 @@ Screens:
                         Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
                         Notify("Please complete all checklist items", NotificationType.Error),
                         If(
-                            IsBlank(ddReceivedBy_GR.Selected.'Tiêu đề') ||
+                            IsBlank(ddReceivedBy_GR.Selected.Title) ||
                             IsBlank(dpReceiptDate_GR.SelectedDate) ||
                             IsBlank(ddReceiptStatus_GR.Selected) ||
                             IsBlank(ddAcceptanceDecision_GR.Selected) ||
@@ -623,7 +610,7 @@ Screens:
                                                 "Rejected",                    "Rejected",
                                                 "Requires Supplier Follow-up", "Pending Supplier Follow-up"
                                             )},
-                                            GoodsReceiptBy: ddReceivedBy_GR.Selected.'Tiêu đề',
+                                            GoodsReceiptBy: ddReceivedBy_GR.Selected.Title,
                                             GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
                                             GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
                                             GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
@@ -639,12 +626,12 @@ Screens:
                                         Procurement_ExecutionLog,
                                         Defaults(Procurement_ExecutionLog),
                                         {
-                                            'Tiêu đề': "Step 3 - Goods Receipt - " & gSelectedRequest.'Tiêu đề',
-                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.'Tiêu đề'},
+                                            Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
+                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
                                             RequestIDText: Text(gSelectedRequest.ID),
                                             StepNumber: 3,
                                             StepName: {Value: "Goods Receipt & Acceptance"},
-                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                             ExecutedAt: Now()
                                         }
                                     );

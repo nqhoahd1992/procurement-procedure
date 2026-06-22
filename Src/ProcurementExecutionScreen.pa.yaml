@@ -1,11 +1,3 @@
-# ************************************************************************************************
-# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
-# Use the maker portal to create and edit your Power Apps.
-# 
-# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
-# 
-# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
-# ************************************************************************************************
 Screens:
   ProcurementExecutionScreen:
     Properties:
@@ -82,7 +74,7 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.'Tiêu đề'
+                        Text: =gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_PE:
                       Control: Label@2.5.1
@@ -159,11 +151,12 @@ Screens:
                         Size: =11
                         Text: |-
                           ="Category: " & gSelectedRequest.Category.Value
-                        Width: =180
+                        Width: =240
                   - lblInfoCost_PE_1:
                       Control: Label@2.5.1
                       Properties:
                         Height: =20
+                        PaddingLeft: =0
                         Size: =11
                         Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                         Width: =160
@@ -171,6 +164,7 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         Height: =20
+                        PaddingLeft: =0
                         Size: =11
                         Text: |-
                           ="Cost Center: " & gSelectedRequest.InvoiceRegion.Value
@@ -305,9 +299,11 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         Color: =RGBA(133, 79, 11, 1)
-                        Height: =60
+                        Height: =50
+                        Overflow: =Overflow.Scroll
                         Size: =11
                         Text: =LookUp(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).ApprovalConditions
+                        VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
             - rowChecklistHeader_PE:
                 Control: GroupContainer@1.5.0
@@ -367,6 +363,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
+                        Label: ="Hộp kiểm"
                         Width: =32
                   - lblChk1_PE:
                       Control: Label@2.5.1
@@ -401,6 +398,7 @@ Screens:
                   - chk2_PE:
                       Control: CheckBox@0.0.30
                       Properties:
+                        Label: ="Hộp kiểm"
                         Width: =32
                   - lblChk2_PE:
                       Control: Label@2.5.1
@@ -434,6 +432,7 @@ Screens:
                   - chk3_PE:
                       Control: CheckBox@0.0.30
                       Properties:
+                        Label: ="Hộp kiểm"
                         Width: =32
                   - lblChk3_PE:
                       Control: Label@2.5.1
@@ -468,6 +467,7 @@ Screens:
                   - chk4_PE:
                       Control: CheckBox@0.0.30
                       Properties:
+                        Label: ="Hộp kiểm"
                         Width: =32
                   - lblChk4_PE:
                       Control: Label@2.5.1
@@ -502,6 +502,7 @@ Screens:
                   - chk5_PE:
                       Control: CheckBox@0.0.30
                       Properties:
+                        Label: ="Hộp kiểm"
                         Width: =30
                   - lblChk5_PE:
                       Control: Label@2.5.1
@@ -536,6 +537,7 @@ Screens:
                   - chk6_PE:
                       Control: CheckBox@0.0.30
                       Properties:
+                        Label: ="Hộp kiểm"
                         Width: =32
                   - lblChk6_PE:
                       Control: Label@2.5.1
@@ -654,8 +656,8 @@ Screens:
                       Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
                       Properties:
                         FillPortions: =0
-                        Height: =Max(CountRows(gSelectedRequest.'Tệp đính kèm') * 36 + 8, 36)
-                        Items: =gSelectedRequest.'Tệp đính kèm'
+                        Height: =Max(CountRows(gSelectedRequest.Attachments) * 36 + 8, 36)
+                        Items: =gSelectedRequest.Attachments
                         ShowScrollbar: =false
                         TemplateSize: =36
                         Width: =Parent.Width
@@ -811,7 +813,7 @@ Screens:
                                           If(
                                               gSelectedRequest.InvoiceType.Value = "Official Invoice",
                                               If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                  First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                  First(gSelectedRequest.Attachments).AbsoluteUri,
                                                   txtNewInvoiceLink_PE.Value
                                               ),
                                               txtOfficialInvoiceDirect_PE.Value
@@ -825,7 +827,7 @@ Screens:
                                               If(
                                                   gSelectedRequest.InvoiceType.Value = "Official Invoice",
                                                   If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                      First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                      First(gSelectedRequest.Attachments).AbsoluteUri,
                                                       txtNewInvoiceLink_PE.Value
                                                   ),
                                                   txtOfficialInvoiceDirect_PE.Value
@@ -856,35 +858,6 @@ Screens:
                         RadiusTopRight: =0
                         Width: =Parent.Width - 50
                       Children:
-                        - colInvoiceNumber_PE:
-                            Control: GroupContainer@1.5.0
-                            Variant: AutoLayout
-                            Properties:
-                              DropShadow: =DropShadow.None
-                              LayoutDirection: =LayoutDirection.Vertical
-                              LayoutGap: =4
-                              LayoutMinHeight: =70
-                              LayoutMinWidth: =60
-                              RadiusBottomLeft: =0
-                              RadiusBottomRight: =0
-                              RadiusTopLeft: =0
-                              RadiusTopRight: =0
-                              Width: =240
-                            Children:
-                              - lblInvNumLabel_PE:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    Color: =RGBA(136, 135, 128, 1)
-                                    Height: =20
-                                    Size: =9
-                                    Text: ="Invoice Number *"
-                                    Width: =240
-                              - txtInvNumValue_PE:
-                                  Control: TextInput@0.0.54
-                                  Properties:
-                                    Height: =40
-                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceNumber, "")
-                                    Width: =Parent.Width
                         - colInvoiceDate_PE:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -907,7 +880,7 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="Invoice Date *"
-                                    Width: =200
+                                    Width: =Parent.Width
                               - txtInvDateValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
@@ -937,12 +910,72 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="Supplier Name *"
-                                    Width: =280
+                                    Width: =Parent.Width
                               - txtSupplierNameValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
                                     Height: =40
                                     Value: =If(gHasInvoiceResult, gInvoiceResult.supplierName, "")
+                                    Width: =Parent.Width
+                        - colInvoiceNumber_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =240
+                            Children:
+                              - lblInvNumLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Invoice Number *"
+                                    Width: =Parent.Width
+                              - txtInvNumValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceNumber, "")
+                                    Width: =Parent.Width
+                        - colBilledTo_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =280
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblBilledToLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Billed To *"
+                                    Width: =Parent.Width
+                              - txtBilledToValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.billedTo, "")
                                     Width: =Parent.Width
                         - colABN_PE:
                             Control: GroupContainer@1.5.0
@@ -968,41 +1001,12 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="ABN"
-                                    Width: =280
+                                    Width: =Parent.Width
                               - txtABNValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
                                     Height: =40
                                     Value: =If(gHasInvoiceResult, gInvoiceResult.supplierABN, "")
-                                    Width: =Parent.Width
-                        - colAttention_PE:
-                            Control: GroupContainer@1.5.0
-                            Variant: AutoLayout
-                            Properties:
-                              DropShadow: =DropShadow.None
-                              LayoutDirection: =LayoutDirection.Vertical
-                              LayoutGap: =4
-                              LayoutMinHeight: =70
-                              LayoutMinWidth: =60
-                              RadiusBottomLeft: =0
-                              RadiusBottomRight: =0
-                              RadiusTopLeft: =0
-                              RadiusTopRight: =0
-                              Width: =240
-                            Children:
-                              - lblAttentionLabel_PE:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    Color: =RGBA(136, 135, 128, 1)
-                                    Height: =20
-                                    Size: =9
-                                    Text: ="Attention"
-                                    Width: =240
-                              - txtAttentionValue_PE:
-                                  Control: TextInput@0.0.54
-                                  Properties:
-                                    Height: =40
-                                    Value: =If(gHasInvoiceResult, gInvoiceResult.attention, "")
                                     Width: =Parent.Width
                   - rowParseFields2_PE:
                       Control: GroupContainer@1.5.0
@@ -1021,7 +1025,7 @@ Screens:
                         RadiusTopRight: =0
                         Width: =Parent.Width - 50
                       Children:
-                        - colBilledTo_PE:
+                        - colAttention_PE:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -1029,25 +1033,58 @@ Screens:
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =4
                               LayoutMinHeight: =70
+                              LayoutMinWidth: =60
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
                               RadiusTopRight: =0
-                              Width: =280
+                              Width: =240
+                              X: =40
+                              Y: =40
                             Children:
-                              - lblBilledToLabel_PE:
+                              - lblAttentionLabel_PE:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
                                     Height: =20
                                     Size: =9
-                                    Text: ="Billed To *"
-                                    Width: =280
-                              - txtBilledToValue_PE:
+                                    Text: ="Attention"
+                                    Width: =Parent.Width
+                              - txtAttentionValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
                                     Height: =40
-                                    Value: =If(gHasInvoiceResult, gInvoiceResult.billedTo, "")
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.attention, "")
+                                    Width: =Parent.Width
+                        - colDescription_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =120
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblDescriptionLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Description"
+                                    Width: =Parent.Width
+                              - txtDescriptionValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
                                     Width: =Parent.Width
                         - colTotalAmount_PE:
                             Control: GroupContainer@1.5.0
@@ -1057,6 +1094,7 @@ Screens:
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =4
                               LayoutMinHeight: =70
+                              LayoutMinWidth: =60
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -1070,7 +1108,7 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="Total Amount *"
-                                    Width: =160
+                                    Width: =Parent.Width
                               - txtTotalAmountValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
@@ -1085,6 +1123,7 @@ Screens:
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =4
                               LayoutMinHeight: =70
+                              LayoutMinWidth: =60
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -1098,7 +1137,7 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="GST / Tax"
-                                    Width: =160
+                                    Width: =Parent.Width
                               - txtTaxAmountValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
@@ -1113,6 +1152,7 @@ Screens:
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =4
                               LayoutMinHeight: =70
+                              LayoutMinWidth: =60
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -1126,7 +1166,7 @@ Screens:
                                     Height: =20
                                     Size: =9
                                     Text: ="Currency *"
-                                    Width: =120
+                                    Width: =Parent.Width
                               - txtCurrencyValue_PE:
                                   Control: TextInput@0.0.54
                                   Properties:
@@ -1180,8 +1220,10 @@ Screens:
                                 =If(gHasInvoiceResult,
                                     If(IsBlank(txtInvDateValue_PE.Value), "", Substitute(txtInvDateValue_PE.Value, "-", "")) &
                                     If(IsBlank(txtSupplierNameValue_PE.Value), "", " - " & txtSupplierNameValue_PE.Value) &
-                                    If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
                                     If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
+                                    If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
+                                    If(IsBlank(txtAttentionValue_PE.Value), "", " - " & txtAttentionValue_PE.Value) &
+                                    If(IsBlank(txtDescriptionValue_PE.Value), "", " - " & txtDescriptionValue_PE.Value) &
                                     If(IsBlank(txtTotalAmountValue_PE.Value), "", " - " & txtCurrencyValue_PE.Value & Text(Value(txtTotalAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
                                     If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
                                     " - " & Text(Now(), "yyyymmddHHmmss") &
