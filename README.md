@@ -25,7 +25,7 @@ See [`CLAUDE.md`](CLAUDE.md) for the detailed architecture and conventions.
 
 ## Backend
 
-- **SharePoint Online** (`maxbiocare.sharepoint.com/sites/Powerapps`) — lists: `Procurement_Requests` (central record), `Procurement_User` (roles), `Procurement_ApprovalLog`, `Procurement_ExecutionLog`, `Procurement_InvoiceData`, `Suppliers`, `Employee List`.
+- **SharePoint Online** (`maxbiocare.sharepoint.com/sites/Powerapps`) — lists: `Procurement_Requests` (central record), `Procurement_User` (roles), `Procurement_ApprovalLog`, `Procurement_ExecutionLog`, `Procurement_InvoiceData`, `Suppliers`, `Employee List`. Full column reference: [`docs/sharepoint-schema.md`](docs/sharepoint-schema.md).
 - **Power Automate** flows called from Power Fx: `Parse_Invoice` (AI invoice extraction) and `Submit_Invoice`.
 
 ## Workflow

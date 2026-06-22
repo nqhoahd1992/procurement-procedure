@@ -24,6 +24,8 @@ All data lives in **SharePoint Online** (`maxbiocare.sharepoint.com/sites/Powera
 - `Procurement_ExecutionLog` — procurement/goods-receipt/follow-up step records (StepNumber 1, 3, 4, 5).
 - `Procurement_InvoiceData`, `Suppliers`, `Employee List`.
 
+Full column-level schema (types, choice values, join keys): `docs/sharepoint-schema.md`.
+
 Two **Power Automate** flows are called from Power Fx (see `ProcurementExecutionScreen`):
 - `Parse_Invoice.Run(invoiceUrl, requestId)` — AI invoice extraction.
 - `Submit_Invoice.Run(...)` — writes parsed invoice data.
