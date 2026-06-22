@@ -306,7 +306,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk1_AC:
                       Control: Label@2.5.1
@@ -341,7 +341,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk2_AC:
                       Control: Label@2.5.1
@@ -376,7 +376,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk3_AC:
                       Control: Label@2.5.1
@@ -411,7 +411,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk4_AC:
                       Control: Label@2.5.1
@@ -446,7 +446,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk5_AC:
                       Control: Label@2.5.1
@@ -531,32 +531,42 @@ Screens:
                         If(
                             IsBlank(txtNotes_AC.Value),
                             Notify("Accounting Notes is required", NotificationType.Error),
-                            If(
-                                IsBlank(Patch(
+                            With(
+                                {wPatched: Patch(
                                     Procurement_Requests,
                                     gSelectedRequest,
                                     {
                                         Status: {Value: "Goods Receipt & Acceptance"},
+                                        AccountingHandlerID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                         AccountingCompletedAt: Now()
                                     }
-                                ).ID),
-                                Notify("Failed to update status. Please try again.", NotificationType.Error),
-                                Patch(
-                                    Procurement_ExecutionLog,
-                                    Defaults(Procurement_ExecutionLog),
-                                    {
-                                        Title: "Step 2 - Accounting Handover - " & gSelectedRequest.Title,
-                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                        RequestIDText: Text(gSelectedRequest.ID),
-                                        StepNumber: 2,
-                                        StepName: {Value: "Accounting Handover"},
-                                        ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                        ExecutedAt: Now(),
-                                        Notes: txtNotes_AC.Value
-                                    }
-                                );
-                                Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
-                                Navigate(HomeScreen)
+                                )},
+                                If(
+                                    IsBlank(wPatched.ID),
+                                    Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                    With(
+                                        {wLog: Patch(
+                                            Procurement_ExecutionLog,
+                                            Defaults(Procurement_ExecutionLog),
+                                            {
+                                                Title: "Step 2 - Accounting Handover - " & gSelectedRequest.Title,
+                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                RequestIDText: Text(gSelectedRequest.ID),
+                                                StepNumber: 2,
+                                                StepName: {Value: "Accounting Handover"},
+                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                ExecutedAt: Now(),
+                                                Notes: txtNotes_AC.Value
+                                            }
+                                        )},
+                                        If(
+                                            IsBlank(wLog.ID),
+                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                            Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
+                                            Navigate(HomeScreen)
+                                        )
+                                    )
+                                )
                             )
                         )
                     )

@@ -352,7 +352,6 @@ Screens:
                               - lblRegionInvoiceValue:
                                   Control: Label@2.5.1
                                   Properties:
-                                    Color: =If(gSelectedRequest.SkippedManagerReview, RGBA(133, 79, 11, 1), RGBA(68, 68, 65, 1))
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
@@ -416,7 +415,7 @@ Screens:
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
-                                    Text: =Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy")
+                                    Text: =Text(gSelectedRequest.RequiredDeliveryDate, "dd/MM/yyyy")
                                     Width: =Parent.Width - 20
                   - rowInfo4:
                       Control: GroupContainer@1.5.0
@@ -493,7 +492,6 @@ Screens:
                               - lblBudgetReferenceValue:
                                   Control: Label@2.5.1
                                   Properties:
-                                    Color: =If(gSelectedRequest.SkippedManagerReview, RGBA(133, 79, 11, 1), RGBA(68, 68, 65, 1))
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
@@ -527,7 +525,7 @@ Screens:
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
-                                    Text: =If(gSelectedRequest.SkippedManagerReview, "— (Escalated to Executive)", gSelectedRequest.ManagerApproverID.Value)
+                                    Text: =If(gSelectedRequest.SkippedManagerReview, "Escalated to Executive", gSelectedRequest.ManagerApproverID.Value)
                                     Width: =Parent.Width - 20
                         - colSkipped:
                             Control: GroupContainer@1.5.0
@@ -1530,7 +1528,7 @@ Screens:
                               5, If(IsBlank(gSelectedRequest.SupplierFollowUpNotes), "", gSelectedRequest.SupplierFollowUpNotes),
                               If(IsBlank(ThisItem.Notes), "", ThisItem.Notes)
                           )
-                        Visible: =Not(IsBlank(ThisItem.Notes))
+                        Visible: =Not(IsBlank(ThisItem.Notes)) || (ThisItem.StepNumber = 4 && Not(IsBlank(gSelectedRequest.FollowUpRemarks))) || (ThisItem.StepNumber = 5 && Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)))
                         Width: =Parent.Width - 40
                         X: =20
                         Y: =77
@@ -1568,7 +1566,7 @@ Screens:
                   Text: ="Review Request →"
                   Visible: |-
                     =(gSelectedRequest.Status.Value = "Pending Manager" && (gCurrentUser.Role.Value = "Admin" || (gCurrentUser.Role.Value = "Manager" && gSelectedRequest.ManagerApproverID.Id = gCurrentEmployee.ID))) ||
-                     (gSelectedRequest.Status.Value = "Pending Executive" && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
+                    (gSelectedRequest.Status.Value = "Pending Executive" && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
                   Width: =200
             - btnActionStart:
                 Control: Button@0.0.45

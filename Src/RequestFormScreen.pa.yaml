@@ -160,7 +160,6 @@ Screens:
                                                         IsBlank(wNewRequest.ID),
                                                         Notify("Failed to submit request. Please try again.", NotificationType.Error),
                                                         Set(gPendingAttachments, DataCardValue15.Attachments);
-                                                        Set(gCurrentRequest, wNewRequest);
                                                         Set(gSelectedRequest, wNewRequest);
                                                         EditForm(Form1);
                                                         SubmitForm(Form1);

@@ -458,7 +458,7 @@ Screens:
                         - chkBizJustification:
                             Control: CheckBox@0.0.30
                             Properties:
-                              Label: ="Hộp kiểm"
+                              Label: =
                               Width: =32
                         - lblChk1:
                             Control: Label@2.5.1
@@ -489,7 +489,7 @@ Screens:
                         - chkCostReasonable:
                             Control: CheckBox@0.0.30
                             Properties:
-                              Label: ="Hộp kiểm"
+                              Label: =
                               Width: =32
                         - lblChk2:
                             Control: Label@2.5.1
@@ -519,7 +519,7 @@ Screens:
                         - chkWithinBudget:
                             Control: CheckBox@0.0.30
                             Properties:
-                              Label: ="Hộp kiểm"
+                              Label: =
                               Width: =32
                         - lblChk3:
                             Control: Label@2.5.1
@@ -550,7 +550,7 @@ Screens:
                         - chkTimingAppropriate:
                             Control: CheckBox@0.0.30
                             Properties:
-                              Label: ="Hộp kiểm"
+                              Label: =
                               Width: =32
                         - lblChk4:
                             Control: Label@2.5.1

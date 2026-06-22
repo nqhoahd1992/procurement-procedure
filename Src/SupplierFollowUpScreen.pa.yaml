@@ -1187,25 +1187,31 @@ Screens:
                                 If(
                                     IsBlank(wPatched.ID),
                                     Notify("Failed to submit. Please try again.", NotificationType.Error),
-                                    Patch(
-                                        Procurement_ExecutionLog,
-                                        Defaults(Procurement_ExecutionLog),
-                                        {
-                                            Title: "Step 4 - Supplier Follow-up Requester - " & gSelectedRequest.Title,
-                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                            RequestIDText: Text(gSelectedRequest.ID),
-                                            StepNumber: 4,
-                                            StepName: {Value: "Supplier Follow-up — Requester Detail"},
-                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                            ExecutedAt: Now()
-                                        }
-                                    );
-                                    Switch(
-                                        ddAcceptanceDecision2_SFU.Selected.Value,
-                                        "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
-                                        "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
-                                    );
-                                    Navigate(HomeScreen)
+                                    With(
+                                        {wLog: Patch(
+                                            Procurement_ExecutionLog,
+                                            Defaults(Procurement_ExecutionLog),
+                                            {
+                                                Title: "Step 4 - Supplier Follow-up Requester - " & gSelectedRequest.Title,
+                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                RequestIDText: Text(gSelectedRequest.ID),
+                                                StepNumber: 4,
+                                                StepName: {Value: "Supplier Follow-up — Requester Detail"},
+                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                ExecutedAt: Now()
+                                            }
+                                        )},
+                                        If(
+                                            IsBlank(wLog.ID),
+                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                            Switch(
+                                                ddAcceptanceDecision2_SFU.Selected.Value,
+                                                "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
+                                                "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
+                                            );
+                                            Navigate(HomeScreen)
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -1247,21 +1253,27 @@ Screens:
                                 If(
                                     IsBlank(wPatched.ID),
                                     Notify("Failed to submit. Please try again.", NotificationType.Error),
-                                    Patch(
-                                        Procurement_ExecutionLog,
-                                        Defaults(Procurement_ExecutionLog),
-                                        {
-                                            Title: "Step 5 - Supplier Follow-up Procurement - " & gSelectedRequest.Title,
-                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                            RequestIDText: Text(gSelectedRequest.ID),
-                                            StepNumber: 5,
-                                            StepName: {Value: "Supplier Follow-up — Procurement"},
-                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                            ExecutedAt: Now()
-                                        }
-                                    );
-                                    Notify("Follow-up completed. Request is now Completed.", NotificationType.Success);
-                                    Navigate(HomeScreen)
+                                    With(
+                                        {wLog: Patch(
+                                            Procurement_ExecutionLog,
+                                            Defaults(Procurement_ExecutionLog),
+                                            {
+                                                Title: "Step 5 - Supplier Follow-up Procurement - " & gSelectedRequest.Title,
+                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                RequestIDText: Text(gSelectedRequest.ID),
+                                                StepNumber: 5,
+                                                StepName: {Value: "Supplier Follow-up — Procurement"},
+                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                ExecutedAt: Now()
+                                            }
+                                        )},
+                                        If(
+                                            IsBlank(wLog.ID),
+                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                            Notify("Follow-up completed. Request is now Completed.", NotificationType.Success);
+                                            Navigate(HomeScreen)
+                                        )
+                                    )
                                 )
                             )
                         )

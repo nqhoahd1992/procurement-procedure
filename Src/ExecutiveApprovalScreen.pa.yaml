@@ -742,7 +742,7 @@ Screens:
                 Control: Button@0.0.45
                 Properties:
                   Height: =44
-                  OnSelect: =Navigate(HomeScreen)
+                  OnSelect: =Navigate(RequestDetailScreen)
                   Text: ="Cancel"
                   Width: =160
             - btnSubmitExec:

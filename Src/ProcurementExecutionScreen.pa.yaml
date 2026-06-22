@@ -363,7 +363,7 @@ Screens:
                       Control: CheckBox@0.0.30
                       Properties:
                         AlignInContainer: =AlignInContainer.Center
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk1_PE:
                       Control: Label@2.5.1
@@ -398,7 +398,7 @@ Screens:
                   - chk2_PE:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk2_PE:
                       Control: Label@2.5.1
@@ -432,7 +432,7 @@ Screens:
                   - chk3_PE:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk3_PE:
                       Control: Label@2.5.1
@@ -467,7 +467,7 @@ Screens:
                   - chk4_PE:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk4_PE:
                       Control: Label@2.5.1
@@ -502,7 +502,7 @@ Screens:
                   - chk5_PE:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =30
                   - lblChk5_PE:
                       Control: Label@2.5.1
@@ -537,7 +537,7 @@ Screens:
                   - chk6_PE:
                       Control: CheckBox@0.0.30
                       Properties:
-                        Label: ="Hộp kiểm"
+                        Label: =
                         Width: =32
                   - lblChk6_PE:
                       Control: Label@2.5.1
@@ -823,17 +823,20 @@ Screens:
                                       Set(gParsingInvoice, true);
                                       Set(gHasInvoiceResult, false);
                                       Set(gInvoiceResult,
-                                          Parse_Invoice.Run(
-                                              If(
-                                                  gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                                  If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                      First(gSelectedRequest.Attachments).AbsoluteUri,
-                                                      txtNewInvoiceLink_PE.Value
-                                                  ),
-                                                  txtOfficialInvoiceDirect_PE.Value
-                                              ),
-                                              gSelectedRequest.ID
-                                          )
+                                          IfError(
+                                            Parse_Invoice.Run(
+                                                If(
+                                                    gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                    If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                        First(gSelectedRequest.Attachments).AbsoluteUri,
+                                                        txtNewInvoiceLink_PE.Value
+                                                    ),
+                                                    txtOfficialInvoiceDirect_PE.Value
+                                                ),
+                                                gSelectedRequest.ID
+                                            ),
+                                            Blank()
+                                        )
                                       );
                                       Set(gHasInvoiceResult, true);
                                       Set(gParsingInvoice, false)
