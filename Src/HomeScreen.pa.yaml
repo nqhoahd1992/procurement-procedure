@@ -230,7 +230,7 @@ Screens:
                           ),
                           "Executive", Procurement_Requests,
                           "Admin", Procurement_Requests,
-                          Filter(Procurement_Requests, RequesterEmail = gCurrentEmployee.Email)
+                          Filter(Procurement_Requests, RequesterEmail = User().Email)
                       ),
                       IsBlank(gStatusFilter) || Status.Value = gStatusFilter
                   ),
