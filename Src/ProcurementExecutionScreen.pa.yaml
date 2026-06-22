@@ -1082,7 +1082,7 @@ Screens:
                                     Color: =RGBA(136, 135, 128, 1)
                                     Height: =20
                                     Size: =9
-                                    Text: ="Description"
+                                    Text: ="Description *"
                                     Width: =Parent.Width
                               - txtDescriptionValue_PE:
                                   Control: TextInput@0.0.54
@@ -1401,7 +1401,8 @@ Screens:
                                                 IsBlank(txtSupplierNameValue_PE.Value) ||
                                                 IsBlank(txtBilledToValue_PE.Value) ||
                                                 IsBlank(txtTotalAmountValue_PE.Value) ||
-                                                IsBlank(txtCurrencyValue_PE.Value),
+                                                IsBlank(txtCurrencyValue_PE.Value) ||
+                                                IsBlank(txtDescriptionValue_PE.Value),
                                                 Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting", NotificationType.Warning),
                                                 With(
                                                     {
