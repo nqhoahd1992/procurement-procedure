@@ -28,5 +28,11 @@ App:
           gCurrentUser.Role.Value = "Procurement" ||
           gCurrentUser.Role.Value = "Accounting" ||
           gCurrentUser.Role.Value = "Admin"
-      )
+      );
+      Set(gGRLogEntry, Blank());
+      Set(gGRPendingAttachments, Blank());
+      Set(gSFU1LogEntry, Blank());
+      Set(gSFU1PendingAttachments, Blank());
+      Set(gGRDelegationMode, "I will receive");
+      Set(gSFU1DelegationMode, "I will receive")
     Theme: =PowerAppsTheme

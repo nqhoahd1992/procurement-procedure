@@ -2,6 +2,11 @@ Screens:
   GoodsReceiptScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =Set(gGRLogEntry, Blank());
+        Set(gGRPendingAttachments, Blank());
+        NewForm(frmGRLog_GR);
+        Set(gGRDelegationMode, If(IsBlank(gSelectedRequest.GRAssignedToID) || gSelectedRequest.GRAssignedToID.Id = gCurrentEmployee.ID || gCurrentUser.Role.Value = "Admin", "I will receive", "Assign to someone else"))
     Children:
       - rectHeader_GR:
           Control: Rectangle@2.3.0
@@ -154,6 +159,144 @@ Screens:
             Width: =Parent.Width
             Y: =160
           Children:
+            - rowDelegation_GR:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =If(gGRDelegationMode = "Assign to someone else", 244, 100)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =gSelectedRequest.RequesterEmail = gCurrentEmployee.Email
+                    && IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3))
+                  Width: =Parent.Width
+                Children:
+                  - lblDelegationHeader_GR:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Goods Receiver"
+                        Width: =Parent.Width - 40
+                  - rowReceiverToggle_GR:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =40
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =8
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 40
+                      Children:
+                        - btnIWillReceive_GR:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =If(gGRDelegationMode = "I will receive", RGBA(83, 74, 183, 1), RGBA(166, 166, 166, 1))
+                              BorderColor: =If(gGRDelegationMode = "I will receive", RGBA(83, 74, 183, 1), RGBA(200, 200, 200, 1))
+                              BorderThickness: =If(gGRDelegationMode = "I will receive", 2, 1)
+                              Height: =40
+                              OnSelect: |-
+                                =Set(gGRDelegationMode, "I will receive");
+                                Set(gSelectedRequest, Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {GRAssignedToID: Blank()}))
+                              Text: ="I will receive"
+                              Width: =160
+                        - btnAssignToOther_GR:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =If(gGRDelegationMode = "Assign to someone else", RGBA(83, 74, 183, 1), RGBA(166, 166, 166, 1))
+                              BorderColor: =If(gGRDelegationMode = "Assign to someone else", RGBA(83, 74, 183, 1), RGBA(200, 200, 200, 1))
+                              BorderThickness: =If(gGRDelegationMode = "Assign to someone else", 2, 1)
+                              Height: =40
+                              OnSelect: =Set(gGRDelegationMode, "Assign to someone else")
+                              Text: ="Assign to someone else"
+                              Width: =200
+                  - rowAssignReceiver_GR:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =136
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =gGRDelegationMode = "Assign to someone else"
+                        Width: =Parent.Width - 40
+                      Children:
+                        - lblAssignReceiverLabel_GR:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Assign to *"
+                              Width: =Parent.Width
+                        - ddAssignReceiver_GR:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Select an employee"
+                              Items: =Sort('Employee List', Title, SortOrder.Ascending)
+                              Width: =Parent.Width
+                            Children:
+                              - Title_DelegateGR:
+                                  Control: ComboBoxDataField@1.5.0
+                                  Variant: textualColumn
+                                  IsLocked: true
+                                  Properties:
+                                    FieldDisplayName: ="Title"
+                                    FieldName: ="Title"
+                                    FieldType: ="E"
+                                    Order: =1
+                        - lblCurrentAssignee_GR:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(83, 74, 183, 1)
+                              Height: =20
+                              Size: =10
+                              Text: |-
+                                =If(IsBlank(gSelectedRequest.GRAssignedToID), "", "→ Assigned to: " & gSelectedRequest.GRAssignedToID.Value)
+                              Width: =Parent.Width
+                        - btnSaveAssignment_GR:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =RGBA(83, 74, 183, 1)
+                              Height: =40
+                              OnSelect: |-
+                                =If(
+                                  IsBlank(ddAssignReceiver_GR.Selected.Title),
+                                  Notify("Please select a person to assign", NotificationType.Error),
+                                  With(
+                                    {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {GRAssignedToID: {Id: ddAssignReceiver_GR.Selected.ID, Value: ddAssignReceiver_GR.Selected.Title}})},
+                                    If(
+                                      IsBlank(wPatched.ID),
+                                      Notify("Failed to save assignment. Please try again.", NotificationType.Error),
+                                      Set(gSelectedRequest, wPatched);
+                                      Notify("Assignment saved to " & ddAssignReceiver_GR.Selected.Title, NotificationType.Success)
+                                    )
+                                  )
+                                )
+                              Text: ="Save Assignment"
+                              Width: =Parent.Width
             - rowChecklistHeader_GR:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -169,6 +312,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - lblChecklistHeader_GR:
@@ -204,6 +348,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - chkGR1:
@@ -238,6 +383,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - chkGR2:
@@ -271,6 +417,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - chkGR3:
@@ -304,6 +451,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - chkGR4:
@@ -337,6 +485,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - chkGR5:
@@ -368,6 +517,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - colReceivedBy_GR:
@@ -381,6 +531,7 @@ Screens:
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
                         RadiusTopRight: =0
+                        Visible: =Not(IsBlank(gSelectedRequest.GRAssignedToID))
                         Width: =300
                       Children:
                         - lblReceivedByLabel_GR:
@@ -450,6 +601,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                   X: =40
                   Y: =40
@@ -530,6 +682,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
                   - lblRemarksLabel_GR:
@@ -555,6 +708,67 @@ Screens:
                         Mode: ='TextInputCanvas.Mode'.Multiline
                         Placeholder: ="Enter remarks here..."
                         Width: =Parent.Width - 40
+            - frmGRLog_GR:
+                Control: Form@2.4.4
+                Layout: Vertical
+                Properties:
+                  BorderStyle: =BorderStyle.None
+                  DataSource: =Procurement_ExecutionLog
+                  Fill: =RGBA(0, 0, 0, 0)
+                  Height: =140
+                  Item: =gGRLogEntry
+                  OnFailure: |-
+                    =Notify("Goods receipt saved, but photo upload failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning)
+                  SnapToColumns: =false
+                  Visible: =gGRDelegationMode = "I will receive"
+                  Width: =Parent.Width
+                Children:
+                  - GRAttachments_DataCard:
+                      Control: TypedDataCard@1.0.7
+                      Variant: ClassicAttachmentsEdit
+                      Properties:
+                        DataField: ="{Attachments}"
+                        Default: =ThisItem.Attachments
+                        DisplayName: ="Receipt Photos"
+                        Required: =false
+                        Update: =attGRPhotos.Attachments
+                        Width: =Parent.Width
+                      Children:
+                        - DataCardKeyGRPhotos:
+                            Control: Label@2.5.1
+                            MetadataKey: FieldName
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              PaddingLeft: =20
+                              PaddingRight: =20
+                              Size: =11
+                              Text: ="Receipt Photos *"
+                              Width: =Parent.Width
+                              Y: =8
+                        - attGRPhotos:
+                            Control: Attachments@2.3.0
+                            MetadataKey: FieldValue
+                            Properties:
+                              Height: =80
+                              Items: =If(IsBlank(Parent.Default), gGRPendingAttachments, Parent.Default)
+                              MaxAttachments: =5
+                              PaddingLeft: =20
+                              PaddingRight: =20
+                              Width: =Parent.Width
+                              Y: =DataCardKeyGRPhotos.Y + DataCardKeyGRPhotos.Height + 4
+                        - ErrorMessageGRPhotos:
+                            Control: Label@2.5.1
+                            MetadataKey: ErrorMessage
+                            Properties:
+                              Color: =RGBA(168, 0, 0, 1)
+                              Height: =20
+                              PaddingLeft: =20
+                              Size: =11
+                              Text: =Parent.Error
+                              Visible: =Parent.DisplayMode = DisplayMode.Edit
+                              Width: =Parent.Width
+                              Y: =attGRPhotos.Y + attGRPhotos.Height
       - conActionBar_GR:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -592,11 +806,12 @@ Screens:
                         Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
                         Notify("Please complete all checklist items", NotificationType.Error),
                         If(
-                            IsBlank(ddReceivedBy_GR.Selected.Title) ||
+                            (Not(IsBlank(gSelectedRequest.GRAssignedToID)) && IsBlank(ddReceivedBy_GR.Selected.Title)) ||
                             IsBlank(dpReceiptDate_GR.SelectedDate) ||
                             IsBlank(ddReceiptStatus_GR.Selected.Value) ||
                             IsBlank(ddAcceptanceDecision_GR.Selected.Value) ||
-                            IsBlank(txtRemarks_GR.Value),
+                            IsBlank(txtRemarks_GR.Value) ||
+                            CountRows(attGRPhotos.Attachments) = 0,
                             Notify("Please fill in all required fields", NotificationType.Error),
                             With(
                                 {
@@ -610,7 +825,7 @@ Screens:
                                                 "Rejected",                    "Rejected",
                                                 "Requires Supplier Follow-up", "Pending Supplier Follow-up"
                                             )},
-                                            GoodsReceiptBy: ddReceivedBy_GR.Selected.Title,
+                                            GoodsReceiptBy: If(IsBlank(gSelectedRequest.GRAssignedToID), gCurrentEmployee.Title, ddReceivedBy_GR.Selected.Title),
                                             GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
                                             GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
                                             GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
@@ -640,6 +855,10 @@ Screens:
                                         If(
                                             IsBlank(wLog.ID),
                                             Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                            Set(gGRPendingAttachments, attGRPhotos.Attachments);
+                                            Set(gGRLogEntry, wLog);
+                                            EditForm(frmGRLog_GR);
+                                            SubmitForm(frmGRLog_GR);
                                             Switch(
                                                 ddAcceptanceDecision_GR.Selected.Value,
                                                 "Accepted",                    Notify("Goods receipt submitted. Request is now Completed.", NotificationType.Success),
@@ -654,4 +873,5 @@ Screens:
                         )
                     )
                   Text: ="Submit →"
+                  Visible: =gGRDelegationMode = "I will receive"
                   Width: =160

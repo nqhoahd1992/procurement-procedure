@@ -415,7 +415,7 @@ Screens:
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
-                                    Text: =Text(gSelectedRequest.RequiredDeliveryDate, "dd/MM/yyyy")
+                                    Text: =Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy")
                                     Width: =Parent.Width - 20
                   - rowInfo4:
                       Control: GroupContainer@1.5.0

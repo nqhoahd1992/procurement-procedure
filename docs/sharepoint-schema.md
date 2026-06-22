@@ -47,6 +47,8 @@ Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescrip
 | `ConditionsText` | Text (multiline) | set on "Approve with conditions" |
 | `RequestID` | Lookup (→ID) | present in schema; not used by the app flow |
 | `PurchaseRequestLink` | Text (URL) | |
+| `GRAssignedToID` | Lookup→Employee List | delegate for Step 3 Goods Receipt; blank = Requester performs it |
+| `SFU1AssignedToID` | Lookup→Employee List | delegate for Step 4 Supplier Follow-up (Requester); blank = Requester performs it |
 | `GoodsReceiptBy` | Text | |
 | `GoodsReceiptDate` | DateTime | |
 | `GoodsReceiptStatus` | Choice | |
