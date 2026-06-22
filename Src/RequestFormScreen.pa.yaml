@@ -1,0 +1,908 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  RequestFormScreen:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: =NewForm(Form1)
+    Children:
+      - rectHeader_2:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            Width: =Parent.Width
+      - lblScreenTitle_1:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =60
+            Size: =18
+            Text: ="Max Biocare Procurement - New Request"
+            Width: =718
+            X: =20
+      - btnBack_1:
+          Control: Button@0.0.45
+          Properties:
+            Height: =36
+            OnSelect: =Navigate(HomeScreen)
+            Text: ="← Back"
+            Width: =100
+            X: =Parent.Width - 120
+            Y: =12
+      - rowButtons:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =60
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =20
+            LayoutJustifyContent: =LayoutJustifyContent.End
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =8
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =Parent.Height - 60
+          Children:
+            - btnCancel_1:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: |-
+                    =Reset(ddDepartment_1);
+                    Reset(txtDescription_1);
+                    Reset(ddCategory_1);
+                    Reset(ddInvoiceRegion);
+                    Reset(ddPurchaseAccordance_2);
+                    Reset(txtEstimatedCost_1);
+                    Reset(ddCurrency_1);
+                    Reset(ddDeliveryLocation_1);
+                    Reset(txtBudgetRef_1);
+                    Reset(ddPreferredSupplier_1);
+                    Reset(dpDeliveryDate_1);
+                    Reset(ddManagerApprover_1);
+                    Reset(rdoProcurementType_1);
+                    Reset(rdoInvoiceType_1);
+                    Set(gPendingAttachments, Blank());
+                    NewForm(Form1);
+                    Navigate(HomeScreen)
+                  Text: ="Cancel"
+                  Width: =160
+            - btnSubmit_1:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: |-
+                    =If(
+                        IsBlank(ddDepartment_1.Selected) ||
+                        IsBlank(txtDescription_1.Value) ||
+                        IsBlank(ddCategory_1.Selected) ||
+                        IsBlank(ddCurrency_1.Selected) ||
+                        IsBlank(ddDeliveryLocation_1.Selected) ||
+                        IsBlank(rdoProcurementType_1.Selected),
+                        Notify("Please fill in all required fields", NotificationType.Error),
+                        If(
+                            IsBlank(ddPurchaseAccordance_2.Selected),
+                            Notify("Please fill in all required fields", NotificationType.Error),
+                            If(
+                                IsBlank(ddInvoiceRegion.Selected),
+                                Notify("Please select an Invoice Target Market", NotificationType.Error),
+                                If(
+                                    IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
+                                    Notify("Estimated Cost is required and must be a number", NotificationType.Error),
+                                    If(
+                                        rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                        IsBlank(rdoInvoiceType_1.Selected),
+                                        Notify("Please select an invoice type", NotificationType.Error),
+                                        If(
+                                            rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                            CountRows(DataCardValue15.Attachments) = 0,
+                                            Notify("Please attach the invoice file before submitting", NotificationType.Error),
+                                            If(
+                                                Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                    ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")) &&
+                                                IsBlank(ddManagerApprover_1.Selected),
+                                                Notify("Please select a Manager Approver", NotificationType.Error),
+                                                With(
+                                                    {
+                                                        wNewRequest: Patch(
+                                                            Procurement_Requests,
+                                                            Defaults(Procurement_Requests),
+                                                            {
+                                                                'Tiêu đề': gCurrentEmployee.'Tiêu đề' & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
+                                                                RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                                                RequesterEmail: User().Email,
+                                                                Department: ddDepartment_1.Selected.Value,
+                                                                ProcurementDescription: txtDescription_1.Value,
+                                                                BudgetReference: txtBudgetRef_1.Value,
+                                                                DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
+                                                                PreferredSupplier: ddPreferredSupplier_1.Selected.'Tiêu đề',
+                                                                Category: {Value: ddCategory_1.Selected.Value},
+                                                                PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
+                                                                InvoiceRegion: {Value: ddInvoiceRegion.Selected.Value},
+                                                                Currency: {Value: ddCurrency_1.Selected.Value},
+                                                                EstimatedCost: Value(txtEstimatedCost_1.Value),
+                                                                RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
+                                                                ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
+                                                                InvoiceType: If(
+                                                                    rdoProcurementType_1.Selected.Value = "Invoice Supplied",
+                                                                    {Value: rdoInvoiceType_1.Selected.Value},
+                                                                    Blank()
+                                                                ),
+                                                                ManagerApproverID: If(
+                                                                    Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                        ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                        (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")),
+                                                                    {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
+                                                                    Blank()
+                                                                ),
+                                                                SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                                      ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                                      (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                Status: {Value: If(
+                                                                    ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                    ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                    "Pending Executive",
+                                                                    "Pending Manager"
+                                                                )}
+                                                            }
+                                                        )
+                                                    },
+                                                    If(
+                                                        IsBlank(wNewRequest.ID),
+                                                        Notify("Failed to submit request. Please try again.", NotificationType.Error),
+                                                        Set(gPendingAttachments, DataCardValue15.Attachments);
+                                                        Set(gCurrentRequest, wNewRequest);
+                                                        Set(gSelectedRequest, wNewRequest);
+                                                        EditForm(Form1);
+                                                        SubmitForm(Form1);
+                                                        Reset(ddDepartment_1);
+                                                        Reset(txtDescription_1);
+                                                        Reset(ddCategory_1);
+                                                        Reset(ddInvoiceRegion);
+                                                        Reset(ddPurchaseAccordance_2);
+                                                        Reset(txtEstimatedCost_1);
+                                                        Reset(ddCurrency_1);
+                                                        Reset(ddDeliveryLocation_1);
+                                                        Reset(txtBudgetRef_1);
+                                                        Reset(ddPreferredSupplier_1);
+                                                        Reset(dpDeliveryDate_1);
+                                                        Reset(ddManagerApprover_1);
+                                                        Reset(rdoProcurementType_1);
+                                                        Reset(rdoInvoiceType_1);
+                                                        Notify("Request submitted successfully", NotificationType.Success);
+                                                        Navigate(HomeScreen)
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                  Text: ="Submit Request →"
+                  Width: =200
+      - containerScroll:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height - 120
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutOverflowY: =LayoutOverflow.Scroll
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =60
+          Children:
+            - rowRequester:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutMinHeight: =80
+                  PaddingBottom: =20
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - lblRequesterLabel_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Requester:"
+                        Width: =86
+                        Y: =15
+                  - lblRequesterValue_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        Fill: =RGBA(241, 239, 232, 0)
+                        FontWeight: =FontWeight.Bold
+                        Height: =36
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =12
+                        Text: =gCurrentEmployee.'Tiêu đề'
+                        Width: =525
+            - rowDeptCategory:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =20
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - colDept:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        LayoutMinHeight: =80
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =400
+                      Children:
+                        - lblDepartmentLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Department *"
+                              Width: =400
+                        - ddDepartment_1:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices('Employee List'.Department)
+                              Width: =Parent.Width
+                  - colCategory:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        LayoutMinHeight: =80
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =360
+                      Children:
+                        - lblCategoryLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Category *"
+                              Width: =360
+                        - ddCategory_1:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.Category)
+                              Width: =Parent.Width
+            - rowProcurementType:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =4
+                  LayoutMinHeight: =80
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - colProcurementType_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =360
+                      Children:
+                        - lblProcurementTypeLabel:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Procurement Type *"
+                              Width: =300
+                              X: =40
+                              Y: =40
+                        - rdoProcurementType_1:
+                            Control: Radio@0.0.25
+                            Properties:
+                              Height: =40
+                              Items: =["Invoice Supplied", "To be sourced by Procurement"]
+                              Layout: ='RadioGroupCanvas.Layout'.Horizontal
+                              Width: =600
+                              X: =40
+                              Y: =40
+            - rowInvoiceType:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(250, 238, 218, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  LayoutMinHeight: =280
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoProcurementType_1.Selected.Value = "Invoice Supplied"
+                  Width: =Parent.Width
+                Children:
+                  - lblInvoiceTypeLabel:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Invoice Type *"
+                        Width: =300
+                  - rdoInvoiceType_1:
+                      Control: Radio@0.0.25
+                      Properties:
+                        Height: =40
+                        Items: =["Official Invoice", "Proforma Invoice"]
+                        Layout: ='RadioGroupCanvas.Layout'.Horizontal
+                        Width: =400
+                  - Form1:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DataSource: =Procurement_Requests
+                        Item: =gSelectedRequest
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        NumberOfColumns: =1
+                        SnapToColumns: =false
+                        Width: =Parent.Width
+                        X: =40
+                        Y: =40
+                      Children:
+                        - Attachments_DataCard1:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              DataField: ="{Attachments}"
+                              Default: =ThisItem.'Tệp đính kèm'
+                              DisplayName: =DataSourceInfo([@Procurement_Requests],DataSourceInfo.DisplayName,'Tệp đính kèm')
+                              Required: =false
+                              Update: =DataCardValue15.Attachments
+                              Width: =Parent.Width
+                              X: =0
+                              Y: =0
+                            Children:
+                              - DataCardKey15:
+                                  Control: Label@2.5.1
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    AutoHeight: =true
+                                    BorderColor: =RGBA(0, 0, 0, 1)
+                                    Font: =Font.'Open Sans'
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =34
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    Size: =10
+                                    Text: ="Invoice SharePoint Link *"
+                                    Width: |+
+                                      =Parent.Width
+                                    Wrap: =false
+                                    Y: =10
+                              - DataCardValue15:
+                                  Control: Attachments@2.3.0
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                                    DisplayMode: =Parent.DisplayMode
+                                    Font: =Font.'Open Sans'
+                                    Height: =100
+                                    HoverFill: =RGBA(186, 202, 226, 1)
+                                    ItemColor: =RGBA(255, 255, 255, 1)
+                                    ItemFill: =RGBA(56, 96, 178, 1)
+                                    ItemHoverFill: =RGBA(186, 202, 226, 1)
+                                    Items: =If(IsBlank(Parent.Default), gPendingAttachments, Parent.Default)
+                                    MaxAttachments: =1
+                                    PaddingBottom: =5
+                                    PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                                    PaddingRight: =5
+                                    PaddingTop: =5
+                                    PressedColor: =RGBA(255, 255, 255, 1)
+                                    PressedFill: =RGBA(0, 18, 107, 1)
+                                    Tooltip: =Parent.DisplayName
+                                    Width: |+
+                                      =Parent.Width
+                                    Y: =DataCardKey15.Y + DataCardKey15.Height + 5
+                              - ErrorMessage15:
+                                  Control: Label@2.5.1
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    BorderColor: =RGBA(0, 0, 0, 1)
+                                    Color: =RGBA(168, 0, 0, 1)
+                                    Font: =Font.'Open Sans'
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =20
+                                    Live: =Live.Assertive
+                                    PaddingBottom: =0
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    PaddingTop: =0
+                                    Size: =14
+                                    Text: =Parent.Error
+                                    Visible: =Parent.DisplayMode=DisplayMode.Edit
+                                    Width: |+
+                                      =Parent.Width
+                                    Y: =DataCardValue15.Y + DataCardValue15.Height
+            - rowDescPurchase:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =20
+                  LayoutMinHeight: =110
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =18
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - colPurchase:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =360
+                      Children:
+                        - lblPurchaseAccordanceLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Purchase Accordance *"
+                              Width: =360
+                        - ddPurchaseAccordance_2:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.PurchaseAccordance)
+                              Width: =Parent.Width
+                  - colInvoiceRegion:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =360
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblInvoiceRegionLabel:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Cost Center *"
+                              Width: =300
+                              X: =40
+                              Y: =40
+                        - ddInvoiceRegion:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.InvoiceRegion)
+                              Width: =Parent.Width
+                              X: =40
+                              Y: =40
+                  - colDeliveryLoc:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =400
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblDeliveryLocationLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Delivery Location *"
+                              Width: =400
+                        - ddDeliveryLocation_1:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.DeliveryLocation)
+                              Width: =Parent.Width
+                  - colDeliveryDate:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =200
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblDeliveryDateLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Required Delivery Date *"
+                              Width: =200
+                        - dpDeliveryDate_1:
+                            Control: DatePicker@0.0.46
+                            Properties:
+                              Height: =40
+                              Placeholder: ="Choose a date"
+                              Width: =Parent.Width
+            - rowCostCurrency:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =20
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - colCost:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =180
+                      Children:
+                        - lblEstimatedCostLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Estimated Cost *"
+                              Width: =180
+                        - txtEstimatedCost_1:
+                            Control: TextInput@0.0.54
+                            Properties:
+                              Height: =40
+                              Placeholder: ="Please enter an amount"
+                              Width: =Parent.Width
+                  - colCurrency:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =160
+                      Children:
+                        - lblCurrencyLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Currency *"
+                              Width: =160
+                        - ddCurrency_1:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.Currency)
+                              Width: =Parent.Width
+                  - colBudgetRef:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =230
+                      Children:
+                        - lblBudgetRefLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Budget Reference"
+                              Width: =230
+                        - txtBudgetRef_1:
+                            Control: TextInput@0.0.54
+                            Properties:
+                              Height: =40
+                              Width: =Parent.Width
+                  - colSupplier:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =360
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblPreferredSupplierLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Preferred Supplier"
+                              Width: =360
+                        - ddPreferredSupplier_1:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Sort(Suppliers, 'Tiêu đề', SortOrder.Ascending)
+                              Width: =Parent.Width
+                            Children:
+                              - Title_PS:
+                                  Control: ComboBoxDataField@1.5.0
+                                  Variant: textualColumn
+                                  IsLocked: true
+                                  Properties:
+                                    FieldDisplayName: ="Title"
+                                    FieldName: ="Title"
+                                    FieldType: ="E"
+                                    Order: =1
+            - rowDeliverySupplier:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =20
+                  LayoutMinHeight: =160
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - colDesc:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =600
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblDescriptionLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Procurement Description *"
+                              Width: =600
+                        - txtDescription_1:
+                            Control: TextInput@0.0.54
+                            Properties:
+                              FillPortions: =1
+                              Height: =40
+                              LayoutMinHeight: =80
+                              Mode: ='TextInputCanvas.Mode'.Multiline
+                              Width: =Parent.Width
+            - rowManagerApprover:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                        ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                        (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"))
+                  Width: =Parent.Width
+                Children:
+                  - lblManagerApproverLabel_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Select Manager Approver *"
+                        Width: =300
+                  - ddManagerApprover_1:
+                      Control: ComboBox@0.0.51
+                      Properties:
+                        Height: =40
+                        InputTextPlaceholder: ="Choose an option"
+                        Items: =Sort(Filter(Procurement_User, Role.Value = "Manager" && IsActive), EmployeeID.Value, SortOrder.Ascending)
+                        Width: =Parent.Width - 40
+                      Children:
+                        - EmployeeID1:
+                            Control: ComboBoxDataField@1.5.0
+                            Variant: textualColumn
+                            IsLocked: true
+                            Properties:
+                              FieldDisplayName: ="EmployeeID"
+                              FieldName: ="EmployeeID"
+                              FieldType: ="E"
+                              Order: =1
+            - rowEscalation:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                    ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")
+                  Width: =Parent.Width
+                Children:
+                  - lblEscalationNotice_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        Fill: =RGBA(250, 238, 218, 1)
+                        Size: =11
+                        Text: ="⚠ This request will be escalated directly to Executive approval"
+                        Width: =Parent.Width - 40

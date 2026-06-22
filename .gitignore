@@ -1,0 +1,14 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Power Apps unpack output — regenerated metadata.
+# Convention for this repo: track ONLY Src/ (the screen logic + UI).
+# Re-exports drop these back in; keep them out so diffs stay clean.
+/Controls/
+/References/
+/Resources/
+/Properties.json
+/Header.json
+/*.sarif

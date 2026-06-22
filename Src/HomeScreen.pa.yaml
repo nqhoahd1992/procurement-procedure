@@ -1,0 +1,334 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  HomeScreen:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: =Set(gStatusFilter, Blank())
+    Children:
+      - lblNoRole:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(163, 45, 45, 1)
+            Fill: =RGBA(252, 235, 235, 1)
+            Height: =Parent.Height - 60
+            Size: =12
+            Text: ="⚠ Your account was not found in the system. Please contact your administrator."
+            Visible: =IsBlank(gCurrentEmployee.ID)
+            Width: =Parent.Width
+            Y: =60
+      - rectHeader:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            Width: =Parent.Width
+      - lblAppTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =60
+            Size: =18
+            Text: ="Max Biocare Procurement"
+            Width: =400
+            X: =20
+      - lblUserInfo:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.'Tiêu đề',
+                  gCurrentEmployee.'Tiêu đề' & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300
+      - rowToolbar:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =80
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingBottom: =20
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =20
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =Not(IsBlank(gCurrentEmployee.ID))
+            Width: =Parent.Width
+            Y: =60
+          Children:
+            - lblSectionTitle:
+                Control: Label@2.5.1
+                Properties:
+                  FontWeight: =FontWeight.Bold
+                  Size: =16
+                  Text: |-
+                    =Switch(gCurrentUser.Role.Value,
+                        "Manager",     "My Requests",
+                        "Admin",       "All Requests",
+                        "Executive",   "All Requests",
+                        "Procurement", "Procurement Requests",
+                        "Accounting",  "Accounting Requests",
+                        "My Requests"
+                    )
+                  Width: =400
+            - btnNewRequest:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =40
+                  OnSelect: =Navigate(RequestFormScreen)
+                  Text: ="+ New Request"
+                  Visible: |-
+                    =Not(
+                        gCurrentUser.Role.Value = "Manager" ||
+                        gCurrentUser.Role.Value = "Executive" ||
+                        gCurrentUser.Role.Value = "Procurement" ||
+                        gCurrentUser.Role.Value = "Accounting"
+                    )
+                  Width: =160
+      - rowFilterBar:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =80
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =8
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =20
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =Not(IsBlank(gCurrentEmployee.ID))
+            Width: =Parent.Width
+            Y: =140
+          Children:
+            - btnFilterAll:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(IsBlank(gStatusFilter), RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, Blank())
+                  Text: ="All"
+                  Width: =83
+            - btnFilterPendingManager:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Manager", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Manager")
+                  Text: ="Pending Manager"
+                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Admin"
+                  Width: =160
+            - btnFilterPendingExec:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Executive", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Executive")
+                  Text: ="Pending Executive"
+                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
+                  Width: =160
+            - btnFilterPendingProcurement:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Procurement", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Procurement")
+                  Text: ="Pending Procurement"
+                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
+                  Width: =180
+            - btnFilterPendingAccounting:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Accounting", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Accounting")
+                  Text: ="Pending Accounting"
+                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Accounting" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
+                  Width: =180
+            - btnFilterGoodsReceipt:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Goods Receipt & Acceptance", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Goods Receipt & Acceptance")
+                  Text: ="Goods Receipt"
+                  Width: =140
+            - btnFilterPendingSupplierFollowUp:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Supplier Follow-up", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Supplier Follow-up")
+                  Text: ="Pending Supplier Follow-up"
+                  Width: =150
+            - btnFilterCompleted:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Completed", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Completed")
+                  Text: ="Completed"
+                  Width: =110
+            - btnFilterRejected:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Rejected", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Rejected")
+                  Text: ="Rejected"
+                  Visible: =Not(gCurrentUser.Role.Value = "Accounting")
+                  Width: =100
+      - galRequests:
+          Control: Gallery@2.15.0
+          Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+          Properties:
+            BorderColor: =RGBA(210, 209, 199, 1)
+            Height: =Parent.Height - 220
+            Items: |-
+              =SortByColumns(
+                  Filter(
+                      Switch(gCurrentUser.Role.Value,
+                          "Manager", Filter(Procurement_Requests,
+                              ManagerApproverID.Id = gCurrentEmployee.ID
+                          ),
+                          "Procurement", Filter(Procurement_Requests,
+                              Status.Value = "Pending Procurement" ||
+                              Status.Value = "Pending Accounting" ||
+                              Status.Value = "Goods Receipt & Acceptance" ||
+                              Status.Value = "Pending Supplier Follow-up" ||
+                              Status.Value = "Completed" ||
+                              Status.Value = "Rejected"
+                          ),
+                          "Accounting", Filter(Procurement_Requests,
+                              Status.Value = "Pending Accounting" ||
+                              Status.Value = "Goods Receipt & Acceptance" ||
+                              Status.Value = "Pending Supplier Follow-up" ||
+                              Status.Value = "Completed"
+                          ),
+                          "Executive", Procurement_Requests,
+                          "Admin", Procurement_Requests,
+                          Filter(Procurement_Requests, RequesterEmail = gCurrentEmployee.Email)
+                      ),
+                      IsBlank(gStatusFilter) || Status.Value = gStatusFilter
+                  ),
+                  "ID", SortOrder.Descending
+              )
+            OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+            TemplateSize: =80
+            Visible: =Not(IsBlank(gCurrentEmployee.ID))
+            Width: =Parent.Width
+            Y: =220
+          Children:
+            - rectRowHitArea:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: =RGBA(0, 0, 0, 0)
+                  Height: =80
+                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  Width: =Parent.Width
+            - lblRequestTitle:
+                Control: Label@2.5.1
+                Properties:
+                  FontWeight: =FontWeight.Bold
+                  Height: =28
+                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  Text: =ThisItem.'Tiêu đề'
+                  Width: =Parent.Width - 260
+                  X: =16
+                  Y: =13
+            - lblRequestStatus:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: |-
+                    =Switch(ThisItem.Status.Value,
+                        "Completed", RGBA(15, 110, 86, 1),
+                        "Rejected", RGBA(163, 45, 45, 1),
+                        "Goods Receipt & Acceptance", RGBA(83, 74, 183, 1),
+                        "Pending Manager", RGBA(133, 79, 11, 1),
+                        "Pending Executive", RGBA(133, 79, 11, 1),
+                        "Pending Procurement", RGBA(133, 79, 11, 1),
+                        "Pending Accounting", RGBA(133, 79, 11, 1),
+                        RGBA(68, 68, 65, 1)
+                    )
+                  Fill: |-
+                    =Switch(ThisItem.Status.Value,
+                        "Completed", RGBA(225, 245, 238, 1),
+                        "Rejected", RGBA(252, 235, 235, 1),
+                        "Goods Receipt & Acceptance", RGBA(225, 220, 252, 1),
+                        "Pending Manager", RGBA(250, 238, 218, 1),
+                        "Pending Executive", RGBA(250, 238, 218, 1),
+                        "Pending Procurement", RGBA(250, 238, 218, 1),
+                        "Pending Accounting", RGBA(250, 238, 218, 1),
+                        RGBA(241, 239, 232, 1)
+                    )
+                  Height: =28
+                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  Size: =11
+                  Text: |-
+                    =If(
+                        ThisItem.Status.Value = "Pending Supplier Follow-up",
+                        If(
+                            IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(ThisItem.ID) And StepNumber = 4)),
+                            "Supplier Follow-up (Step 1)",
+                            "Supplier Follow-up (Step 2)"
+                        ),
+                        ThisItem.Status.Value
+                    )
+                  Width: =200
+                  X: =Parent.Width - 220
+                  Y: =13
+            - lblRequestMeta:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(136, 135, 128, 1)
+                  Height: =24
+                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  Size: =11
+                  Text: |-
+                    ="ID: " & ThisItem.ID & " | " & ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | EstimatedCost: " & ThisItem.Currency.Value & " " & Text(ThisItem.EstimatedCost, "[#,###]"))
+                  Width: =600
+                  X: =16
+                  Y: =44
+            - lblRequesterName:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Right
+                  Color: =RGBA(136, 135, 128, 1)
+                  Height: =24
+                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  Size: =11
+                  Text: =ThisItem.RequesterID.Value
+                  Width: =260
+                  X: =Parent.Width - 280
+                  Y: =44
+            - rectSeparator:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =1
+                  Width: =Parent.Width
+                  Y: =79

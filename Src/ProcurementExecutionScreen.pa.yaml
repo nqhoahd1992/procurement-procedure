@@ -1,0 +1,1461 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  ProcurementExecutionScreen:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - rectHeader_PE:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            Width: =Parent.Width
+      - lblScreenTitle_PE:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =60
+            Size: =18
+            Text: ="Max Biocare Procurement - Procurement Execution"
+            Width: =654
+            X: =20
+      - btnBack_PE:
+          Control: Button@0.0.45
+          Properties:
+            Height: =36
+            OnSelect: =Navigate(RequestDetailScreen)
+            Text: ="← Back"
+            Width: =100
+            X: =Parent.Width - 120
+            Y: =12
+      - rowInfoBlock_PE:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(245, 245, 250, 1)
+            Height: =160
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =4
+            PaddingBottom: =12
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =12
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =60
+          Children:
+            - rowInfoLine1:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Height: =60
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =16
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  LayoutMinHeight: =24
+                  PaddingRight: =1
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - lblInfoTitle_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =14
+                        Text: =gSelectedRequest.'Tiêu đề'
+                        Width: =600
+                  - lblStatusBadge_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(133, 79, 11, 1)
+                        BorderThickness: =1
+                        Color: =RGBA(133, 79, 11, 1)
+                        Fill: =RGBA(250, 238, 218, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =32
+                        PaddingLeft: =8
+                        PaddingRight: =8
+                        Size: =10
+                        Text: =gSelectedRequest.Status.Value
+                        Width: =220
+            - rowInfoLine2:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =24
+                  LayoutMinHeight: =24
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - lblInfoRequester_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Height: =20
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: |-
+                          ="Requester: " & gSelectedRequest.RequesterID.Value
+                        Width: =240
+                  - lblInfoDept_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FillPortions: =1
+                        Height: =20
+                        PaddingLeft: =0
+                        Size: =11
+                        Text: |-
+                          ="Dept: " & gSelectedRequest.Department
+                        Width: =600
+            - rowInfoLine3:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =24
+                  LayoutMinHeight: =24
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                  X: =40
+                  Y: =40
+                Children:
+                  - lblInfoCategory_PE_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Height: =20
+                        PaddingLeft: =0
+                        Size: =11
+                        Text: |-
+                          ="Category: " & gSelectedRequest.Category.Value
+                        Width: =180
+                  - lblInfoCost_PE_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Height: =20
+                        Size: =11
+                        Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                        Width: =160
+                  - lblInfoTargetInvoice_PE_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Height: =20
+                        Size: =11
+                        Text: |-
+                          ="Cost Center: " & gSelectedRequest.InvoiceRegion.Value
+                        Width: =240
+      - conScrollable_PE:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height - 280
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutOverflowY: =LayoutOverflow.Scroll
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =220
+          Children:
+            - rowDecision_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =100
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - lblDecisionLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Procurement Decision *"
+                        Width: =Parent.Width - 40
+                  - rdoDecision_PE:
+                      Control: Radio@0.0.25
+                      Properties:
+                        DefaultSelectedItems: =["Proceed"]
+                        Height: =40
+                        Items: =["Proceed", "Reject"]
+                        Layout: ='RadioGroupCanvas.Layout'.Horizontal
+                        Width: =300
+            - rowRejectReason_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(252, 235, 235, 1)
+                  FillPortions: =0
+                  Height: =170
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =120
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Reject"
+                  Width: =Parent.Width
+                Children:
+                  - lblRejectReasonLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(163, 45, 45, 1)
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Rejection Reason *"
+                        Width: =Parent.Width - 40
+                  - lblRejectReasonHint_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =20
+                        Size: =10
+                        Text: ="Explain why this procurement request cannot be fulfilled"
+                        Width: =Parent.Width - 40
+                  - txtRejectReason_PE:
+                      Control: TextInput@0.0.54
+                      Properties:
+                        Height: =80
+                        Mode: ='TextInputCanvas.Mode'.Multiline
+                        Placeholder: ="Enter rejection reason..."
+                        Width: =Parent.Width - 40
+            - rowConditionsBanner_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(250, 238, 218, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    Not(IsBlank(LookUp(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).ApprovalConditions))
+                  Width: =Parent.Width
+                Children:
+                  - lblConditionsTitle_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="⚠ Executive Approval Conditions"
+                        Width: =Parent.Width - 40
+                  - lblConditionsText_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        Height: =60
+                        Size: =11
+                        Text: =LookUp(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).ApprovalConditions
+                        Width: =Parent.Width - 40
+            - rowChecklistHeader_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMinHeight: =70
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =10
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - lblChecklistHeader_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Procurement Execution Checklist *"
+                        Width: =Parent.Width - 40
+                  - lblChecklistNote_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        Height: =20
+                        Size: =10
+                        Text: ="All items must be checked before submitting"
+                        Width: =Parent.Width - 40
+            - rowCheck1_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk1_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Width: =32
+                  - lblChk1_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Supplier sourcing completed"
+                        Width: =Parent.Width - 60
+            - rowCheck2_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk2_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        Width: =32
+                  - lblChk2_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Price comparison and/or negotiation completed (where applicable)"
+                        Width: =Parent.Width - 60
+            - rowCheck3_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk3_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        Width: =32
+                  - lblChk3_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Purchase Order issued (if applicable)"
+                        Width: =Parent.Width - 60
+            - rowCheck4_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk4_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        Width: =32
+                  - lblChk4_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Supplier coordination and delivery tracking in place"
+                        Width: =Parent.Width - 60
+            - rowCheck5_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk5_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        Width: =30
+                  - lblChk5_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Official supplier invoice collected"
+                        Width: =Parent.Width - 60
+            - rowCheck6_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - chk6_PE:
+                      Control: CheckBox@0.0.30
+                      Properties:
+                        Width: =32
+                  - lblChk6_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Center
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =11
+                        Text: ="Invoice verified against approved procurement request and delivery status"
+                        Width: =Parent.Width - 60
+            - rowSupplierSummary_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =140
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - lblSupplierSummaryLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Supplier Selection / Negotiation Summary *"
+                        Width: =Parent.Width - 40
+                  - txtSupplierSummary_PE:
+                      Control: TextInput@0.0.54
+                      Properties:
+                        Height: =80
+                        Mode: ='TextInputCanvas.Mode'.Multiline
+                        Placeholder: ="Describe supplier selection and negotiation outcome..."
+                        Width: =Parent.Width - 40
+            - rowPurchaseOrder_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Height: =220
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - lblPurchaseOrderLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Purchase Order Link"
+                        Width: =Parent.Width - 40
+                  - txtPurchaseOrder_PE:
+                      Control: TextInput@0.0.54
+                      Properties:
+                        Height: =40
+                        Placeholder: ="Paste Purchase Order Link (optional)..."
+                        Width: =Parent.Width - 40
+            - rowInvoiceSection_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(245, 245, 250, 1)
+                  FillPortions: =0
+                  Height: =If(rdoInvoiceCorrect_PE.Selected.Value = "No", 260, 180)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  LayoutMinHeight: =If(rdoInvoiceCorrect_PE.Selected.Value = "No", 260, 180)
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    gSelectedRequest.InvoiceType.Value = "Official Invoice"
+                  Width: =Parent.Width
+                Children:
+                  - lblInvoiceSectionHeader_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Start
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Official Invoice Verification (Invoice submitted by requester) *"
+                        Width: =Parent.Width - 40
+                  - galInvoiceAttachments_1:
+                      Control: Gallery@2.15.0
+                      Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                      Properties:
+                        FillPortions: =0
+                        Height: =Max(CountRows(gSelectedRequest.'Tệp đính kèm') * 36 + 8, 36)
+                        Items: =gSelectedRequest.'Tệp đính kèm'
+                        ShowScrollbar: =false
+                        TemplateSize: =36
+                        Width: =Parent.Width
+                      Children:
+                        - lblAttachmentName_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(56, 96, 178, 1)
+                              Height: =36
+                              OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                              Size: =11
+                              Text: =If(IsBlank(ThisItem.DisplayName), "—", ThisItem.DisplayName)
+                              Underline: =true
+                              Width: =Parent.Width - 20
+                              X: =1
+                  - lblInvoiceCorrectLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Is this invoice correct?"
+                        Width: =Parent.Width - 40
+                  - rdoInvoiceCorrect_PE:
+                      Control: Radio@0.0.25
+                      Properties:
+                        Height: =40
+                        Items: =["Yes", "No"]
+                        Layout: ='RadioGroupCanvas.Layout'.Horizontal
+                        OnChange: |-
+                          =Set(gHasInvoiceResult, false);
+                          Set(gInvoiceResult, Blank())
+                        Width: =200
+                  - rowNewInvoiceLink_PE:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Height: =100
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =rdoInvoiceCorrect_PE.Selected.Value = "No"
+                        Width: =Parent.Width - 40
+                      Children:
+                        - lblNewInvoiceLinkLabel_PE:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Upload Correct Official Invoice Link *"
+                              Width: =Parent.Width
+                        - txtNewInvoiceLink_PE:
+                            Control: TextInput@0.0.54
+                            Properties:
+                              Height: =40
+                              Placeholder: ="Paste correct official invoice SharePoint or OneDrive link..."
+                              Width: =Parent.Width
+            - rowOfficialInvoiceDirect_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =110
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    Not(gSelectedRequest.InvoiceType.Value = "Official Invoice")
+                  Width: =Parent.Width
+                Children:
+                  - lblOfficialInvoiceDirectLabel_PE:
+                      Control: HtmlViewer@2.1.0
+                      Properties:
+                        Font: =Font.'Open Sans'
+                        Height: =36
+                        HtmlText: ="<span style='font-weight:bold;font-size:13px;'>Official Invoice SharePoint Link (<a href='https://maxbiocare.sharepoint.com/sites/Powerapps/Invoice/Forms/AllItems.aspx' target='_blank'>Click here to access the SharePoint library where invoices are stored</a>) *</span>"
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        Width: =Parent.Width - 40
+                  - txtOfficialInvoiceDirect_PE:
+                      Control: TextInput@0.0.54
+                      Properties:
+                        Height: =40
+                        Placeholder: ="Paste the SharePoint link to the official invoice from the Invoice Library"
+                        Width: =Parent.Width - 40
+            - rowParseInvoice_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.Start
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(241, 239, 232, 1)
+                  Height: =120
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  LayoutMinHeight: =360
+                  PaddingBottom: =16
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - rowParseHeader_PE:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Start
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =36
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                        LayoutMinHeight: =60
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 50
+                      Children:
+                        - lblParseInvoiceHeader_PE:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =28
+                              Size: =12
+                              Text: =If(gParsingInvoice, "⏳ Parsing invoice, please wait...", "Invoice Data")
+                              Width: =300
+                        - btnParseInvoice_PE:
+                            Control: Button@0.0.45
+                            Properties:
+                              Height: =36
+                              OnSelect: |-
+                                =If(
+                                      IsBlank(
+                                          If(
+                                              gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                              If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                  First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                  txtNewInvoiceLink_PE.Value
+                                              ),
+                                              txtOfficialInvoiceDirect_PE.Value
+                                          )
+                                      ),
+                                      Notify("Please provide an invoice link before parsing.", NotificationType.Error),
+                                      Set(gParsingInvoice, true);
+                                      Set(gHasInvoiceResult, false);
+                                      Set(gInvoiceResult,
+                                          Parse_Invoice.Run(
+                                              If(
+                                                  gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                  If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                      First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                      txtNewInvoiceLink_PE.Value
+                                                  ),
+                                                  txtOfficialInvoiceDirect_PE.Value
+                                              ),
+                                              gSelectedRequest.ID
+                                          )
+                                      );
+                                      Set(gHasInvoiceResult, true);
+                                      Set(gParsingInvoice, false)
+                                  )
+                              Text: |-
+                                ="🔍 Extract Invoice"
+                              Width: =160
+                  - rowParseFields1_PE:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        AlignInContainer: =AlignInContainer.SetByContainer
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =70
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                        LayoutMinHeight: =70
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 50
+                      Children:
+                        - colInvoiceNumber_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =240
+                            Children:
+                              - lblInvNumLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Invoice Number *"
+                                    Width: =240
+                              - txtInvNumValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceNumber, "")
+                                    Width: =Parent.Width
+                        - colInvoiceDate_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =200
+                            Children:
+                              - lblInvDateLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Invoice Date *"
+                                    Width: =200
+                              - txtInvDateValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Placeholder: ="YYYY-MM-DD"
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceDate, "")
+                                    Width: =Parent.Width
+                        - colSupplierName_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =280
+                            Children:
+                              - lblSupplierNameLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Supplier Name *"
+                                    Width: =280
+                              - txtSupplierNameValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.supplierName, "")
+                                    Width: =Parent.Width
+                        - colABN_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =280
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblABNLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="ABN"
+                                    Width: =280
+                              - txtABNValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.supplierABN, "")
+                                    Width: =Parent.Width
+                        - colAttention_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =240
+                            Children:
+                              - lblAttentionLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Attention"
+                                    Width: =240
+                              - txtAttentionValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.attention, "")
+                                    Width: =Parent.Width
+                  - rowParseFields2_PE:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        AlignInContainer: =AlignInContainer.SetByContainer
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =70
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                        LayoutMinHeight: =70
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 50
+                      Children:
+                        - colBilledTo_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =280
+                            Children:
+                              - lblBilledToLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Billed To *"
+                                    Width: =280
+                              - txtBilledToValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.billedTo, "")
+                                    Width: =Parent.Width
+                        - colTotalAmount_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =160
+                            Children:
+                              - lblTotalAmountLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Total Amount *"
+                                    Width: =160
+                              - txtTotalAmountValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, Text(gInvoiceResult.totalAmount, "0.00"), "")
+                                    Width: =Parent.Width
+                        - colTaxAmount_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =160
+                            Children:
+                              - lblTaxAmountLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="GST / Tax"
+                                    Width: =160
+                              - txtTaxAmountValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, Text(gInvoiceResult.taxAmount, "0.00"), "")
+                                    Width: =Parent.Width
+                        - colCurrency_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =120
+                            Children:
+                              - lblCurrencyLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Currency *"
+                                    Width: =120
+                              - txtCurrencyValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.currency, "")
+                                    Width: =Parent.Width
+                        - colCurrency_PE_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =120
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblCurrencyLabel_PE_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Currency *"
+                                    Width: =120
+                              - txtCurrencyValue_PE_1:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.currency, "")
+                                    Width: =Parent.Width
+                  - rowSuggestedFilename_PE:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        AlignInContainer: =AlignInContainer.SetByContainer
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(219, 234, 254, 1)
+                        FillPortions: =0
+                        Height: =70
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        LayoutMinHeight: =80
+                        PaddingBottom: =12
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =12
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 50
+                      Children:
+                        - lblSuggestedFilenameLabel_PE:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(37, 99, 235, 1)
+                              FontWeight: =FontWeight.Bold
+                              Height: =20
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              Size: =9
+                              Text: |-
+                                ="Suggested Filename" & If(gHasInvoiceResult, " (ConfidenceScore: " & gInvoiceResult.confidenceScore & ")", "")
+                              Width: =Parent.Width - 24
+                        - lblSuggestedFilename_PE:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(37, 99, 235, 1)
+                              FontWeight: =FontWeight.Bold
+                              Height: =20
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              Size: =9
+                              Text: |-
+                                =If(gHasInvoiceResult,
+                                    If(IsBlank(txtInvDateValue_PE.Value), "", Substitute(txtInvDateValue_PE.Value, "-", "")) &
+                                    If(IsBlank(txtSupplierNameValue_PE.Value), "", " - " & txtSupplierNameValue_PE.Value) &
+                                    If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
+                                    If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
+                                    If(IsBlank(txtTotalAmountValue_PE.Value), "", " - " & txtCurrencyValue_PE.Value & Text(Value(txtTotalAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
+                                    If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
+                                    " - " & Text(Now(), "yyyymmddHHmmss") &
+                                    "." & Last(Split(gInvoiceResult.suggestedFilename, ".")).Value,
+                                    ""
+                                )
+                              Width: =Parent.Width - 24
+                  - lblNoticeCheck_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 0, 0, 1)
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =9
+                        Text: ="Please double-check the above information before submitting!"
+                        Width: =Parent.Width - 50
+            - rowAccountingHandler_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =120
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Width: =Parent.Width
+                Children:
+                  - lblAccountingHandlerLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Assign to Accounting Staff *"
+                        Width: =Parent.Width - 40
+                  - ddAccountingHandler_PE:
+                      Control: ComboBox@0.0.51
+                      Properties:
+                        Height: =40
+                        InputTextPlaceholder: ="Choose an option"
+                        Items: =Filter(Procurement_User, Role.Value = "Accounting")
+                        Width: =Parent.Width - 40
+                      Children:
+                        - EmployeeID_AH:
+                            Control: ComboBoxDataField@1.5.0
+                            Variant: textualColumn
+                            IsLocked: true
+                            Properties:
+                              FieldDisplayName: ="EmployeeID"
+                              FieldName: ="EmployeeID"
+                              FieldType: ="E"
+                              Order: =1
+      - conActionBar_PE:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =60
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =12
+            LayoutJustifyContent: =LayoutJustifyContent.End
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =8
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =Parent.Height - 60
+          Children:
+            - btnCancel_PE:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(RequestDetailScreen)
+                  Text: ="Cancel"
+                  Width: =120
+            - btnSubmit_PE:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: |-
+                    =If(
+                        rdoDecision_PE.Selected.Value = "Reject",
+                        If(
+                            IsBlank(txtRejectReason_PE.Value),
+                            Notify("Please enter a rejection reason", NotificationType.Error),
+                            Patch(
+                                Procurement_Requests,
+                                gSelectedRequest,
+                                {
+                                    Status: {Value: "Rejected"},
+                                    ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                    ProcurementExecutedAt: Now()
+                                }
+                            );
+                            Patch(
+                                Procurement_ExecutionLog,
+                                Defaults(Procurement_ExecutionLog),
+                                {
+                                    'Tiêu đề': "Step 1 - Procurement Rejected - " & gSelectedRequest.'Tiêu đề',
+                                    RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.'Tiêu đề'},
+                                    RequestIDText: Text(gSelectedRequest.ID),
+                                    StepNumber: 1,
+                                    StepName: {Value: "Procurement Execution"},
+                                    ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                    ExecutedAt: Now(),
+                                    Notes: txtRejectReason_PE.Value
+                                }
+                            );
+                            Notify("Request has been rejected.", NotificationType.Success);
+                            Navigate(HomeScreen)
+                        ),
+                        If(
+                            Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked &&
+                                chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
+                            Notify("Please complete all checklist items", NotificationType.Error),
+                            If(
+                                IsBlank(txtSupplierSummary_PE.Value) ||
+                                IsBlank(ddAccountingHandler_PE.Selected),
+                                Notify("Please fill in all required fields", NotificationType.Error),
+                                If(
+                                    IsBlank(
+                                        If(
+                                            gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                            If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                txtNewInvoiceLink_PE.Value
+                                            ),
+                                            txtOfficialInvoiceDirect_PE.Value
+                                        )
+                                    ),
+                                    Notify("Please provide an invoice link before submitting", NotificationType.Error),
+                                    If(
+                                        Not(IsNumeric(Find("maxbiocare.sharepoint",
+                                            If(
+                                                gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                    First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                    txtNewInvoiceLink_PE.Value
+                                                ),
+                                                txtOfficialInvoiceDirect_PE.Value
+                                            )
+                                        ))),
+                                        Notify("Please provide a valid SharePoint link (maxbiocare)", NotificationType.Error),
+                                        If(
+                                            !gHasInvoiceResult,
+                                            Notify("Please click 'Parse Invoice' to extract invoice data before submitting", NotificationType.Warning),
+                                            If(
+                                                IsBlank(txtInvNumValue_PE.Value) ||
+                                                IsBlank(txtInvDateValue_PE.Value) ||
+                                                IsBlank(txtSupplierNameValue_PE.Value) ||
+                                                IsBlank(txtBilledToValue_PE.Value) ||
+                                                IsBlank(txtTotalAmountValue_PE.Value) ||
+                                                IsBlank(txtCurrencyValue_PE.Value),
+                                                Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting", NotificationType.Warning),
+                                                With(
+                                                    {
+                                                        wOfficialInvoiceLink: If(
+                                                            gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                            If(
+                                                                rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                                                First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                                txtNewInvoiceLink_PE.Value
+                                                            ),
+                                                            txtOfficialInvoiceDirect_PE.Value
+                                                        )
+                                                    },
+                                                    Patch(
+                                                        Procurement_Requests,
+                                                        gSelectedRequest,
+                                                        {
+                                                            Status: {Value: "Pending Accounting"},
+                                                            OfficialInvoiceLink: wOfficialInvoiceLink,
+                                                            AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                                            ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                                            ProcurementExecutedAt: Now()
+                                                        }
+                                                    );
+                                                    Patch(
+                                                        Procurement_ExecutionLog,
+                                                        Defaults(Procurement_ExecutionLog),
+                                                        {
+                                                            'Tiêu đề': "Step 1 - Procurement Execution - " & gSelectedRequest.'Tiêu đề',
+                                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.'Tiêu đề'},
+                                                            RequestIDText: Text(gSelectedRequest.ID),
+                                                            StepNumber: 1,
+                                                            StepName: {Value: "Procurement Execution"},
+                                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
+                                                            ExecutedAt: Now(),
+                                                            HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                                            HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
+                                                            SupplierSummary: txtSupplierSummary_PE.Value,
+                                                            PurchaseOrderLink: txtPurchaseOrder_PE.Value
+                                                        }
+                                                    );
+                                                    Set(gSubmitInvoiceResult,
+                                                        Submit_Invoice.Run(
+                                                            wOfficialInvoiceLink,
+                                                            gSelectedRequest.ID,
+                                                            Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
+                                                            txtInvDateValue_PE.Value,
+                                                            txtSupplierNameValue_PE.Value,
+                                                            txtBilledToValue_PE.Value,
+                                                            txtInvNumValue_PE.Value,
+                                                            Value(txtTotalAmountValue_PE.Value),
+                                                            Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
+                                                            txtCurrencyValue_PE.Value,
+                                                            gInvoiceResult.jobId,
+                                                            gInvoiceResult.confidenceScore,
+                                                            txtAttentionValue_PE.Value,
+                                                            "",
+                                                            gSelectedRequest.InvoiceRegion.Value,
+                                                            txtABNValue_PE.Value
+                                                        )
+                                                    );
+                                                    If(
+                                                        IsError(gSubmitInvoiceResult),
+                                                        Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.'Tiêu đề', NotificationType.Warning);
+                                                        Navigate(HomeScreen),
+                                                        Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                                        Navigate(HomeScreen)
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                  Text: ="Submit →"
+                  Width: =120

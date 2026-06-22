@@ -1,0 +1,32 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+App:
+  Properties:
+    OnStart: |-
+      =Set(gCurrentEmployee, LookUp('Employee List', Email = User().Email));
+      Set(gCurrentUser,
+          If(
+              IsBlank(LookUp(Procurement_User, EmployeeID.Id = gCurrentEmployee.ID)),
+              {Role: {Value: "Requester"}},
+              LookUp(Procurement_User, EmployeeID.Id = gCurrentEmployee.ID)
+          )
+      );
+      Set(gUserRole, gCurrentUser.Role.Value);
+      Set(gShowRejectReason, false);
+      Set(gParsingInvoice, false);
+      Set(gHasInvoiceResult, false);
+      Set(gSelectedRequest, Blank());
+      Set(gIsSpecialRole,
+          gCurrentUser.Role.Value = "Manager" ||
+          gCurrentUser.Role.Value = "Executive" ||
+          gCurrentUser.Role.Value = "Procurement" ||
+          gCurrentUser.Role.Value = "Accounting" ||
+          gCurrentUser.Role.Value = "Admin"
+      )
+    Theme: =PowerAppsTheme

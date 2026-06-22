@@ -1,0 +1,1579 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  RequestDetailScreen:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =ClearCollect(colExecutionLog, Filter(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID)));
+        ClearCollect(colApprovalLog, Filter(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID)))
+    Children:
+      - rectHeader_4:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            Width: =Parent.Width
+      - lblScreenTitle_3:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =60
+            Size: =18
+            Text: ="Max Biocare Procurement - Request Detail"
+            Width: =615
+            X: =20
+      - btnBack_3:
+          Control: Button@0.0.45
+          Properties:
+            Height: =36
+            OnSelect: =Navigate(HomeScreen)
+            Text: ="← Back"
+            Width: =100
+            X: =Parent.Width - 120
+            Y: =12
+      - rowTitle:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =8
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =60
+          Children:
+            - lblRequestTitle_1:
+                Control: Label@2.5.1
+                Properties:
+                  FontWeight: =FontWeight.Bold
+                  Height: =36
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  Size: =14
+                  Text: =gSelectedRequest.'Tiêu đề'
+                  Width: =Parent.Width - 300
+            - lblStatusBadge:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: |-
+                    =Switch(gSelectedRequest.Status.Value,
+                      "Completed", RGBA(15, 110, 86, 1),
+                      "Rejected", RGBA(163, 45, 45, 1),
+                      "Pending Manager", RGBA(133, 79, 11, 1),
+                      "Pending Executive", RGBA(133, 79, 11, 1),
+                      "Pending Procurement", RGBA(133, 79, 11, 1),
+                      "Pending Accounting", RGBA(133, 79, 11, 1),
+                      RGBA(68, 68, 65, 1)
+                    )
+                  Fill: |-
+                    =Switch(gSelectedRequest.Status.Value,
+                      "Completed", RGBA(225, 245, 238, 1),
+                      "Rejected", RGBA(252, 235, 235, 1),
+                      "Pending Manager", RGBA(250, 238, 218, 1),
+                      "Pending Executive", RGBA(250, 238, 218, 1),
+                      "Pending Procurement", RGBA(250, 238, 218, 1),
+                      "Pending Accounting", RGBA(250, 238, 218, 1),
+                      RGBA(241, 239, 232, 1)
+                    )
+                  FontWeight: =FontWeight.Semibold
+                  Height: =32
+                  LayoutMinWidth: =220
+                  Size: =10
+                  Text: =gSelectedRequest.Status.Value
+                  Width: =220
+      - conScrollable:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: |-
+              =Parent.Height - 120 -
+                If(
+                    Not(
+                        gSelectedRequest.Status.Value = "Completed" ||
+                        gSelectedRequest.Status.Value = "Rejected"
+                    ),
+                    60, 0
+                )
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutOverflowY: =LayoutOverflow.Scroll
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+            Y: =120
+          Children:
+            - rowInfoBlock:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(241, 239, 232, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: |-
+                    =520 +
+                      If(gSelectedRequest.ProcurementType.Value = "Invoice Supplied", 90, 0) +
+                      If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 70, 0) +
+                      If(
+                          gSelectedRequest.Status.Value = "Completed" ||
+                          gSelectedRequest.Status.Value = "Pending Supplier Follow-up",
+                          200 +
+                          If(Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks)), 70, 0) +
+                          If(Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)), 160, 0) +
+                          If(Not(IsBlank(gSelectedRequest.FollowUpRemarks)), 70, 0) +
+                          If(Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)), 70, 0) +
+                          If(Not(IsBlank(gSelectedRequest.CreditNote)), 80, 0),
+                          0
+                      )
+                  PaddingBottom: =20
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - rowInfo1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =60
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMinHeight: =60
+                        PaddingBottom: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - colRequester:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblRequesterLabel_3:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Requester"
+                                    Width: =220
+                              - lblRequesterValue_3:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.RequesterID.Value
+                                    Width: =Parent.Width - 20
+                        - colDept_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblDeptLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Department"
+                                    Width: =220
+                              - lblDeptValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.Department
+                                    Width: =Parent.Width - 20
+                        - colCategory_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =200
+                            Children:
+                              - lblCategoryLabel_3:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Category"
+                                    Width: =200
+                              - lblCategoryValue_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.Category.Value
+                                    Width: =Parent.Width - 20
+                        - colProcurementType:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =280
+                            Children:
+                              - lblProcurementTypeLabel_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Procurement Type"
+                                    Width: =280
+                              - lblProcurementTypeValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.ProcurementType.Value
+                                    Width: =Parent.Width - 20
+                  - rowInfo2:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =60
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMinHeight: =80
+                        PaddingBottom: =4
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - colAccordance:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblAccordanceLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Purchase Accordance"
+                                    Width: =220
+                              - lblAccordanceValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.PurchaseAccordance.Value
+                                    Width: =Parent.Width - 20
+                        - colEstCost:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblCostLabel_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Estimated Cost"
+                                    Width: =220
+                              - lblCostValue_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                                    Width: =Parent.Width - 20
+                        - colDeliveryDate_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =200
+                            Children:
+                              - lblDeliveryDateLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Required Delivery"
+                                    Width: =200
+                              - lblDeliveryDateValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy")
+                                    Width: =Parent.Width - 20
+                        - colDeliveryLoc_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblDeliveryLocLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Delivery Location"
+                                    Width: =220
+                              - lblDeliveryLocValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =48
+                                    Size: =11
+                                    Text: =gSelectedRequest.DeliveryLocation.Value
+                                    VerticalAlign: =VerticalAlign.Top
+                                    Width: =Parent.Width - 20
+                  - rowInfo3:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =60
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMinHeight: =84
+                        PaddingBottom: =4
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - colInvoiceType:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =gSelectedRequest.ProcurementType.Value = "Invoice Supplied"
+                              Width: =220
+                            Children:
+                              - lblInvoiceTypeLabel_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Invoice Type"
+                                    Width: =220
+                              - lblInvoiceTypeValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =If(gSelectedRequest.InvoiceType.Value = "Official Invoice", RGBA(15, 110, 86, 1), RGBA(133, 79, 11, 1))
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.InvoiceType.Value
+                                    Width: =220
+                        - colPreferredSupplier:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblPreferredSupplierLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Preferred Supplier"
+                                    Width: =220
+                              - lblPreferredSupplierValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =If(IsBlank(gSelectedRequest.PreferredSupplier), "—", gSelectedRequest.PreferredSupplier)
+                                    Width: =Parent.Width
+                  - rowInfo4:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =60
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMinHeight: =60
+                        PaddingBottom: =4
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - colManagerApprover:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblManagerApproverLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Manager Approver"
+                                    Width: =220
+                              - lblManagerApproverValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =If(gSelectedRequest.SkippedManagerReview, "— (Escalated to Executive)", gSelectedRequest.ManagerApproverID.Value)
+                                    Width: =Parent.Width - 20
+                        - colSkipped:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                            Children:
+                              - lblSkippedLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Escalated to Executive"
+                                    Width: =220
+                              - lblSkippedValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =If(gSelectedRequest.SkippedManagerReview, RGBA(133, 79, 11, 1), RGBA(68, 68, 65, 1))
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =If(gSelectedRequest.SkippedManagerReview, "Yes", "No")
+                                    Width: =Parent.Width - 20
+                        - colRegionInvoice:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =220
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblRegionInvoiceLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Cost Center"
+                                    Width: =220
+                              - lblRegionInvoiceValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =If(gSelectedRequest.SkippedManagerReview, RGBA(133, 79, 11, 1), RGBA(68, 68, 65, 1))
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    Size: =11
+                                    Text: =If(IsBlank(gSelectedRequest.InvoiceRegion.Value), "—", gSelectedRequest.InvoiceRegion.Value)
+                                    Width: =Parent.Width - 20
+                  - rowDescription:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =130
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        LayoutMinHeight: =90
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - lblDescriptionLabel_2:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              Size: =9
+                              Text: ="Description"
+                              Width: =Parent.Width
+                        - lblDescriptionValue_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              AutoHeight: =true
+                              FillPortions: =1
+                              FontWeight: =FontWeight.Semibold
+                              Height: =100
+                              LayoutMinHeight: =100
+                              Overflow: =Overflow.Scroll
+                              Size: =11
+                              Text: =gSelectedRequest.ProcurementDescription
+                              Width: =Parent.Width
+                  - rowInvoiceLink:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =90
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        LayoutMinHeight: =90
+                        PaddingBottom: =4
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =gSelectedRequest.ProcurementType.Value = "Invoice Supplied"
+                        Width: =Parent.Width
+                      Children:
+                        - lblInvoiceLinkLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              Size: =9
+                              Text: ="Invoice Link (Requester)"
+                              Width: =Parent.Width
+                        - galInvoiceAttachments:
+                            Control: Gallery@2.15.0
+                            Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                            Properties:
+                              FillPortions: =0
+                              Height: =Max(CountRows(gSelectedRequest.'Tệp đính kèm') * 36 + 8, 36)
+                              Items: =gSelectedRequest.'Tệp đính kèm'
+                              ShowScrollbar: =false
+                              TemplateSize: =36
+                              Width: =Parent.Width
+                            Children:
+                              - lblAttachmentName:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(56, 96, 178, 1)
+                                    Height: =36
+                                    OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                                    Size: =11
+                                    Text: =If(IsBlank(ThisItem.DisplayName), "—", ThisItem.DisplayName)
+                                    Underline: =true
+                                    Width: =Parent.Width - 20
+                                    X: =1
+                  - rowPurchaseRequestLink_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =70
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        LayoutMinHeight: =70
+                        PaddingBottom: =4
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement"
+                        Width: =Parent.Width
+                      Children:
+                        - lblPurchaseRequestLinkLabel_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              Size: =9
+                              Text: ="Purchase Request Link"
+                              Width: =Parent.Width
+                        - lblPurchaseRequestLinkValue:
+                            Control: Label@2.5.1
+                            Properties:
+                              FillPortions: =1
+                              FontWeight: =FontWeight.Semibold
+                              Height: =48
+                              OnSelect: =If(Not(IsBlank(gSelectedRequest.PurchaseRequestLink)), Launch(gSelectedRequest.PurchaseRequestLink, {}, LaunchTarget.New))
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.PurchaseRequestLink), "—", gSelectedRequest.PurchaseRequestLink)
+                              Underline: =Not(IsBlank(gSelectedRequest.PurchaseRequestLink))
+                              Width: =Parent.Width
+                  - rowOfficialInvoiceLink:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =100
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        LayoutMinHeight: =70
+                        PaddingBottom: =20
+                        PaddingTop: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                      Children:
+                        - lblOfficialInvoiceLabel:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              Size: =9
+                              Text: ="Official Invoice (Procurement)"
+                              Width: =Parent.Width
+                        - lblOfficialInvoiceValue:
+                            Control: Label@2.5.1
+                            Properties:
+                              FillPortions: =1
+                              FontWeight: =FontWeight.Semibold
+                              Height: =48
+                              OnSelect: =If(Not(IsBlank(gSelectedRequest.OfficialInvoiceLink)), Launch(gSelectedRequest.OfficialInvoiceLink, {}, LaunchTarget.New))
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", gSelectedRequest.OfficialInvoiceLink)
+                              Underline: =Not(IsBlank(gSelectedRequest.OfficialInvoiceLink))
+                              VerticalAlign: =VerticalAlign.Top
+                              Width: =Parent.Width
+                  - rowGoodsReceipt:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =8
+                        LayoutMinHeight: =60
+                        PaddingBottom: =8
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: |-
+                          =gSelectedRequest.Status.Value = "Completed" ||
+                          gSelectedRequest.Status.Value = "Pending Supplier Follow-up"
+                        Width: =Parent.Width
+                      Children:
+                        - divider:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Fill: =RGBA(210, 209, 199, 1)
+                              Height: =1
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                              Width: =Parent.Width
+                              X: =40
+                              Y: =40
+                        - lblGoodsReceiptHeader:
+                            Control: Label@2.5.1
+                            Properties:
+                              BorderStyle: =BorderStyle.None
+                              FontWeight: =FontWeight.Bold
+                              Height: =34
+                              PaddingTop: =15
+                              Size: =11
+                              Text: ="Goods Receipt & Acceptance — Round 1"
+                              Width: =Parent.Width
+                        - rowGoodsReceiptFields1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =20
+                              LayoutMinHeight: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - colGoodsReceiptBy:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =220
+                                  Children:
+                                    - lblGoodsReceiptByLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Received By"
+                                          Width: =220
+                                    - lblGoodsReceiptByValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.GoodsReceiptBy), "—", gSelectedRequest.GoodsReceiptBy)
+                                          Width: =220
+                              - colGoodsReceiptDate:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =200
+                                  Children:
+                                    - lblGoodsReceiptDateLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Receipt Date"
+                                          Width: =200
+                                    - lblGoodsReceiptDateValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.GoodsReceiptDate), "—", Text(gSelectedRequest.GoodsReceiptDate, "dd/mm/yyyy"))
+                                          Width: =200
+                              - colGoodsReceiptStatus:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =220
+                                  Children:
+                                    - lblGoodsReceiptStatusLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Receipt Status"
+                                          Width: =220
+                                    - lblGoodsReceiptStatusValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.GoodsReceiptStatus.Value), "—", gSelectedRequest.GoodsReceiptStatus.Value)
+                                          Width: =220
+                              - colGoodsAcceptanceDecision:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =240
+                                  Children:
+                                    - lblGoodsAcceptanceDecisionLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Acceptance Decision"
+                                          Width: =240
+                                    - lblGoodsAcceptanceDecisionValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.GoodsAcceptanceDecision.Value), "—", gSelectedRequest.GoodsAcceptanceDecision.Value)
+                                          Width: =240
+                        - rowGoodsReceiptRemarks:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks))
+                              Width: =Parent.Width
+                            Children:
+                              - lblGoodsReceiptRemarksLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Remarks"
+                                    Width: =Parent.Width
+                              - lblGoodsReceiptRemarksValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    Height: =48
+                                    Size: =11
+                                    Text: =gSelectedRequest.GoodsReceiptRemarks
+                                    Width: =Parent.Width
+                        - lblGoodsReceipt2Header:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Goods Receipt & Acceptance — Round 2"
+                              Visible: =Not(IsBlank(gSelectedRequest.FollowUpReceiptBy))
+                              Width: =Parent.Width
+                        - rowGoodsReceiptFields2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =20
+                              LayoutMinHeight: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.FollowUpReceiptBy))
+                              Width: =Parent.Width
+                            Children:
+                              - colFollowUpReceiptBy:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =220
+                                  Children:
+                                    - lblFollowUpReceiptByLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Received By"
+                                          Width: =220
+                                    - lblFollowUpReceiptByValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptBy), "—", gSelectedRequest.FollowUpReceiptBy)
+                                          Width: =220
+                              - colFollowUpReceiptDate:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =200
+                                  Children:
+                                    - lblFollowUpReceiptDateLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Receipt Date"
+                                          Width: =200
+                                    - lblFollowUpReceiptDateValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptDate), "—", Text(gSelectedRequest.FollowUpReceiptDate, "dd/mm/yyyy"))
+                                          Width: =200
+                              - colFollowUpAcceptanceDecision:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =240
+                                  Children:
+                                    - lblFollowUpAcceptanceDecisionLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Acceptance Decision"
+                                          Width: =240
+                                    - lblFollowUpAcceptanceDecisionValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.FollowUpAcceptanceDecision.Value), "—", gSelectedRequest.FollowUpAcceptanceDecision.Value)
+                                          Width: =240
+                              - colFulfillment:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =200
+                                  Children:
+                                    - lblFulfillmentLabel:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          Size: =9
+                                          Text: ="Fulfillment"
+                                          Width: =200
+                                    - lblFulfillmentValue:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Bold
+                                          Height: =24
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.Fulfillment.Value), "—", gSelectedRequest.Fulfillment.Value)
+                                          Width: =200
+                        - rowGoodsReceipt2Remarks:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: |-
+                                =Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)) &&
+                                Not(IsBlank(gSelectedRequest.FollowUpRemarks))
+                              Width: =Parent.Width
+                            Children:
+                              - lblGoodsReceipt2RemarksLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Remarks"
+                                    Width: =Parent.Width
+                              - lblGoodsReceipt2RemarksValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    Height: =48
+                                    Size: =11
+                                    Text: =gSelectedRequest.FollowUpRemarks
+                                    Width: =Parent.Width
+                        - rowSupplierFollowUpNotes:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes))
+                              Width: =Parent.Width
+                            Children:
+                              - lblSupplierFollowUpNotesLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Supplier Follow-up Notes"
+                                    Width: =Parent.Width
+                              - lblSupplierFollowUpNotesValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    AutoHeight: =true
+                                    Height: =48
+                                    Size: =11
+                                    Text: =gSelectedRequest.SupplierFollowUpNotes
+                                    Width: =Parent.Width
+                        - rowCreditNote:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =50
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.CreditNote))
+                              Width: =Parent.Width
+                            Children:
+                              - lblCreditNoteLabel:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Credit Note"
+                                    Width: =Parent.Width
+                              - lblCreditNoteValue:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Height: =24
+                                    Size: =11
+                                    Text: =gSelectedRequest.CreditNote
+                                    Width: =Parent.Width
+            - rowApprovalTitle:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutMinHeight: =70
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =CountRows(colApprovalLog) > 0
+                  Width: =Parent.Width
+                Children:
+                  - lblApprovalHistoryTitle:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =32
+                        Text: ="Approval History"
+                        Width: =300
+            - galApprovalHistory:
+                Control: Gallery@2.15.0
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  FillPortions: =0
+                  Height: =CountRows(colApprovalLog) * 120 + 8
+                  Items: =colApprovalLog
+                  ShowScrollbar: =false
+                  TemplateSize: =120
+                  Visible: =CountRows(colApprovalLog) > 0
+                  Width: =Parent.Width
+                Children:
+                  - rectApprovalBg:
+                      Control: Rectangle@2.3.0
+                      Properties:
+                        Fill: =If(Mod(ThisItem.ID, 2) = 0, RGBA(241, 239, 232, 1), RGBA(255, 255, 255, 1))
+                        Height: =120
+                        Width: =1354
+                  - lblStepDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Size: =9
+                        Text: =If(ThisItem.StepNumber = 2, "Step 2 — Department Manager", "Step 3 — Executive")
+                        Width: =260
+                        X: =20
+                        Y: =10
+                  - lblDateDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Right
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Size: =9
+                        Text: =Text(ThisItem.'Đã tạo', "dd/mm/yyyy hh:mm")
+                        Width: =180
+                        X: =1154
+                        Y: =10
+                  - lblApproverDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =22
+                        Size: =11
+                        Text: =ThisItem.ApproverID.Value
+                        Width: =240
+                        X: =20
+                        Y: =40
+                  - lblDecisionDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: |-
+                          =Switch(ThisItem.Decision.Value,
+                            "Approve", RGBA(15, 110, 86, 1),
+                            "Approved (within budget)", RGBA(15, 110, 86, 1),
+                            "Approve with conditions", RGBA(15, 110, 86, 1),
+                            "Reject", RGBA(163, 45, 45, 1),
+                            RGBA(133, 79, 11, 1)
+                          )
+                        FontWeight: =FontWeight.Bold
+                        Height: =22
+                        Size: =11
+                        Text: =ThisItem.Decision.Value
+                        Width: =260
+                        X: =500
+                        Y: =40
+                  - lblRemarksDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Overflow: =Overflow.Scroll
+                        Size: =10
+                        Text: |-
+                          =If(IsBlank(ThisItem.ManagerRemarks), "", "Remarks: " & ThisItem.ManagerRemarks)
+                        Visible: =Not(IsBlank(ThisItem.ManagerRemarks))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =73
+                  - lblConditionsDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(133, 79, 11, 1)
+                        Height: =43
+                        Overflow: =Overflow.Scroll
+                        Size: =9
+                        Text: |-
+                          =If(Not(IsBlank(ThisItem.ApprovalConditions)), "Conditions: " & ThisItem.ApprovalConditions, "")
+                        Visible: =Not(IsBlank(ThisItem.ApprovalConditions))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =73
+                  - lblRejectionDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(163, 45, 45, 1)
+                        Height: =22
+                        Overflow: =Overflow.Scroll
+                        Size: =9
+                        Text: |-
+                          =If(Not(IsBlank(ThisItem.RejectionReason)), "Rejection reason: " & ThisItem.RejectionReason, "")
+                        Visible: =Not(IsBlank(ThisItem.RejectionReason))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =73
+            - Rectangle1:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(128, 128, 128, 0.2)
+                  Height: =1
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  Width: =Parent.Width
+            - rowExecutionTitle:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutMinHeight: =70
+                  PaddingBottom: =4
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =CountRows(colExecutionLog) > 0
+                  Width: =Parent.Width
+                Children:
+                  - lblExecutionHistoryTitle:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =32
+                        Text: ="Execution History"
+                        Width: =300
+            - galExecutionHistory:
+                Control: Gallery@2.15.0
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  FillPortions: =0
+                  Height: =CountRows(colExecutionLog) * 130
+                  Items: =colExecutionLog
+                  ShowScrollbar: =false
+                  TemplateSize: =130
+                  Visible: =CountRows(colExecutionLog) > 0
+                  Width: =Parent.Width
+                Children:
+                  - rectExecutionBg:
+                      Control: Rectangle@2.3.0
+                      Properties:
+                        Fill: =If(Mod(ThisItem.ID, 2) = 0, RGBA(241, 239, 232, 1), RGBA(255, 255, 255, 1))
+                        Height: =130
+                        Width: =Parent.Width
+                  - lblExecFollowUpDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =43
+                        Overflow: =Overflow.Scroll
+                        Size: =10
+                        Text: |-
+                          =If(Value(ThisItem.StepNumber) = 4,
+                              gSelectedRequest.FollowUpRemarks,
+                              gSelectedRequest.SupplierFollowUpNotes
+                          )
+                        Visible: |-
+                          =(Value(ThisItem.StepNumber) = 4 && Not(IsBlank(gSelectedRequest.FollowUpRemarks))) ||
+                          (Value(ThisItem.StepNumber) = 5 && Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =77
+                  - lblExecGRRemarks:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =43
+                        Overflow: =Overflow.Scroll
+                        Size: =10
+                        Text: =gSelectedRequest.GoodsReceiptRemarks
+                        Visible: =Value(ThisItem.StepNumber) = 3 && Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =77
+                  - lblExecStepDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Size: =9
+                        Text: |-
+                          =Switch(ThisItem.StepNumber,
+                                      1, "Step 1 — Procurement Execution",
+                                      2, "Step 2 — Accounting Handover",
+                                      3, "Step 3 — Goods Receipt & Acceptance",
+                                      4, "Step 4 — Supplier Follow-up (Requester)",
+                                      5, "Step 5 — Supplier Follow-up (Procurement)",
+                                      "—"
+                                  )
+                        Width: =260
+                        X: =20
+                        Y: =10
+                  - lblExecDateDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Right
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Size: =9
+                        Text: =Text(ThisItem.ExecutedAt, "dd/mm/yyyy hh:mm")
+                        Width: =110
+                        X: =1224
+                        Y: =10
+                  - lblExecByDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =22
+                        Size: =11
+                        Text: =ThisItem.ExecutedBy.Value
+                        Width: =240
+                        X: =20
+                        Y: =40
+                  - lblExecSupplierDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =22
+                        Overflow: =Overflow.Scroll
+                        Size: =10
+                        Text: |-
+                          =If(IsBlank(ThisItem.SupplierSummary), "", "Supplier: " & ThisItem.SupplierSummary)
+                        Visible: =Not(IsBlank(ThisItem.SupplierSummary))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =77
+                  - lblExecPODetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(56, 96, 178, 1)
+                        Height: =22
+                        Size: =10
+                        Text: |-
+                          =If(IsBlank(ThisItem.PurchaseOrderLink), "", "PO: " & ThisItem.PurchaseOrderLink)
+                        Visible: =Not(IsBlank(ThisItem.PurchaseOrderLink))
+                        Width: =807
+                        X: =500
+                        Y: =40
+                  - lblExecNotesDetail:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =43
+                        Size: =10
+                        Text: |-
+                          =Switch(
+                              ThisItem.StepNumber,
+                              4, If(IsBlank(gSelectedRequest.FollowUpRemarks), "", gSelectedRequest.FollowUpRemarks),
+                              5, If(IsBlank(gSelectedRequest.SupplierFollowUpNotes), "", gSelectedRequest.SupplierFollowUpNotes),
+                              If(IsBlank(ThisItem.Notes), "", ThisItem.Notes)
+                          )
+                        Visible: =Not(IsBlank(ThisItem.Notes))
+                        Width: =Parent.Width - 40
+                        X: =20
+                        Y: =77
+      - conActionBar:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =60
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =12
+            LayoutJustifyContent: =LayoutJustifyContent.End
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =8
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: |-
+              =Not(
+                  gSelectedRequest.Status.Value = "Completed" ||
+                  gSelectedRequest.Status.Value = "Rejected"
+              )
+            Width: =Parent.Width
+            Y: =Parent.Height - 60
+          Children:
+            - btnActionReview:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(If(gSelectedRequest.Status.Value = "Pending Manager", ManagerReviewScreen, ExecutiveApprovalScreen))
+                  Text: ="Review Request →"
+                  Visible: |-
+                    =(gSelectedRequest.Status.Value = "Pending Manager" && (gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Admin")) ||
+                     (gSelectedRequest.Status.Value = "Pending Executive" && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
+                  Width: =200
+            - btnActionStart:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(ProcurementExecutionScreen)
+                  Text: ="Start Procurement →"
+                  Visible: =gSelectedRequest.Status.Value = "Pending Procurement" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin")
+                  Width: =220
+            - btnActionAccounting:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(AccountingScreen)
+                  Text: ="Start Accounting →"
+                  Visible: =gSelectedRequest.Status.Value = "Pending Accounting" && (gCurrentUser.Role.Value = "Accounting" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin")
+                  Width: =220
+            - btnActionGoodsReceipt:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(GoodsReceiptScreen)
+                  Text: ="Goods Receipt & Acceptance →"
+                  Visible: |-
+                    =gSelectedRequest.Status.Value = "Goods Receipt & Acceptance" &&
+                    gSelectedRequest.RequesterEmail = gCurrentEmployee.Email
+                  Width: =260
+            - btnActionSupplierFollowUpScreen:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: =Navigate(SupplierFollowUpScreen)
+                  Text: ="Start Supplier Follow-up →"
+                  Visible: =gSelectedRequest.Status.Value = "Pending Supplier Follow-up" && (gSelectedRequest.RequesterEmail = gCurrentEmployee.Email || gCurrentUser.Role.Value = "Procurement")
+                  Width: =260
