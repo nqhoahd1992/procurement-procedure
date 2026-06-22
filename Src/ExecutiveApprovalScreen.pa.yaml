@@ -789,24 +789,30 @@ Screens:
                                         )
                                     }
                                 );
-                                Patch(
-                                    Procurement_Requests,
-                                    gSelectedRequest,
-                                    {
-                                        Status: {Value: If(
-                                            rdoExecutiveDecision.Selected.Value = "Reject",
-                                            "Rejected",
-                                            "Pending Procurement"
-                                        )},
-                                        ConditionsText: If(
-                                            rdoExecutiveDecision.Selected.Value = "Approve with conditions",
-                                            txtApprovalConditions.Value,
-                                            ""
-                                        )
-                                    }
-                                );
-                                Notify("Decision submitted successfully", NotificationType.Success);
-                                Navigate(HomeScreen)
+                                With(
+                                    {wReq: Patch(
+                                        Procurement_Requests,
+                                        gSelectedRequest,
+                                        {
+                                            Status: {Value: If(
+                                                rdoExecutiveDecision.Selected.Value = "Reject",
+                                                "Rejected",
+                                                "Pending Procurement"
+                                            )},
+                                            ConditionsText: If(
+                                                rdoExecutiveDecision.Selected.Value = "Approve with conditions",
+                                                txtApprovalConditions.Value,
+                                                ""
+                                            )
+                                        }
+                                    )},
+                                    If(
+                                        IsBlank(wReq.ID),
+                                        Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                        Notify("Decision submitted successfully", NotificationType.Success);
+                                        Navigate(HomeScreen)
+                                    )
+                                )
                             )
                         )
                     )

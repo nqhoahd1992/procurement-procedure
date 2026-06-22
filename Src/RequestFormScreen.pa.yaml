@@ -92,6 +92,7 @@ Screens:
                         IsBlank(ddCategory_1.Selected) ||
                         IsBlank(ddCurrency_1.Selected) ||
                         IsBlank(ddDeliveryLocation_1.Selected) ||
+                        IsBlank(dpDeliveryDate_1.SelectedDate) ||
                         IsBlank(rdoProcurementType_1.Selected),
                         Notify("Please fill in all required fields", NotificationType.Error),
                         If(
@@ -167,26 +168,9 @@ Screens:
                                                         IsBlank(wNewRequest.ID),
                                                         Notify("Failed to submit request. Please try again.", NotificationType.Error),
                                                         Set(gPendingAttachments, DataCardValue15.Attachments);
-                                                        Set(gCurrentRequest, wNewRequest);
                                                         Set(gSelectedRequest, wNewRequest);
                                                         EditForm(Form1);
-                                                        SubmitForm(Form1);
-                                                        Reset(ddDepartment_1);
-                                                        Reset(txtDescription_1);
-                                                        Reset(ddCategory_1);
-                                                        Reset(ddInvoiceRegion);
-                                                        Reset(ddPurchaseAccordance_2);
-                                                        Reset(txtEstimatedCost_1);
-                                                        Reset(ddCurrency_1);
-                                                        Reset(ddDeliveryLocation_1);
-                                                        Reset(txtBudgetRef_1);
-                                                        Reset(ddPreferredSupplier_1);
-                                                        Reset(dpDeliveryDate_1);
-                                                        Reset(ddManagerApprover_1);
-                                                        Reset(rdoProcurementType_1);
-                                                        Reset(rdoInvoiceType_1);
-                                                        Notify("Request submitted successfully", NotificationType.Success);
-                                                        Navigate(HomeScreen)
+                                                        SubmitForm(Form1)
                                                     )
                                                 )
                                             )
@@ -426,6 +410,24 @@ Screens:
                         LayoutMinHeight: =16
                         LayoutMinWidth: =16
                         NumberOfColumns: =1
+                        OnFailure: =Notify("Request saved but attachment upload failed. Please open the request and re-attach.", NotificationType.Warning); Navigate(HomeScreen)
+                        OnSuccess: |-
+                          =Reset(ddDepartment_1);
+                          Reset(txtDescription_1);
+                          Reset(ddCategory_1);
+                          Reset(ddInvoiceRegion);
+                          Reset(ddPurchaseAccordance_2);
+                          Reset(txtEstimatedCost_1);
+                          Reset(ddCurrency_1);
+                          Reset(ddDeliveryLocation_1);
+                          Reset(txtBudgetRef_1);
+                          Reset(ddPreferredSupplier_1);
+                          Reset(dpDeliveryDate_1);
+                          Reset(ddManagerApprover_1);
+                          Reset(rdoProcurementType_1);
+                          Reset(rdoInvoiceType_1);
+                          Notify("Request submitted successfully", NotificationType.Success);
+                          Navigate(HomeScreen)
                         SnapToColumns: =false
                         Width: =Parent.Width
                         X: =40

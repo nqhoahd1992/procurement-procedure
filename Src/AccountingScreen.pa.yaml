@@ -523,14 +523,16 @@ Screens:
                         If(
                             IsBlank(txtNotes_AC.Value),
                             Notify("Accounting Notes is required", NotificationType.Error),
-                            Patch(
-                                Procurement_Requests,
-                                gSelectedRequest,
-                                {
-                                    Status: {Value: "Goods Receipt & Acceptance"},
-                                    AccountingCompletedAt: Now()
-                                }
-                            );
+                            If(
+                                IsBlank(Patch(
+                                    Procurement_Requests,
+                                    gSelectedRequest,
+                                    {
+                                        Status: {Value: "Goods Receipt & Acceptance"},
+                                        AccountingCompletedAt: Now()
+                                    }
+                                ).ID),
+                                Notify("Failed to update status. Please try again.", NotificationType.Error),
                             Patch(
                                 Procurement_ExecutionLog,
                                 Defaults(Procurement_ExecutionLog),
@@ -547,6 +549,7 @@ Screens:
                             );
                             Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
                             Navigate(HomeScreen)
+                            )
                         )
                     )
                   Text: ="Submit →"

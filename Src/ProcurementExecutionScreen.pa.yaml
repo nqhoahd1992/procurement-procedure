@@ -1283,31 +1283,37 @@ Screens:
                         If(
                             IsBlank(txtRejectReason_PE.Value),
                             Notify("Please enter a rejection reason", NotificationType.Error),
-                            Patch(
-                                Procurement_Requests,
-                                gSelectedRequest,
-                                {
-                                    Status: {Value: "Rejected"},
-                                    ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
-                                    ProcurementExecutedAt: Now()
-                                }
-                            );
-                            Patch(
-                                Procurement_ExecutionLog,
-                                Defaults(Procurement_ExecutionLog),
-                                {
-                                    'Tiêu đề': "Step 1 - Procurement Rejected - " & gSelectedRequest.'Tiêu đề',
-                                    RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.'Tiêu đề'},
-                                    RequestIDText: Text(gSelectedRequest.ID),
-                                    StepNumber: 1,
-                                    StepName: {Value: "Procurement Execution"},
-                                    ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
-                                    ExecutedAt: Now(),
-                                    Notes: txtRejectReason_PE.Value
-                                }
-                            );
-                            Notify("Request has been rejected.", NotificationType.Success);
-                            Navigate(HomeScreen)
+                            With(
+                                {wReq: Patch(
+                                    Procurement_Requests,
+                                    gSelectedRequest,
+                                    {
+                                        Status: {Value: "Rejected"},
+                                        ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                        ProcurementExecutedAt: Now()
+                                    }
+                                )},
+                                If(
+                                    IsBlank(wReq.ID),
+                                    Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                    Patch(
+                                        Procurement_ExecutionLog,
+                                        Defaults(Procurement_ExecutionLog),
+                                        {
+                                            Title: "Step 1 - Procurement Rejected - " & gSelectedRequest.Title,
+                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                            RequestIDText: Text(gSelectedRequest.ID),
+                                            StepNumber: 1,
+                                            StepName: {Value: "Procurement Execution"},
+                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                            ExecutedAt: Now(),
+                                            Notes: txtRejectReason_PE.Value
+                                        }
+                                    );
+                                    Notify("Request has been rejected.", NotificationType.Success);
+                                    Navigate(HomeScreen)
+                                )
+                            )
                         ),
                         If(
                             Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked &&
@@ -1322,7 +1328,7 @@ Screens:
                                         If(
                                             gSelectedRequest.InvoiceType.Value = "Official Invoice",
                                             If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                First(gSelectedRequest.Attachments).AbsoluteUri,
                                                 txtNewInvoiceLink_PE.Value
                                             ),
                                             txtOfficialInvoiceDirect_PE.Value
@@ -1334,7 +1340,7 @@ Screens:
                                             If(
                                                 gSelectedRequest.InvoiceType.Value = "Official Invoice",
                                                 If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                    First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                    First(gSelectedRequest.Attachments).AbsoluteUri,
                                                     txtNewInvoiceLink_PE.Value
                                                 ),
                                                 txtOfficialInvoiceDirect_PE.Value
@@ -1358,66 +1364,72 @@ Screens:
                                                             gSelectedRequest.InvoiceType.Value = "Official Invoice",
                                                             If(
                                                                 rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                                First(gSelectedRequest.'Tệp đính kèm').AbsoluteUri,
+                                                                First(gSelectedRequest.Attachments).AbsoluteUri,
                                                                 txtNewInvoiceLink_PE.Value
                                                             ),
                                                             txtOfficialInvoiceDirect_PE.Value
                                                         )
                                                     },
-                                                    Patch(
-                                                        Procurement_Requests,
-                                                        gSelectedRequest,
-                                                        {
-                                                            Status: {Value: "Pending Accounting"},
-                                                            OfficialInvoiceLink: wOfficialInvoiceLink,
-                                                            AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
-                                                            ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
-                                                            ProcurementExecutedAt: Now()
-                                                        }
-                                                    );
-                                                    Patch(
-                                                        Procurement_ExecutionLog,
-                                                        Defaults(Procurement_ExecutionLog),
-                                                        {
-                                                            'Tiêu đề': "Step 1 - Procurement Execution - " & gSelectedRequest.'Tiêu đề',
-                                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.'Tiêu đề'},
-                                                            RequestIDText: Text(gSelectedRequest.ID),
-                                                            StepNumber: 1,
-                                                            StepName: {Value: "Procurement Execution"},
-                                                            ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.'Tiêu đề'},
-                                                            ExecutedAt: Now(),
-                                                            HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
-                                                            HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
-                                                            SupplierSummary: txtSupplierSummary_PE.Value,
-                                                            PurchaseOrderLink: txtPurchaseOrder_PE.Value
-                                                        }
-                                                    );
-                                                    Set(gSubmitInvoiceResult,
-                                                        Submit_Invoice.Run(
-                                                            wOfficialInvoiceLink,
-                                                            gSelectedRequest.ID,
-                                                            Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
-                                                            txtInvDateValue_PE.Value,
-                                                            txtSupplierNameValue_PE.Value,
-                                                            txtBilledToValue_PE.Value,
-                                                            txtInvNumValue_PE.Value,
-                                                            Value(txtTotalAmountValue_PE.Value),
-                                                            Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
-                                                            txtCurrencyValue_PE.Value,
-                                                            gInvoiceResult.jobId,
-                                                            gInvoiceResult.confidenceScore,
-                                                            txtAttentionValue_PE.Value,
-                                                            "",
-                                                            gSelectedRequest.InvoiceRegion.Value,
-                                                            txtABNValue_PE.Value
+                                                    With(
+                                                        {wReq: Patch(
+                                                            Procurement_Requests,
+                                                            gSelectedRequest,
+                                                            {
+                                                                Status: {Value: "Pending Accounting"},
+                                                                OfficialInvoiceLink: wOfficialInvoiceLink,
+                                                                AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                                                ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                                ProcurementExecutedAt: Now()
+                                                            }
+                                                        )},
+                                                        If(
+                                                            IsBlank(wReq.ID),
+                                                            Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                                            Patch(
+                                                                Procurement_ExecutionLog,
+                                                                Defaults(Procurement_ExecutionLog),
+                                                                {
+                                                                    Title: "Step 1 - Procurement Execution - " & gSelectedRequest.Title,
+                                                                    RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                                    RequestIDText: Text(gSelectedRequest.ID),
+                                                                    StepNumber: 1,
+                                                                    StepName: {Value: "Procurement Execution"},
+                                                                    ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                                    ExecutedAt: Now(),
+                                                                    HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                                                    HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
+                                                                    SupplierSummary: txtSupplierSummary_PE.Value,
+                                                                    PurchaseOrderLink: txtPurchaseOrder_PE.Value
+                                                                }
+                                                            );
+                                                            Set(gSubmitInvoiceResult,
+                                                                Submit_Invoice.Run(
+                                                                    wOfficialInvoiceLink,
+                                                                    gSelectedRequest.ID,
+                                                                    Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
+                                                                    txtInvDateValue_PE.Value,
+                                                                    txtSupplierNameValue_PE.Value,
+                                                                    txtBilledToValue_PE.Value,
+                                                                    txtInvNumValue_PE.Value,
+                                                                    Value(txtTotalAmountValue_PE.Value),
+                                                                    Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
+                                                                    txtCurrencyValue_PE.Value,
+                                                                    gInvoiceResult.jobId,
+                                                                    gInvoiceResult.confidenceScore,
+                                                                    txtAttentionValue_PE.Value,
+                                                                    txtDescriptionValue_PE.Value,
+                                                                    gSelectedRequest.InvoiceRegion.Value,
+                                                                    txtABNValue_PE.Value
+                                                                )
+                                                            );
+                                                            If(
+                                                                IsError(gSubmitInvoiceResult),
+                                                                Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
+                                                                Navigate(HomeScreen),
+                                                                Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                                                Navigate(HomeScreen)
+                                                            )
                                                         )
-                                                    );
-                                                    If(
-                                                        IsError(gSubmitInvoiceResult),
-                                                        Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.'Tiêu đề', NotificationType.Warning);
-                                                        Navigate(HomeScreen),
-                                                        Notify("Procurement execution submitted successfully", NotificationType.Success);
-                                                        Navigate(HomeScreen)
                                                     )
                                                 )
                                             )

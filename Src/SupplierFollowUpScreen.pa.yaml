@@ -1216,7 +1216,7 @@ Screens:
                                     Switch(
                                         ddAcceptanceDecision2_SFU.Selected.Value,
                                         "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
-                                        "Accepted with Invoice Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
+                                        "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
                                     );
                                     Navigate(HomeScreen)
                                 )

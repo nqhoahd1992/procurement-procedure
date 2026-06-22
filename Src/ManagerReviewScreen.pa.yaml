@@ -701,19 +701,25 @@ Screens:
                                         ManagerRemarks: txtManagerRemarks.Value
                                     }
                                 );
-                                Patch(
-                                    Procurement_Requests,
-                                    gSelectedRequest,
-                                    {
-                                        Status: {Value: If(
-                                            rdoApproved.Selected.Value = "Approved (within budget)",
-                                            "Pending Procurement",
-                                            "Pending Executive"
-                                        )}
-                                    }
-                                );
-                                Notify("Decision submitted successfully", NotificationType.Success);
-                                Navigate(HomeScreen)
+                                With(
+                                    {wReq: Patch(
+                                        Procurement_Requests,
+                                        gSelectedRequest,
+                                        {
+                                            Status: {Value: If(
+                                                rdoApproved.Selected.Value = "Approved (within budget)",
+                                                "Pending Procurement",
+                                                "Pending Executive"
+                                            )}
+                                        }
+                                    )},
+                                    If(
+                                        IsBlank(wReq.ID),
+                                        Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                        Notify("Decision submitted successfully", NotificationType.Success);
+                                        Navigate(HomeScreen)
+                                    )
+                                )
                             )
                         )
                     )
