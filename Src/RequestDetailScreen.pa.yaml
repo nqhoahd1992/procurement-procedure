@@ -1567,7 +1567,7 @@ Screens:
                   OnSelect: =Navigate(If(gSelectedRequest.Status.Value = "Pending Manager", ManagerReviewScreen, ExecutiveApprovalScreen))
                   Text: ="Review Request →"
                   Visible: |-
-                    =(gSelectedRequest.Status.Value = "Pending Manager" && (gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Admin")) ||
+                    =(gSelectedRequest.Status.Value = "Pending Manager" && (gCurrentUser.Role.Value = "Admin" || (gCurrentUser.Role.Value = "Manager" && gSelectedRequest.ManagerApproverID.Id = gCurrentEmployee.ID))) ||
                      (gSelectedRequest.Status.Value = "Pending Executive" && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
                   Width: =200
             - btnActionStart:

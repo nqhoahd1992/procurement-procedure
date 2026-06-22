@@ -684,36 +684,42 @@ Screens:
                             If(
                                 IsBlank(rdoApproved.Selected.Value),
                                 Notify("Please select a decision", NotificationType.Error),
-                                Patch(
-                                    Procurement_ApprovalLog,
-                                    Defaults(Procurement_ApprovalLog),
-                                    {
-                                        Title: "Step 2 - " & rdoApproved.Selected.Value & " - " & gSelectedRequest.Title,
-                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                        RequestIDText: Text(gSelectedRequest.ID),
-                                        StepNumber: 2,
-                                        ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                        Decision: {Value: rdoApproved.Selected.Value},
-                                        ManagerRemarks: txtManagerRemarks.Value
-                                    }
-                                );
                                 With(
-                                    {wReq: Patch(
-                                        Procurement_Requests,
-                                        gSelectedRequest,
+                                    {wLog: Patch(
+                                        Procurement_ApprovalLog,
+                                        Defaults(Procurement_ApprovalLog),
                                         {
-                                            Status: {Value: If(
-                                                rdoApproved.Selected.Value = "Approved (within budget)",
-                                                "Pending Procurement",
-                                                "Pending Executive"
-                                            )}
+                                            Title: "Step 2 - " & rdoApproved.Selected.Value & " - " & gSelectedRequest.Title,
+                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                            RequestIDText: Text(gSelectedRequest.ID),
+                                            StepNumber: 2,
+                                            ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                            Decision: {Value: rdoApproved.Selected.Value},
+                                            ManagerRemarks: txtManagerRemarks.Value
                                         }
                                     )},
                                     If(
-                                        IsBlank(wReq.ID),
-                                        Notify("Failed to update status. Please try again.", NotificationType.Error),
-                                        Notify("Decision submitted successfully", NotificationType.Success);
-                                        Navigate(HomeScreen)
+                                        IsBlank(wLog.ID),
+                                        Notify("Failed to save approval log. Please try again.", NotificationType.Error),
+                                        With(
+                                            {wReq: Patch(
+                                                Procurement_Requests,
+                                                gSelectedRequest,
+                                                {
+                                                    Status: {Value: If(
+                                                        rdoApproved.Selected.Value = "Approved (within budget)",
+                                                        "Pending Procurement",
+                                                        "Pending Executive"
+                                                    )}
+                                                }
+                                            )},
+                                            If(
+                                                IsBlank(wReq.ID),
+                                                Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                                Notify("Decision submitted successfully", NotificationType.Success);
+                                                Navigate(HomeScreen)
+                                            )
+                                        )
                                     )
                                 )
                             )

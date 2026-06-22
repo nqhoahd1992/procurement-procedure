@@ -759,50 +759,56 @@ Screens:
                             If(
                                 rdoExecutiveDecision.Selected.Value = "Reject" && IsBlank(txtRejectionReason.Value),
                                 Notify("Rejection Reason is required", NotificationType.Error),
-                                Patch(
-                                    Procurement_ApprovalLog,
-                                    Defaults(Procurement_ApprovalLog),
-                                    {
-                                        Title: "Step 3 - " & rdoExecutiveDecision.Selected.Value & " - " & gSelectedRequest.Title,
-                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                        RequestIDText: Text(gSelectedRequest.ID),
-                                        StepNumber: 3,
-                                        ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                        Decision: {Value: rdoExecutiveDecision.Selected.Value},
-                                        ApprovalConditions: If(
-                                            rdoExecutiveDecision.Selected.Value = "Approve with conditions",
-                                            txtApprovalConditions.Value,
-                                            ""
-                                        ),
-                                        RejectionReason: If(
-                                            rdoExecutiveDecision.Selected.Value = "Reject",
-                                            txtRejectionReason.Value,
-                                            ""
-                                        )
-                                    }
-                                );
                                 With(
-                                    {wReq: Patch(
-                                        Procurement_Requests,
-                                        gSelectedRequest,
+                                    {wLog: Patch(
+                                        Procurement_ApprovalLog,
+                                        Defaults(Procurement_ApprovalLog),
                                         {
-                                            Status: {Value: If(
-                                                rdoExecutiveDecision.Selected.Value = "Reject",
-                                                "Rejected",
-                                                "Pending Procurement"
-                                            )},
-                                            ConditionsText: If(
+                                            Title: "Step 3 - " & rdoExecutiveDecision.Selected.Value & " - " & gSelectedRequest.Title,
+                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                            RequestIDText: Text(gSelectedRequest.ID),
+                                            StepNumber: 3,
+                                            ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                            Decision: {Value: rdoExecutiveDecision.Selected.Value},
+                                            ApprovalConditions: If(
                                                 rdoExecutiveDecision.Selected.Value = "Approve with conditions",
                                                 txtApprovalConditions.Value,
+                                                ""
+                                            ),
+                                            RejectionReason: If(
+                                                rdoExecutiveDecision.Selected.Value = "Reject",
+                                                txtRejectionReason.Value,
                                                 ""
                                             )
                                         }
                                     )},
                                     If(
-                                        IsBlank(wReq.ID),
-                                        Notify("Failed to update status. Please try again.", NotificationType.Error),
-                                        Notify("Decision submitted successfully", NotificationType.Success);
-                                        Navigate(HomeScreen)
+                                        IsBlank(wLog.ID),
+                                        Notify("Failed to save approval log. Please try again.", NotificationType.Error),
+                                        With(
+                                            {wReq: Patch(
+                                                Procurement_Requests,
+                                                gSelectedRequest,
+                                                {
+                                                    Status: {Value: If(
+                                                        rdoExecutiveDecision.Selected.Value = "Reject",
+                                                        "Rejected",
+                                                        "Pending Procurement"
+                                                    )},
+                                                    ConditionsText: If(
+                                                        rdoExecutiveDecision.Selected.Value = "Approve with conditions",
+                                                        txtApprovalConditions.Value,
+                                                        ""
+                                                    )
+                                                }
+                                            )},
+                                            If(
+                                                IsBlank(wReq.ID),
+                                                Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                                Notify("Decision submitted successfully", NotificationType.Success);
+                                                Navigate(HomeScreen)
+                                            )
+                                        )
                                     )
                                 )
                             )
