@@ -240,7 +240,11 @@ Screens:
                         Height: =60
                         Overflow: =Overflow.Scroll
                         Size: =11
-                        Text: ="ádasdasd"
+                        Text: |-
+                          =With(
+                              {wSummary: LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 1).SupplierSummary},
+                              If(IsBlank(wSummary), "—", wSummary)
+                          )
                         VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
             - rowChecklistHeader_AC:

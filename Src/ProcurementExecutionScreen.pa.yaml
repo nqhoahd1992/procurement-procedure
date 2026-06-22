@@ -1133,36 +1133,6 @@ Screens:
                                     Height: =40
                                     Value: =If(gHasInvoiceResult, gInvoiceResult.currency, "")
                                     Width: =Parent.Width
-                        - colCurrency_PE_1:
-                            Control: GroupContainer@1.5.0
-                            Variant: AutoLayout
-                            Properties:
-                              DropShadow: =DropShadow.None
-                              LayoutDirection: =LayoutDirection.Vertical
-                              LayoutGap: =4
-                              LayoutMinHeight: =70
-                              RadiusBottomLeft: =0
-                              RadiusBottomRight: =0
-                              RadiusTopLeft: =0
-                              RadiusTopRight: =0
-                              Width: =120
-                              X: =40
-                              Y: =40
-                            Children:
-                              - lblCurrencyLabel_PE_1:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    Color: =RGBA(136, 135, 128, 1)
-                                    Height: =20
-                                    Size: =9
-                                    Text: ="Currency *"
-                                    Width: =120
-                              - txtCurrencyValue_PE_1:
-                                  Control: TextInput@0.0.54
-                                  Properties:
-                                    Height: =40
-                                    Value: =If(gHasInvoiceResult, gInvoiceResult.currency, "")
-                                    Width: =Parent.Width
                   - rowSuggestedFilename_PE:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout

@@ -622,9 +622,7 @@ Screens:
                               Height: =24
                               LayoutMinHeight: =30
                               Size: =11
-                              Text: |-
-                                ="
-                                "
+                              Text: =LookUp(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 2).Decision.Value
                               VerticalAlign: =VerticalAlign.Top
                               Width: =Parent.Width
             - rowDecisionTitle:
