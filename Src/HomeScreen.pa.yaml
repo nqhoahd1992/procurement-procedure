@@ -313,9 +313,19 @@ Screens:
                   Height: =24
                   OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
                   Size: =11
-                  Text: =ThisItem.RequesterID.Value
-                  Width: =260
-                  X: =Parent.Width - 280
+                  Text: |-
+                    =ThisItem.RequesterID.Value &
+                    If(
+                        ThisItem.Status.Value = "Goods Receipt & Acceptance" && Not(IsBlank(ThisItem.GRAssignedToID)),
+                        " | Receiver: " & ThisItem.GRAssignedToID.Value,
+                        If(
+                            ThisItem.Status.Value = "Pending Supplier Follow-up" && Not(IsBlank(ThisItem.SFU1AssignedToID)),
+                            " | Receiver: " & ThisItem.SFU1AssignedToID.Value,
+                            ""
+                        )
+                    )
+                  Width: =420
+                  X: =Parent.Width - 440
                   Y: =44
             - rectSeparator:
                 Control: Rectangle@2.3.0

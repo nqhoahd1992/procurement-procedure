@@ -6,7 +6,8 @@ Screens:
         =Set(gSFU1LogEntry, Blank());
         Set(gSFU1PendingAttachments, Blank());
         NewForm(frmSFU1Log_SFU);
-        Set(gSFU1DelegationMode, If(IsBlank(gSelectedRequest.SFU1AssignedToID) || gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID || gCurrentUser.Role.Value = "Admin", "I will receive", "Assign to someone else"))
+        Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
+        Set(gSFU1DelegationMode, If(IsBlank(gSelectedRequest.SFU1AssignedToID) || gSelectedRequest.SFU1AssignedToID.Id = 0 || gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID, "I will receive", "Assign to someone else"))
     Children:
       - rectHeader_SFU:
           Control: Rectangle@2.3.0
@@ -138,6 +139,7 @@ Screens:
                   - lblInfoDept_SFU:
                       Control: Label@2.5.1
                       Properties:
+                        FillPortions: =1
                         Height: =20
                         Size: =11
                         Text: |-
@@ -179,7 +181,7 @@ Screens:
                   - lblGR1Header_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Semibold
+                        FontWeight: =FontWeight.Bold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt — Round 1"
@@ -351,6 +353,7 @@ Screens:
                       Properties:
                         AutoHeight: =true
                         FillPortions: =1
+                        FontWeight: =FontWeight.Semibold
                         Size: =11
                         Text: =gSelectedRequest.GoodsReceiptRemarks
                         Width: =Parent.Width - 40
@@ -376,7 +379,7 @@ Screens:
                   - lblStep1Header_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Semibold
+                        FontWeight: =FontWeight.Bold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt — Round 2"
@@ -475,7 +478,7 @@ Screens:
                         - lblAssignReceiverLabel_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: ="Assign to *"
@@ -506,27 +509,6 @@ Screens:
                               Text: |-
                                 =If(IsBlank(gSelectedRequest.SFU1AssignedToID), "", "→ Assigned to: " & gSelectedRequest.SFU1AssignedToID.Value)
                               Width: =Parent.Width
-                        - btnSaveAssignment_SFU:
-                            Control: Button@0.0.45
-                            Properties:
-                              BasePaletteColor: =RGBA(83, 74, 183, 1)
-                              Height: =40
-                              OnSelect: |-
-                                =If(
-                                  IsBlank(ddAssignReceiver_SFU.Selected.Title),
-                                  Notify("Please select a person to assign", NotificationType.Error),
-                                  With(
-                                    {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {SFU1AssignedToID: {Id: ddAssignReceiver_SFU.Selected.ID, Value: ddAssignReceiver_SFU.Selected.Title}})},
-                                    If(
-                                      IsBlank(wPatched.ID),
-                                      Notify("Failed to save assignment. Please try again.", NotificationType.Error),
-                                      Set(gSelectedRequest, wPatched);
-                                      Notify("Assignment saved to " & ddAssignReceiver_SFU.Selected.Title, NotificationType.Success)
-                                    )
-                                  )
-                                )
-                              Text: ="Save Assignment"
-                              Width: =Parent.Width
             - rowStep1ChecklistHeader_SFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -550,7 +532,7 @@ Screens:
                   - lblStep1ChecklistHeader_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Semibold
+                        FontWeight: =FontWeight.Bold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt Checklist *"
@@ -764,45 +746,6 @@ Screens:
                     && gSFU1DelegationMode = "I will receive"
                   Width: =Parent.Width
                 Children:
-                  - colReceivedBy2_SFU:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Visible: =Not(IsBlank(gSelectedRequest.SFU1AssignedToID))
-                        Width: =300
-                      Children:
-                        - lblReceivedBy2Label_SFU:
-                            Control: Label@2.5.1
-                            Properties:
-                              FontWeight: =FontWeight.Bold
-                              Height: =24
-                              Size: =11
-                              Text: ="Received By *"
-                              Width: =300
-                        - ddReceivedBy2_SFU:
-                            Control: ComboBox@0.0.51
-                            Properties:
-                              Height: =40
-                              InputTextPlaceholder: ="Choose an option"
-                              Items: =Sort('Employee List', Title, SortOrder.Ascending)
-                              Width: =Parent.Width
-                            Children:
-                              - Title_RB2:
-                                  Control: ComboBoxDataField@1.5.0
-                                  Variant: textualColumn
-                                  IsLocked: true
-                                  Properties:
-                                    FieldDisplayName: ="Title"
-                                    FieldName: ="Title"
-                                    FieldType: ="E"
-                                    Order: =1
                   - colReceiptDate2_SFU:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
@@ -829,6 +772,36 @@ Screens:
                             Properties:
                               Height: =40
                               Placeholder: ="Choose a date"
+                              Width: =Parent.Width
+                  - rowStep1ReceiptStatus_SFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =4
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width
+                        X: =40
+                        Y: =40
+                      Children:
+                        - lblReceiptStatus2Label_SFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: ="Receipt Status *"
+                              Width: =Parent.Width - 40
+                        - ddReceiptStatus2_SFU:
+                            Control: ComboBox@0.0.51
+                            Properties:
+                              Height: =40
+                              InputTextPlaceholder: ="Choose an option"
+                              Items: =Choices(Procurement_Requests.FollowUpReceiptStatus)
                               Width: =Parent.Width
                   - rowStep1AcceptanceDecision_SFU:
                       Control: GroupContainer@1.5.0
@@ -897,69 +870,96 @@ Screens:
                         Mode: ='TextInputCanvas.Mode'.Multiline
                         Placeholder: ="Enter remarks here..."
                         Width: =Parent.Width - 40
-            - frmSFU1Log_SFU:
-                Control: Form@2.4.4
-                Layout: Vertical
+            - rowfrmSFU1Log_SFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  BorderStyle: =BorderStyle.None
-                  DataSource: =Procurement_ExecutionLog
-                  Fill: =RGBA(0, 0, 0, 0)
-                  Height: =140
-                  Item: =gSFU1LogEntry
-                  OnFailure: |-
-                    =Notify("Receipt saved, but photo upload failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning)
-                  SnapToColumns: =false
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =140
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
                   Visible: |-
                     =IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4))
                     && gSFU1DelegationMode = "I will receive"
                   Width: =Parent.Width
+                  X: =40
+                  Y: =40
                 Children:
-                  - SFU1Attachments_DataCard:
-                      Control: TypedDataCard@1.0.7
-                      Variant: ClassicAttachmentsEdit
+                  - frmSFU1Log_SFU:
+                      Control: Form@2.4.4
+                      Layout: Vertical
                       Properties:
-                        DataField: ="{Attachments}"
-                        Default: =ThisItem.Attachments
-                        DisplayName: ="Round 2 Receipt Photos"
-                        Required: =false
-                        Update: =attSFU1Photos.Attachments
+                        BorderStyle: =BorderStyle.None
+                        DataSource: =Procurement_ExecutionLog
+                        Height: =140
+                        Item: =gSFU1LogEntry
+                        LayoutMinHeight: =200
+                        OnFailure: |-
+                          =Notify("Receipt saved, but photo upload failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning)
+                        SnapToColumns: =false
+                        Visible: |-
+                          =IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4))
+                          && gSFU1DelegationMode = "I will receive"
                         Width: =Parent.Width
+                        X: =40
+                        Y: =40
                       Children:
-                        - DataCardKeySFU1Photos:
-                            Control: Label@2.5.1
-                            MetadataKey: FieldName
+                        - SFU1Attachments_DataCard:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
                             Properties:
-                              FontWeight: =FontWeight.Bold
-                              Height: =24
-                              PaddingLeft: =20
-                              PaddingRight: =20
-                              Size: =11
-                              Text: ="Round 2 Receipt Photos *"
+                              DataField: ="{Attachments}"
+                              Default: =ThisItem.Attachments
+                              DisplayName: ="Round 2 Receipt Photos"
+                              Height: =200
+                              Required: =false
+                              Update: =attSFU1Photos.Attachments
                               Width: =Parent.Width
-                              Y: =8
-                        - attSFU1Photos:
-                            Control: Attachments@2.3.0
-                            MetadataKey: FieldValue
-                            Properties:
-                              Height: =80
-                              Items: =If(IsBlank(Parent.Default), gSFU1PendingAttachments, Parent.Default)
-                              MaxAttachments: =5
-                              PaddingLeft: =20
-                              PaddingRight: =20
-                              Width: =Parent.Width
-                              Y: =DataCardKeySFU1Photos.Y + DataCardKeySFU1Photos.Height + 4
-                        - ErrorMessageSFU1Photos:
-                            Control: Label@2.5.1
-                            MetadataKey: ErrorMessage
-                            Properties:
-                              Color: =RGBA(168, 0, 0, 1)
-                              Height: =20
-                              PaddingLeft: =20
-                              Size: =11
-                              Text: =Parent.Error
-                              Visible: =Parent.DisplayMode = DisplayMode.Edit
-                              Width: =Parent.Width
-                              Y: =attSFU1Photos.Y + attSFU1Photos.Height
+                              X: =0
+                              Y: =0
+                            Children:
+                              - DataCardKeySFU1Photos:
+                                  Control: Label@2.5.1
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =24
+                                    PaddingLeft: =0
+                                    PaddingRight: =0
+                                    Size: =11
+                                    Text: ="Round 2 Receipt Photos *"
+                                    Width: =Parent.Width
+                                    Y: =8
+                              - attSFU1Photos:
+                                  Control: Attachments@2.3.0
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    Height: =140
+                                    Items: =If(IsBlank(Parent.Default), gSFU1PendingAttachments, Parent.Default)
+                                    MaxAttachments: =5
+                                    PaddingLeft: =20
+                                    PaddingRight: =20
+                                    Width: =Parent.Width
+                                    Y: =DataCardKeySFU1Photos.Y + DataCardKeySFU1Photos.Height + 4
+                              - ErrorMessageSFU1Photos:
+                                  Control: Label@2.5.1
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Color: =RGBA(168, 0, 0, 1)
+                                    Height: =20
+                                    PaddingLeft: =20
+                                    Size: =11
+                                    Text: =Parent.Error
+                                    Visible: =Parent.DisplayMode = DisplayMode.Edit
+                                    Width: =Parent.Width
+                                    Y: =attSFU1Photos.Y + attSFU1Photos.Height
             - rowGR2Header_SFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -1066,6 +1066,35 @@ Screens:
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptDate), "—", Text(gSelectedRequest.FollowUpReceiptDate, "dd/mm/yyyy"))
                               Width: =180
+                  - colGR2ReceiptStatus_SFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =200
+                      Children:
+                        - lblGR2ReceiptStatusLabel_SFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              Size: =9
+                              Text: ="Receipt Status"
+                              Width: =200
+                        - lblGR2ReceiptStatusValue_SFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Bold
+                              Height: =24
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptStatus.Value), "—", gSelectedRequest.FollowUpReceiptStatus.Value)
+                              Width: =200
                   - colGR2AcceptanceDecision_SFU:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
@@ -1369,6 +1398,29 @@ Screens:
                   Text: ="Cancel"
                   Visible: =IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 5))
                   Width: =120
+            - btnSaveAssignment_SFU:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =44
+                  OnSelect: |-
+                    =If(
+                      IsBlank(ddAssignReceiver_SFU.Selected.Title),
+                      Notify("Please select a person to assign", NotificationType.Error),
+                      With(
+                        {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {SFU1AssignedToID: {Id: ddAssignReceiver_SFU.Selected.ID, Value: ddAssignReceiver_SFU.Selected.Title}})},
+                        If(
+                          IsBlank(wPatched.ID),
+                          Notify("Failed to save assignment. Please try again.", NotificationType.Error),
+                          Set(gSelectedRequest, wPatched);
+                          Notify("Assignment saved to " & ddAssignReceiver_SFU.Selected.Title, NotificationType.Success)
+                        )
+                      )
+                    )
+                  Text: ="Save Assignment"
+                  Visible: =gSFU1DelegationMode = "Assign to someone else"
+                  Width: =160
+                  X: =40
+                  Y: =40
             - btnSubmitStep1_SFU:
                 Control: Button@0.0.45
                 Properties:
@@ -1378,8 +1430,8 @@ Screens:
                         Not(chkSFU1.Checked && chkSFU2.Checked && chkSFU3.Checked && chkSFU4.Checked && chkSFU5.Checked),
                         Notify("Please complete all checklist items", NotificationType.Error),
                         If(
-                            (Not(IsBlank(gSelectedRequest.SFU1AssignedToID)) && IsBlank(ddReceivedBy2_SFU.Selected.Title)) ||
                             IsBlank(dpReceiptDate2_SFU.SelectedDate) ||
+                            IsBlank(ddReceiptStatus2_SFU.Selected.Value) ||
                             IsBlank(ddAcceptanceDecision2_SFU.Selected) ||
                             IsBlank(txtRemarks2_SFU.Value) ||
                             CountRows(attSFU1Photos.Attachments) = 0,
@@ -1395,8 +1447,9 @@ Screens:
                                                 "Completed",
                                                 "Pending Supplier Follow-up"
                                             )},
-                                            FollowUpReceiptBy: If(IsBlank(gSelectedRequest.SFU1AssignedToID), gCurrentEmployee.Title, ddReceivedBy2_SFU.Selected.Title),
+                                            FollowUpReceiptBy: gCurrentEmployee.Title,
                                             FollowUpReceiptDate: dpReceiptDate2_SFU.SelectedDate,
+                                            FollowUpReceiptStatus: {Value: ddReceiptStatus2_SFU.Selected.Value},
                                             FollowUpAcceptanceDecision: {Value: ddAcceptanceDecision2_SFU.Selected.Value},
                                             Fulfillment: {Value: If(
                                                 ddAcceptanceDecision2_SFU.Selected.Value = "Accepted with Adjustment",

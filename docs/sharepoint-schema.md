@@ -57,6 +57,7 @@ Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescrip
 | `GoodsReceiptAt` | DateTime | |
 | `FollowUpReceiptBy` | Text | |
 | `FollowUpReceiptDate` | DateTime | |
+| `FollowUpReceiptStatus` | Choice | same choices as `GoodsReceiptStatus` |
 | `FollowUpAcceptanceDecision` | Choice | `Accepted`, `Accepted with Adjustment` |
 | `CreditNote` | Text | required when follow-up decision = adjustment |
 | `Fulfillment` | Choice | `Fulfilled`, `Fulfilled with Adjustment` |
