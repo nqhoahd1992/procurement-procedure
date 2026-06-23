@@ -445,7 +445,19 @@ Screens:
                               BorderThickness: =If(gSFU1DelegationMode = "I will receive", 2, 1)
                               Height: =40
                               OnSelect: |-
-                                =Set(gSFU1DelegationMode, "I will receive");
+                                =If(
+                                    Not(IsBlank(gSelectedRequest.SFU1AssignedToID)),
+                                    Procurement_Notify_Receipt_Assignee.Run(
+                                    LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).email,
+                                    gSelectedRequest.SFU1AssignedToID.Value,
+                                    gSelectedRequest.Title,
+                                    gSelectedRequest.ID,
+                                    "Unassigned",
+                                    Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
+                                    gSelectedRequest.Category.Value
+                                    )
+                                );
+                                Set(gSFU1DelegationMode, "I will receive");
                                 Set(gSelectedRequest, Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {SFU1AssignedToID: Blank()}))
                               Text: ="I will receive"
                               Width: =160
@@ -1155,7 +1167,7 @@ Screens:
                   - lblGR2CreditNoteValue_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: =gSelectedRequest.CreditNote
@@ -1378,12 +1390,34 @@ Screens:
                     =If(
                       IsBlank(ddAssignReceiver_SFU.Selected.Title),
                       Notify("Please select a person to assign", NotificationType.Error),
+                      If(
+                        Not(IsBlank(gSelectedRequest.SFU1AssignedToID)) &&
+                        gSelectedRequest.SFU1AssignedToID.Id <> ddAssignReceiver_SFU.Selected.ID,
+                        Procurement_Notify_Receipt_Assignee.Run(
+                            LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).email,
+                            gSelectedRequest.SFU1AssignedToID.Value,
+                            gSelectedRequest.Title,
+                            gSelectedRequest.ID,
+                            "Unassigned",
+                            Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
+                            gSelectedRequest.Category.Value
+                        )
+                      );
                       With(
                         {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {SFU1AssignedToID: {Id: ddAssignReceiver_SFU.Selected.ID, Value: ddAssignReceiver_SFU.Selected.Title}})},
                         If(
                           IsBlank(wPatched.ID),
                           Notify("Failed to save assignment. Please try again.", NotificationType.Error),
                           Set(gSelectedRequest, wPatched);
+                          Procurement_Notify_Receipt_Assignee.Run(
+                            ddAssignReceiver_SFU.Selected.email,
+                            ddAssignReceiver_SFU.Selected.Title,
+                            gSelectedRequest.Title,
+                            gSelectedRequest.ID,
+                            "SupplierFollowUp",
+                            Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
+                            gSelectedRequest.Category.Value
+                          );
                           Notify("Assignment saved to " & ddAssignReceiver_SFU.Selected.Title, NotificationType.Success)
                         )
                       )
