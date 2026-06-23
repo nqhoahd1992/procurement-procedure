@@ -26,9 +26,20 @@ All data lives in **SharePoint Online** (`maxbiocare.sharepoint.com/sites/Powera
 
 Full column-level schema (types, choice values, join keys): `docs/sharepoint-schema.md`.
 
-Two **Power Automate** flows are called from Power Fx (see `ProcurementExecutionScreen`):
+**Power Automate** flows called from Power Fx:
+
+Invoice flows (called from `ProcurementExecutionScreen`):
 - `Parse_Invoice.Run(invoiceUrl, requestId)` — AI invoice extraction.
 - `Submit_Invoice.Run(...)` — writes parsed invoice data.
+
+Assignment notification flow (called from `GoodsReceiptScreen` and `SupplierFollowUpScreen`):
+- `Procurement_Notify_Receipt_Assignee.Run(assigneeEmail, assigneeName, requestTitle, requestId, notificationType, deliveryDate, category)`
+  - `notificationType = "GoodsReceipt"` — notify new assignee they must perform Goods Receipt & Acceptance.
+  - `notificationType = "SupplierFollowUp"` — notify new assignee they must perform Supplier Follow-up Round 2.
+  - `notificationType = "Unassigned"` — notify previous assignee they no longer need to act (email only, no Adaptive Card).
+  - Called on `btnSaveAssignment_GR` / `btnSaveAssignment_SFU` (assign new person) and `btnIWillReceive_GR` / `btnIWillReceive_SFU` (requester takes back the task).
+  - Flow sends Outlook email + Teams Adaptive Card for assignment types; email only for Unassigned.
+  - Connection: `app.admin@maxbiocare.com` pinned in "Run only users" — not invoker-provided.
 
 **Important:** SharePoint internal field names are Vietnamese for system columns — `'Tiêu đề'` = Title, `'Tệp đính kèm'` = Attachments. Custom columns are English (`Status`, `EstimatedCost`, `ManagerApproverID`, etc.). Reference Vietnamese-named columns with single quotes in Power Fx.
 
@@ -85,7 +96,7 @@ The gallery `Items` filters `Procurement_Requests` differently per `gUserRole`:
 - **Manager** → requests where `ManagerApproverID.Id = gCurrentEmployee.ID`.
 - **Procurement / Accounting** → requests in their relevant statuses onward.
 - **Executive / Admin** → all requests.
-- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`).
+- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`) **OR** assigned as receiver (`GRAssignedToID.Id = gCurrentEmployee.ID` or `SFU1AssignedToID.Id = gCurrentEmployee.ID`).
 
 Filter buttons and "+ New Request" are shown/hidden by role. Keep the per-role `Items` filter and the filter-button `Visible` rules in sync.
 
