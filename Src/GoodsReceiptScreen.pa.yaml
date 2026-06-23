@@ -808,16 +808,22 @@ Screens:
                 Properties:
                   Height: =44
                   OnSelect: |-
-                    =If(
-                        Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
-                        Notify("Please complete all checklist items", NotificationType.Error),
+                    =With(
+                        {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
                         If(
-                            IsBlank(dpReceiptDate_GR.SelectedDate) ||
-                            IsBlank(ddReceiptStatus_GR.Selected.Value) ||
-                            IsBlank(ddAcceptanceDecision_GR.Selected.Value) ||
-                            IsBlank(txtRemarks_GR.Value) ||
-                            CountRows(attGRPhotos.Attachments) = 0,
-                            Notify("Please fill in all required fields", NotificationType.Error),
+                            Not(IsBlank(wLatest.GRAssignedToID)) && wLatest.GRAssignedToID.Id <> gCurrentEmployee.ID,
+                            Notify("This assignment has been reassigned to someone else. Your submission has been cancelled.", NotificationType.Warning);
+                            Navigate(HomeScreen),
+                            If(
+                                Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
+                                Notify("Please complete all checklist items", NotificationType.Error),
+                                If(
+                                    IsBlank(dpReceiptDate_GR.SelectedDate) ||
+                                    IsBlank(ddReceiptStatus_GR.Selected.Value) ||
+                                    IsBlank(ddAcceptanceDecision_GR.Selected.Value) ||
+                                    IsBlank(txtRemarks_GR.Value) ||
+                                    CountRows(attGRPhotos.Attachments) = 0,
+                                    Notify("Please fill in all required fields", NotificationType.Error),
                             With(
                                 {
                                     wPatched: Patch(
@@ -875,6 +881,8 @@ Screens:
                                     )
                                 )
                             )
+                        )
+                    )
                         )
                     )
                   Text: ="Submit →"

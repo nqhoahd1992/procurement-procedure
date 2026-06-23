@@ -1432,16 +1432,22 @@ Screens:
                 Properties:
                   Height: =44
                   OnSelect: |-
-                    =If(
-                        Not(chkSFU1.Checked && chkSFU2.Checked && chkSFU3.Checked && chkSFU4.Checked && chkSFU5.Checked),
-                        Notify("Please complete all checklist items", NotificationType.Error),
+                    =With(
+                        {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
                         If(
-                            IsBlank(dpReceiptDate2_SFU.SelectedDate) ||
-                            IsBlank(ddReceiptStatus2_SFU.Selected.Value) ||
-                            IsBlank(ddAcceptanceDecision2_SFU.Selected) ||
-                            IsBlank(txtRemarks2_SFU.Value) ||
-                            CountRows(attSFU1Photos.Attachments) = 0,
-                            Notify("Please fill in all required fields", NotificationType.Error),
+                            Not(IsBlank(wLatest.SFU1AssignedToID)) && wLatest.SFU1AssignedToID.Id <> gCurrentEmployee.ID,
+                            Notify("This assignment has been reassigned to someone else. Your submission has been cancelled.", NotificationType.Warning);
+                            Navigate(HomeScreen),
+                            If(
+                                Not(chkSFU1.Checked && chkSFU2.Checked && chkSFU3.Checked && chkSFU4.Checked && chkSFU5.Checked),
+                                Notify("Please complete all checklist items", NotificationType.Error),
+                                If(
+                                    IsBlank(dpReceiptDate2_SFU.SelectedDate) ||
+                                    IsBlank(ddReceiptStatus2_SFU.Selected.Value) ||
+                                    IsBlank(ddAcceptanceDecision2_SFU.Selected) ||
+                                    IsBlank(txtRemarks2_SFU.Value) ||
+                                    CountRows(attSFU1Photos.Attachments) = 0,
+                                    Notify("Please fill in all required fields", NotificationType.Error),
                             With(
                                 {
                                     wPatched: Patch(
@@ -1501,6 +1507,8 @@ Screens:
                                     )
                                 )
                             )
+                        )
+                    )
                         )
                     )
                   Text: ="Submit →"
