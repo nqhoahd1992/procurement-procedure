@@ -1032,7 +1032,7 @@ Screens:
                         - lblGR2ReceivedByValue_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptBy), "—", gSelectedRequest.FollowUpReceiptBy)
@@ -1061,7 +1061,7 @@ Screens:
                         - lblGR2ReceiptDateValue_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptDate), "—", Text(gSelectedRequest.FollowUpReceiptDate, "dd/mm/yyyy"))
@@ -1090,7 +1090,7 @@ Screens:
                         - lblGR2ReceiptStatusValue_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.FollowUpReceiptStatus.Value), "—", gSelectedRequest.FollowUpReceiptStatus.Value)
@@ -1119,40 +1119,11 @@ Screens:
                         - lblGR2AcceptanceDecisionValue_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.FollowUpAcceptanceDecision.Value), "—", gSelectedRequest.FollowUpAcceptanceDecision.Value)
                               Width: =240
-                  - colGR2Fulfillment_SFU:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =200
-                      Children:
-                        - lblGR2FulfillmentLabel_SFU:
-                            Control: Label@2.5.1
-                            Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Fulfillment Status"
-                              Width: =200
-                        - lblGR2FulfillmentValue_SFU:
-                            Control: Label@2.5.1
-                            Properties:
-                              FontWeight: =FontWeight.Bold
-                              Height: =24
-                              Size: =11
-                              Text: =If(IsBlank(gSelectedRequest.Fulfillment.Value), "—", gSelectedRequest.Fulfillment.Value)
-                              Width: =200
             - rowGR2CreditNote_SFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -1221,6 +1192,7 @@ Screens:
                       Properties:
                         AutoHeight: =true
                         FillPortions: =1
+                        FontWeight: =FontWeight.Semibold
                         Overflow: =Overflow.Scroll
                         Size: =11
                         Text: =gSelectedRequest.FollowUpRemarks

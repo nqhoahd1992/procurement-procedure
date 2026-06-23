@@ -127,24 +127,24 @@ Screens:
                   LayoutGap: =4
                   LayoutMinHeight: |-
                     =520 +
-                      If(gSelectedRequest.ProcurementType.Value = "Invoice Supplied", 90, 0) +
-                      If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 70, 0) +
-                      If(Not(IsBlank(gSelectedRequest.ConditionsText)), 88, 0) +
-                      If(Not(IsBlank(gSelectedRequest.AccountingHandlerID)), 68, 0) +
-                      If(
-                          gSelectedRequest.Status.Value = "Completed" ||
-                          gSelectedRequest.Status.Value = "Pending Supplier Follow-up",
-                          200 +
-                          If(Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks)), 70, 0) +
-                          If(Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)), 160, 0) +
-                          If(Not(IsBlank(gSelectedRequest.FollowUpRemarks)), 70, 0) +
-                          If(Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)), 70, 0) +
-                          If(Not(IsBlank(gSelectedRequest.CreditNote)), 80, 0) +
-                          If(gGRHasAttachments, 50, 0) +
-                          If(gSFU1HasAttachments, 50, 0) +
-                          If(gSFU2HasAttachments, 50, 0),
-                          0
-                      )
+                        If(gSelectedRequest.ProcurementType.Value = "Invoice Supplied", 90, 0) +
+                        If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 70, 0) +
+                        If(Not(IsBlank(gSelectedRequest.ConditionsText)), 88, 0) +
+                        If(Not(IsBlank(gSelectedRequest.AccountingHandlerID)), 68, 0) +
+                        If(
+                            gSelectedRequest.Status.Value = "Completed" ||
+                            gSelectedRequest.Status.Value = "Pending Supplier Follow-up",
+                            200 +
+                            If(Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks)), 70, 0) +
+                            If(Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)), 160, 0) +
+                            If(Not(IsBlank(gSelectedRequest.FollowUpRemarks)), 70, 0) +
+                            If(Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)), 70, 0) +
+                            If(Not(IsBlank(gSelectedRequest.CreditNote)), 80, 0) +
+                            If(gGRHasAttachments, 50, 0) +
+                            If(gSFU1HasAttachments, 70, 0) +
+                            If(gSFU2HasAttachments, 50, 0),
+                            0
+                        )
                   PaddingBottom: =20
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -1147,15 +1147,29 @@ Screens:
                                     Size: =9
                                     Text: ="Attachments (Round 1)"
                                     Width: =Parent.Width
-                              - lblGRAttachmentsValue:
-                                  Control: Label@2.5.1
+                              - galGRAttachments:
+                                  Control: Gallery@2.15.0
+                                  Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
                                   Properties:
-                                    AutoHeight: =true
-                                    FontWeight: =FontWeight.Semibold
-                                    Height: =24
-                                    Size: =10
-                                    Text: =Concat(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).Attachments, DisplayName, " | ")
+                                    FillPortions: =0
+                                    Height: =Max(CountRows(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).Attachments) * 36 + 4, 36)
+                                    Items: =LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).Attachments
+                                    ShowScrollbar: =false
+                                    TemplateSize: =36
                                     Width: =Parent.Width
+                                  Children:
+                                    - lblGRAttachmentName:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(56, 96, 178, 1)
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =36
+                                          OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                                          Size: =11
+                                          Text: =If(IsBlank(ThisItem.DisplayName), "—", ThisItem.DisplayName)
+                                          Underline: =true
+                                          Width: =Parent.Width - 20
+                                          X: =1
                         - lblGoodsReceipt2Header:
                             Control: Label@2.5.1
                             Properties:
@@ -1386,6 +1400,7 @@ Screens:
                                   Control: Label@2.5.1
                                   Properties:
                                     AutoHeight: =true
+                                    FontWeight: =FontWeight.Semibold
                                     Height: =48
                                     Size: =11
                                     Text: =gSelectedRequest.FollowUpRemarks
@@ -1410,17 +1425,31 @@ Screens:
                                     Color: =RGBA(136, 135, 128, 1)
                                     Height: =20
                                     Size: =9
-                                    Text: ="Attachments (Round 2 — Requester)"
+                                    Text: ="Attachments (Round 2)"
                                     Width: =Parent.Width
-                              - lblSFU1AttachmentsValue:
-                                  Control: Label@2.5.1
+                              - galSFU1Attachments:
+                                  Control: Gallery@2.15.0
+                                  Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
                                   Properties:
-                                    AutoHeight: =true
-                                    FontWeight: =FontWeight.Semibold
-                                    Height: =24
-                                    Size: =10
-                                    Text: =Concat(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4).Attachments, DisplayName, " | ")
+                                    FillPortions: =0
+                                    Height: =Max(CountRows(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4).Attachments) * 36 + 4, 36)
+                                    Items: =LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4).Attachments
+                                    ShowScrollbar: =false
+                                    TemplateSize: =36
                                     Width: =Parent.Width
+                                  Children:
+                                    - lblSFU1AttachmentName:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(56, 96, 178, 1)
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =36
+                                          OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                                          Size: =11
+                                          Text: =If(IsBlank(ThisItem.DisplayName), "—", ThisItem.DisplayName)
+                                          Underline: =true
+                                          Width: =Parent.Width - 20
+                                          X: =1
                         - rowSupplierFollowUpNotes:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -1447,6 +1476,7 @@ Screens:
                                   Control: Label@2.5.1
                                   Properties:
                                     AutoHeight: =true
+                                    FontWeight: =FontWeight.Semibold
                                     Height: =48
                                     Size: =11
                                     Text: =gSelectedRequest.SupplierFollowUpNotes
@@ -1535,6 +1565,8 @@ Screens:
                       Properties:
                         FontWeight: =FontWeight.Bold
                         Height: =32
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Text: ="Approval History"
                         Width: =300
             - galApprovalHistory:
@@ -1560,10 +1592,13 @@ Screens:
                       Properties:
                         Color: =RGBA(136, 135, 128, 1)
                         Height: =22
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =9
                         Text: =If(ThisItem.StepNumber = 2, "Step 2 — Department Manager", "Step 3 — Executive")
-                        Width: =260
-                        Y: =10
+                        Width: =300
+                        X: =20
+                        Y: =19
                   - lblDateDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1572,20 +1607,25 @@ Screens:
                         Height: =22
                         Size: =9
                         Text: =Text(ThisItem.Created, "dd/mm/yyyy hh:mm")
-                        Width: =180
-                        Y: =10
+                        Width: =200
+                        X: =1134
+                        Y: =19
                   - lblApproverDetail:
                       Control: Label@2.5.1
                       Properties:
                         FontWeight: =FontWeight.Semibold
-                        Height: =22
+                        Height: =21
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =11
                         Text: =ThisItem.ApproverID.Value
-                        Width: =240
-                        Y: =40
+                        Width: =300
+                        X: =20
+                        Y: =52
                   - lblDecisionDetail:
                       Control: Label@2.5.1
                       Properties:
+                        Align: =Align.Right
                         Color: |-
                           =Switch(ThisItem.Decision.Value,
                             "Approve", RGBA(15, 110, 86, 1),
@@ -1595,11 +1635,12 @@ Screens:
                             RGBA(133, 79, 11, 1)
                           )
                         FontWeight: =FontWeight.Semibold
-                        Height: =22
+                        Height: =21
                         Size: =11
                         Text: =ThisItem.Decision.Value
-                        Width: =260
-                        Y: =41
+                        Width: =194
+                        X: =1140
+                        Y: =52
                   - lblRemarksDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1607,27 +1648,29 @@ Screens:
                         Color: =RGBA(136, 135, 128, 1)
                         Height: =22
                         Overflow: =Overflow.Scroll
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =10
                         Text: |-
                           =If(IsBlank(ThisItem.ManagerRemarks), "", "Remarks: " & ThisItem.ManagerRemarks)
                         Visible: =Not(IsBlank(ThisItem.ManagerRemarks))
                         Width: =Parent.Width - 40
-                        X: =1
-                        Y: =73
+                        X: =20
+                        Y: =81
                   - lblConditionsDetail:
                       Control: Label@2.5.1
                       Properties:
                         AutoHeight: =true
                         Color: =RGBA(133, 79, 11, 1)
-                        Height: =43
+                        Height: =27
                         Overflow: =Overflow.Scroll
                         Size: =9
                         Text: |-
                           =If(Not(IsBlank(ThisItem.ApprovalConditions)), "Conditions: " & ThisItem.ApprovalConditions, "")
                         Visible: =Not(IsBlank(ThisItem.ApprovalConditions))
                         Width: =Parent.Width - 40
-                        X: =1
-                        Y: =73
+                        X: =20
+                        Y: =81
                   - lblRejectionDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1640,7 +1683,7 @@ Screens:
                           =If(Not(IsBlank(ThisItem.RejectionReason)), "Rejection reason: " & ThisItem.RejectionReason, "")
                         Visible: =Not(IsBlank(ThisItem.RejectionReason))
                         Width: =Parent.Width - 40
-                        X: =1
+                        X: =20
                         Y: =73
             - Rectangle1:
                 Control: Rectangle@2.3.0
@@ -1674,6 +1717,8 @@ Screens:
                       Properties:
                         FontWeight: =FontWeight.Bold
                         Height: =32
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Text: ="Execution History"
                         Width: =300
             - galExecutionHistory:
@@ -1699,18 +1744,21 @@ Screens:
                       Properties:
                         Color: =RGBA(136, 135, 128, 1)
                         Height: =22
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =9
                         Text: |-
                           =Switch(ThisItem.StepNumber,
-                                      1, "Step 1 — Procurement Execution",
-                                      2, "Step 2 — Accounting Handover",
-                                      3, "Step 3 — Goods Receipt & Acceptance",
-                                      4, "Step 4 — Supplier Follow-up (Requester)",
-                                      5, "Step 5 — Supplier Follow-up (Procurement)",
-                                      "—"
-                                  )
-                        Width: =260
-                        Y: =10
+                              1, "Step 1 — Procurement Execution",
+                              2, "Step 2 — Accounting Handover",
+                              3, "Step 3 — Goods Receipt & Acceptance",
+                              4, "Step 4 — Supplier Follow-up 1",
+                              5, "Step 5 — Supplier Follow-up 2",
+                              "—"
+                          )
+                        Width: =300
+                        X: =20
+                        Y: =18
                   - lblExecDateDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1719,17 +1767,21 @@ Screens:
                         Height: =22
                         Size: =9
                         Text: =Text(ThisItem.ExecutedAt, "dd/mm/yyyy hh:mm")
-                        Width: =180
-                        Y: =10
+                        Width: =200
+                        X: =1134
+                        Y: =18
                   - lblExecByDetail:
                       Control: Label@2.5.1
                       Properties:
                         FontWeight: =FontWeight.Semibold
                         Height: =22
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =11
                         Text: =ThisItem.ExecutedBy.Value
-                        Width: =240
-                        Y: =40
+                        Width: =300
+                        X: =20
+                        Y: =52
                   - lblExecHandoverTo:
                       Control: Label@2.5.1
                       Properties:
@@ -1740,8 +1792,8 @@ Screens:
                           ="→ Handed to: " & ThisItem.HandoverToID.Value
                         Visible: =Value(ThisItem.StepNumber) = 2 && Not(IsBlank(ThisItem.HandoverToID))
                         Width: =Parent.Width - 40
-                        X: =1
-                        Y: =62
+                        X: =20
+                        Y: =89
                   - lblExecSupplierDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1754,19 +1806,20 @@ Screens:
                           =If(IsBlank(ThisItem.SupplierSummary), "", "Supplier: " & ThisItem.SupplierSummary)
                         Visible: =Not(IsBlank(ThisItem.SupplierSummary))
                         Width: =Parent.Width - 40
-                        X: =1
-                        Y: =77
+                        X: =20
+                        Y: =89
                   - lblExecPODetail:
                       Control: Label@2.5.1
                       Properties:
                         Color: =RGBA(56, 96, 178, 1)
-                        Height: =22
+                        Height: =24
                         Size: =10
                         Text: |-
                           =If(IsBlank(ThisItem.PurchaseOrderLink), "", "PO: " & ThisItem.PurchaseOrderLink)
                         Visible: =Not(IsBlank(ThisItem.PurchaseOrderLink))
-                        Width: =807
-                        Y: =40
+                        Width: =966
+                        X: =368
+                        Y: =52
                   - lblExecNotesDetail:
                       Control: Label@2.5.1
                       Properties:
@@ -1774,12 +1827,30 @@ Screens:
                         Color: =RGBA(136, 135, 128, 1)
                         Height: =30
                         Overflow: =Overflow.Scroll
+                        PaddingLeft: =0
+                        PaddingRight: =0
                         Size: =10
-                        Text: =If(IsBlank(ThisItem.Notes), "", ThisItem.Notes)
-                        Visible: =Not(IsBlank(ThisItem.Notes))
+                        Text: |-
+                          =If(
+                              Value(ThisItem.StepNumber) = 4, Coalesce(gSelectedRequest.FollowUpRemarks, ""),
+                              If(
+                                  Value(ThisItem.StepNumber) = 5, Coalesce(gSelectedRequest.SupplierFollowUpNotes, ""),
+                                  Coalesce(ThisItem.Notes, "")
+                              )
+                          )
+                        Visible: |-
+                          =Not(IsBlank(
+                              If(
+                                  Value(ThisItem.StepNumber) = 4, gSelectedRequest.FollowUpRemarks,
+                                  If(
+                                  Value(ThisItem.StepNumber) = 5, gSelectedRequest.SupplierFollowUpNotes,
+                                  ThisItem.Notes
+                                  )
+                              )
+                          ))
                         Width: =Parent.Width - 40
-                        X: =1
-                        Y: =94
+                        X: =20
+                        Y: =84
       - conActionBar:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -1840,7 +1911,8 @@ Screens:
                   Text: ="Goods Receipt & Acceptance →"
                   Visible: |-
                     =gSelectedRequest.Status.Value = "Goods Receipt & Acceptance" &&
-                    gSelectedRequest.RequesterEmail = gCurrentEmployee.Email
+                    (gSelectedRequest.RequesterEmail = gCurrentEmployee.Email ||
+                    gSelectedRequest.GRAssignedToID.Id = gCurrentEmployee.ID)
                   Width: =260
             - btnActionSupplierFollowUpScreen:
                 Control: Button@0.0.45
@@ -1848,5 +1920,9 @@ Screens:
                   Height: =44
                   OnSelect: =Navigate(SupplierFollowUpScreen)
                   Text: ="Start Supplier Follow-up →"
-                  Visible: =gSelectedRequest.Status.Value = "Pending Supplier Follow-up" && (gSelectedRequest.RequesterEmail = gCurrentEmployee.Email || gCurrentUser.Role.Value = "Procurement")
+                  Visible: |-
+                    =gSelectedRequest.Status.Value = "Pending Supplier Follow-up" &&
+                    (gSelectedRequest.RequesterEmail = gCurrentEmployee.Email ||
+                    gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID ||
+                    gCurrentUser.Role.Value = "Procurement")
                   Width: =260

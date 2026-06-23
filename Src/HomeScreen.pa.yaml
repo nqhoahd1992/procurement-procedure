@@ -222,7 +222,11 @@ Screens:
                           ),
                           "Executive", Procurement_Requests,
                           "Admin", Procurement_Requests,
-                          Filter(Procurement_Requests, RequesterEmail = User().Email)
+                          Filter(Procurement_Requests,
+                              RequesterEmail = User().Email ||
+                              GRAssignedToID.Id = gCurrentEmployee.ID ||
+                              SFU1AssignedToID.Id = gCurrentEmployee.ID
+                          )
                       ),
                       IsBlank(gStatusFilter) || Status.Value = gStatusFilter
                   ),
@@ -319,7 +323,7 @@ Screens:
                         ThisItem.Status.Value = "Goods Receipt & Acceptance" && Not(IsBlank(ThisItem.GRAssignedToID)),
                         " | Receiver: " & ThisItem.GRAssignedToID.Value,
                         If(
-                            ThisItem.Status.Value = "Pending Supplier Follow-up" && Not(IsBlank(ThisItem.SFU1AssignedToID)),
+                            ThisItem.Status.Value = "Pending Supplier Follow-up" && Not(IsBlank(ThisItem.SFU1AssignedToID)) && IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(ThisItem.ID) && StepNumber = 4)),
                             " | Receiver: " & ThisItem.SFU1AssignedToID.Value,
                             ""
                         )
