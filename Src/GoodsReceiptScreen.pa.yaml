@@ -824,65 +824,65 @@ Screens:
                                     IsBlank(txtRemarks_GR.Value) ||
                                     CountRows(attGRPhotos.Attachments) = 0,
                                     Notify("Please fill in all required fields", NotificationType.Error),
-                            With(
-                                {
-                                    wPatched: Patch(
-                                        Procurement_Requests,
-                                        gSelectedRequest,
-                                        {
-                                            Status: {Value: Switch(
-                                                ddAcceptanceDecision_GR.Selected.Value,
-                                                "Accepted",                    "Completed",
-                                                "Rejected",                    "Rejected",
-                                                "Requires Supplier Follow-up", "Pending Supplier Follow-up"
-                                            )},
-                                            GoodsReceiptBy: gCurrentEmployee.Title,
-                                            GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
-                                            GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
-                                            GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
-                                            GoodsReceiptRemarks: txtRemarks_GR.Value,
-                                            GoodsReceiptAt: Now()
-                                        }
-                                    )
-                                },
-                                If(
-                                    IsBlank(wPatched.ID),
-                                    Notify("Failed to submit. Please try again.", NotificationType.Error),
                                     With(
-                                        {wLog: Patch(
-                                            Procurement_ExecutionLog,
-                                            Defaults(Procurement_ExecutionLog),
-                                            {
-                                                Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
-                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                RequestIDText: Text(gSelectedRequest.ID),
-                                                StepNumber: 3,
-                                                StepName: {Value: "Goods Receipt & Acceptance"},
-                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                ExecutedAt: Now(),
-                                                Notes: txtRemarks_GR.Value
-                                            }
-                                        )},
+                                        {
+                                            wPatched: Patch(
+                                                Procurement_Requests,
+                                                gSelectedRequest,
+                                                {
+                                                    Status: {Value: Switch(
+                                                        ddAcceptanceDecision_GR.Selected.Value,
+                                                        "Accepted",                    "Completed",
+                                                        "Rejected",                    "Rejected",
+                                                        "Requires Supplier Follow-up", "Pending Supplier Follow-up"
+                                                    )},
+                                                    GoodsReceiptBy: gCurrentEmployee.Title,
+                                                    GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
+                                                    GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
+                                                    GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
+                                                    GoodsReceiptRemarks: txtRemarks_GR.Value,
+                                                    GoodsReceiptAt: Now()
+                                                }
+                                            )
+                                        },
                                         If(
-                                            IsBlank(wLog.ID),
-                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                            Set(gGRPendingAttachments, attGRPhotos.Attachments);
-                                            Set(gGRLogEntry, wLog);
-                                            EditForm(frmGRLog_GR);
-                                            SubmitForm(frmGRLog_GR);
-                                            Switch(
-                                                ddAcceptanceDecision_GR.Selected.Value,
-                                                "Accepted",                    Notify("Goods receipt submitted. Request is now Completed.", NotificationType.Success),
-                                                "Rejected",                    Notify("Goods receipt submitted. Request is now Rejected.", NotificationType.Success),
-                                                "Requires Supplier Follow-up", Notify("Goods receipt submitted. Request is pending Supplier Follow-up.", NotificationType.Success)
-                                            );
-                                            Navigate(HomeScreen)
+                                            IsBlank(wPatched.ID),
+                                            Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                            With(
+                                                {wLog: Patch(
+                                                    Procurement_ExecutionLog,
+                                                    Defaults(Procurement_ExecutionLog),
+                                                    {
+                                                        Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
+                                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                        RequestIDText: Text(gSelectedRequest.ID),
+                                                        StepNumber: 3,
+                                                        StepName: {Value: "Goods Receipt & Acceptance"},
+                                                        ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                        ExecutedAt: Now(),
+                                                        Notes: txtRemarks_GR.Value
+                                                    }
+                                                )},
+                                                If(
+                                                    IsBlank(wLog.ID),
+                                                    Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                    Set(gGRPendingAttachments, attGRPhotos.Attachments);
+                                                    Set(gGRLogEntry, wLog);
+                                                    EditForm(frmGRLog_GR);
+                                                    SubmitForm(frmGRLog_GR);
+                                                    Switch(
+                                                        ddAcceptanceDecision_GR.Selected.Value,
+                                                        "Accepted",                    Notify("Goods receipt submitted. Request is now Completed.", NotificationType.Success),
+                                                        "Rejected",                    Notify("Goods receipt submitted. Request is now Rejected.", NotificationType.Success),
+                                                        "Requires Supplier Follow-up", Notify("Goods receipt submitted. Request is pending Supplier Follow-up.", NotificationType.Success)
+                                                    );
+                                                    Navigate(HomeScreen)
+                                                )
+                                            )
                                         )
                                     )
                                 )
                             )
-                        )
-                    )
                         )
                     )
                   Text: ="Submit →"

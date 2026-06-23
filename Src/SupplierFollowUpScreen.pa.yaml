@@ -1448,67 +1448,67 @@ Screens:
                                     IsBlank(txtRemarks2_SFU.Value) ||
                                     CountRows(attSFU1Photos.Attachments) = 0,
                                     Notify("Please fill in all required fields", NotificationType.Error),
-                            With(
-                                {
-                                    wPatched: Patch(
-                                        Procurement_Requests,
-                                        gSelectedRequest,
-                                        {
-                                            Status: {Value: If(
-                                                ddAcceptanceDecision2_SFU.Selected.Value = "Accepted",
-                                                "Completed",
-                                                "Pending Supplier Follow-up"
-                                            )},
-                                            FollowUpReceiptBy: gCurrentEmployee.Title,
-                                            FollowUpReceiptDate: dpReceiptDate2_SFU.SelectedDate,
-                                            FollowUpReceiptStatus: {Value: ddReceiptStatus2_SFU.Selected.Value},
-                                            FollowUpAcceptanceDecision: {Value: ddAcceptanceDecision2_SFU.Selected.Value},
-                                            Fulfillment: {Value: If(
-                                                ddAcceptanceDecision2_SFU.Selected.Value = "Accepted with Adjustment",
-                                                "Fulfilled with Adjustment",
-                                                "Fulfilled"
-                                            )},
-                                            FollowUpRemarks: txtRemarks2_SFU.Value,
-                                            FollowUpReceiptAt: Now()
-                                        }
-                                    )
-                                },
-                                If(
-                                    IsBlank(wPatched.ID),
-                                    Notify("Failed to submit. Please try again.", NotificationType.Error),
                                     With(
-                                        {wLog: Patch(
-                                            Procurement_ExecutionLog,
-                                            Defaults(Procurement_ExecutionLog),
-                                            {
-                                                Title: "Step 4 - Supplier Follow-up Requester - " & gSelectedRequest.Title,
-                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                RequestIDText: Text(gSelectedRequest.ID),
-                                                StepNumber: 4,
-                                                StepName: {Value: "Supplier Follow-up — Requester Detail"},
-                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                ExecutedAt: Now()
-                                            }
-                                        )},
+                                        {
+                                            wPatched: Patch(
+                                                Procurement_Requests,
+                                                gSelectedRequest,
+                                                {
+                                                    Status: {Value: If(
+                                                        ddAcceptanceDecision2_SFU.Selected.Value = "Accepted",
+                                                        "Completed",
+                                                        "Pending Supplier Follow-up"
+                                                    )},
+                                                    FollowUpReceiptBy: gCurrentEmployee.Title,
+                                                    FollowUpReceiptDate: dpReceiptDate2_SFU.SelectedDate,
+                                                    FollowUpReceiptStatus: {Value: ddReceiptStatus2_SFU.Selected.Value},
+                                                    FollowUpAcceptanceDecision: {Value: ddAcceptanceDecision2_SFU.Selected.Value},
+                                                    Fulfillment: {Value: If(
+                                                        ddAcceptanceDecision2_SFU.Selected.Value = "Accepted with Adjustment",
+                                                        "Fulfilled with Adjustment",
+                                                        "Fulfilled"
+                                                    )},
+                                                    FollowUpRemarks: txtRemarks2_SFU.Value,
+                                                    FollowUpReceiptAt: Now()
+                                                }
+                                            )
+                                        },
                                         If(
-                                            IsBlank(wLog.ID),
-                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                            Set(gSFU1PendingAttachments, attSFU1Photos.Attachments);
-                                            Set(gSFU1LogEntry, wLog);
-                                            EditForm(frmSFU1Log_SFU);
-                                            SubmitForm(frmSFU1Log_SFU);
-                                            Switch(
-                                                ddAcceptanceDecision2_SFU.Selected.Value,
-                                                "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
-                                                "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
-                                            );
-                                            Navigate(HomeScreen)
+                                            IsBlank(wPatched.ID),
+                                            Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                            With(
+                                                {wLog: Patch(
+                                                    Procurement_ExecutionLog,
+                                                    Defaults(Procurement_ExecutionLog),
+                                                    {
+                                                        Title: "Step 4 - Supplier Follow-up Requester - " & gSelectedRequest.Title,
+                                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                        RequestIDText: Text(gSelectedRequest.ID),
+                                                        StepNumber: 4,
+                                                        StepName: {Value: "Supplier Follow-up — Requester Detail"},
+                                                        ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                        ExecutedAt: Now()
+                                                    }
+                                                )},
+                                                If(
+                                                    IsBlank(wLog.ID),
+                                                    Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                    Set(gSFU1PendingAttachments, attSFU1Photos.Attachments);
+                                                    Set(gSFU1LogEntry, wLog);
+                                                    EditForm(frmSFU1Log_SFU);
+                                                    SubmitForm(frmSFU1Log_SFU);
+                                                    Switch(
+                                                        ddAcceptanceDecision2_SFU.Selected.Value,
+                                                        "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
+                                                        "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
+                                                    );
+                                                    Navigate(HomeScreen)
+                                                )
+                                            )
                                         )
                                     )
                                 )
                             )
-                        )
-                    )
                         )
                     )
                   Text: ="Submit →"
