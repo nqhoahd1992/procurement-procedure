@@ -96,7 +96,7 @@ The gallery `Items` filters `Procurement_Requests` differently per `gUserRole`:
 - **Manager** → requests where `ManagerApproverID.Id = gCurrentEmployee.ID`.
 - **Procurement / Accounting** → requests in their relevant statuses onward.
 - **Executive / Admin** → all requests.
-- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`) **OR** assigned as receiver (`GRAssignedToID.Id = gCurrentEmployee.ID` or `SFU1AssignedToID.Id = gCurrentEmployee.ID`).
+- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`). Non-special-role employees who are assigned as a goods receipt / supplier follow-up receiver also see those requests via `GRAssignedToID.Id = gCurrentEmployee.ID || SFU1AssignedToID.Id = gCurrentEmployee.ID`.
 
 Filter buttons and "+ New Request" are shown/hidden by role. Keep the per-role `Items` filter and the filter-button `Visible` rules in sync.
 
