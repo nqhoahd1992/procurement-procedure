@@ -115,6 +115,7 @@ Screens:
                         - lblRequesterValue:
                             Control: Label@2.5.1
                             Properties:
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: =gSelectedRequest.RequesterID.Value
@@ -354,6 +355,7 @@ Screens:
                   - lblDescriptionValue:
                       Control: Label@2.5.1
                       Properties:
+                        FontWeight: =FontWeight.Semibold
                         Height: =80
                         Overflow: =Overflow.Scroll
                         Size: =11
@@ -657,12 +659,6 @@ Screens:
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
-            - rectDivider_1:
-                Control: Rectangle@2.3.0
-                Properties:
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =1
-                  Width: =Parent.Width
             - btnCancelReview:
                 Control: Button@0.0.45
                 Properties:

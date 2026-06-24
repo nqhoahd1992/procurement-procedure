@@ -115,7 +115,7 @@ Screens:
                         Size: =11
                         Text: |-
                           ="Requester: " & gSelectedRequest.RequesterID.Value
-                        Width: =240
+                        Width: =300
                   - lblInfoDept_PE:
                       Control: Label@2.5.1
                       Properties:
@@ -151,15 +151,16 @@ Screens:
                         Size: =11
                         Text: |-
                           ="Category: " & gSelectedRequest.Category.Value
-                        Width: =240
+                        Width: =300
                   - lblInfoCost_PE_1:
                       Control: Label@2.5.1
                       Properties:
                         Height: =20
                         PaddingLeft: =0
                         Size: =11
-                        Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
-                        Width: =160
+                        Text: |-
+                          ="Estimated Cost: " & gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                        Width: =300
                   - lblInfoTargetInvoice_PE_1:
                       Control: Label@2.5.1
                       Properties:
@@ -168,7 +169,7 @@ Screens:
                         Size: =11
                         Text: |-
                           ="Cost Center: " & gSelectedRequest.InvoiceRegion.Value
-                        Width: =240
+                        Width: =300
       - conScrollable_PE:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -1231,7 +1232,7 @@ Screens:
                                     If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
                                     " - " & Text(Now(), "yyyymmddHHmmss") &
                                     "." & Last(Split(gInvoiceResult.suggestedFilename, ".")).Value,
-                                    ""
+                                    "—"
                                 )
                               Width: =Parent.Width - 24
                   - lblNoticeCheck_PE:

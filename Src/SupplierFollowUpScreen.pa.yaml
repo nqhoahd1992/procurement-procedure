@@ -128,14 +128,15 @@ Screens:
                         Size: =11
                         Text: |-
                           ="Category: " & gSelectedRequest.Category.Value
-                        Width: =180
+                        Width: =240
                   - lblInfoCost_SFU:
                       Control: Label@2.5.1
                       Properties:
                         Height: =20
                         Size: =11
-                        Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
-                        Width: =160
+                        Text: |-
+                          ="Estimated Cost: " & gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                        Width: =240
                   - lblInfoDept_SFU:
                       Control: Label@2.5.1
                       Properties:
