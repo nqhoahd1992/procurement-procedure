@@ -88,13 +88,7 @@ Screens:
                   Height: =40
                   OnSelect: =Navigate(RequestFormScreen)
                   Text: ="+ New Request"
-                  Visible: |-
-                    =Not(
-                        gCurrentUser.Role.Value = "Manager" ||
-                        gCurrentUser.Role.Value = "Executive" ||
-                        gCurrentUser.Role.Value = "Procurement" ||
-                        gCurrentUser.Role.Value = "Accounting"
-                    )
+                  Visible: =true
                   Width: =160
       - rowFilterBar:
           Control: GroupContainer@1.5.0
@@ -204,7 +198,8 @@ Screens:
                   Filter(
                       Switch(gCurrentUser.Role.Value,
                           "Manager", Filter(Procurement_Requests,
-                              ManagerApproverID.Id = gCurrentEmployee.ID
+                              ManagerApproverID.Id = gCurrentEmployee.ID ||
+                              RequesterEmail = User().Email
                           ),
                           "Procurement", Filter(Procurement_Requests,
                               Status.Value = "Pending Procurement" ||
@@ -212,13 +207,15 @@ Screens:
                               Status.Value = "Goods Receipt & Acceptance" ||
                               Status.Value = "Pending Supplier Follow-up" ||
                               Status.Value = "Completed" ||
-                              Status.Value = "Rejected"
+                              Status.Value = "Rejected" ||
+                              RequesterEmail = User().Email
                           ),
                           "Accounting", Filter(Procurement_Requests,
                               Status.Value = "Pending Accounting" ||
                               Status.Value = "Goods Receipt & Acceptance" ||
                               Status.Value = "Pending Supplier Follow-up" ||
-                              Status.Value = "Completed"
+                              Status.Value = "Completed" ||
+                              RequesterEmail = User().Email
                           ),
                           "Executive", Procurement_Requests,
                           "Admin", Procurement_Requests,

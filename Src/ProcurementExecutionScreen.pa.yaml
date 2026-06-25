@@ -921,35 +921,6 @@ Screens:
                                     Height: =40
                                     Value: =If(gHasInvoiceResult, gInvoiceResult.supplierName, "")
                                     Width: =Parent.Width
-                        - colInvoiceNumber_PE:
-                            Control: GroupContainer@1.5.0
-                            Variant: AutoLayout
-                            Properties:
-                              DropShadow: =DropShadow.None
-                              LayoutDirection: =LayoutDirection.Vertical
-                              LayoutGap: =4
-                              LayoutMinHeight: =70
-                              LayoutMinWidth: =60
-                              RadiusBottomLeft: =0
-                              RadiusBottomRight: =0
-                              RadiusTopLeft: =0
-                              RadiusTopRight: =0
-                              Width: =240
-                            Children:
-                              - lblInvNumLabel_PE:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    Color: =RGBA(136, 135, 128, 1)
-                                    Height: =20
-                                    Size: =9
-                                    Text: ="Invoice Number *"
-                                    Width: =Parent.Width
-                              - txtInvNumValue_PE:
-                                  Control: TextInput@0.0.54
-                                  Properties:
-                                    Height: =40
-                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceNumber, "")
-                                    Width: =Parent.Width
                         - colBilledTo_PE:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -980,6 +951,35 @@ Screens:
                                   Properties:
                                     Height: =40
                                     Value: =If(gHasInvoiceResult, gInvoiceResult.billedTo, "")
+                                    Width: =Parent.Width
+                        - colInvoiceNumber_PE:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =4
+                              LayoutMinHeight: =70
+                              LayoutMinWidth: =60
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =240
+                            Children:
+                              - lblInvNumLabel_PE:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Invoice Number *"
+                                    Width: =Parent.Width
+                              - txtInvNumValue_PE:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    Height: =40
+                                    Value: =If(gHasInvoiceResult, gInvoiceResult.invoiceNumber, "")
                                     Width: =Parent.Width
                         - colABN_PE:
                             Control: GroupContainer@1.5.0
@@ -1224,13 +1224,12 @@ Screens:
                                 =If(gHasInvoiceResult,
                                     If(IsBlank(txtInvDateValue_PE.Value), "", Substitute(txtInvDateValue_PE.Value, "-", "")) &
                                     If(IsBlank(txtSupplierNameValue_PE.Value), "", " - " & txtSupplierNameValue_PE.Value) &
-                                    If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
                                     If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
+                                    If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
                                     If(IsBlank(txtAttentionValue_PE.Value), "", " - " & txtAttentionValue_PE.Value) &
                                     If(IsBlank(txtDescriptionValue_PE.Value), "", " - " & txtDescriptionValue_PE.Value) &
                                     If(IsBlank(txtTotalAmountValue_PE.Value), "", " - " & txtCurrencyValue_PE.Value & Text(Value(txtTotalAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
                                     If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
-                                    " - " & Text(Now(), "yyyymmddHHmmss") &
                                     "." & Last(Split(gInvoiceResult.suggestedFilename, ".")).Value,
                                     "—"
                                 )

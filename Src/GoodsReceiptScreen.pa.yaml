@@ -812,7 +812,10 @@ Screens:
                     =With(
                         {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
                         If(
-                            Not(IsBlank(wLatest.GRAssignedToID)) && wLatest.GRAssignedToID.Id <> gCurrentEmployee.ID,
+                            Not(
+                            wLatest.RequesterEmail = gCurrentEmployee.Email && IsBlank(wLatest.GRAssignedToID)
+                            || Not(IsBlank(wLatest.GRAssignedToID)) && wLatest.GRAssignedToID.Id = gCurrentEmployee.ID
+                        ),
                             Notify("This assignment has been reassigned to someone else. Your submission has been cancelled.", NotificationType.Warning);
                             Navigate(HomeScreen),
                             If(
