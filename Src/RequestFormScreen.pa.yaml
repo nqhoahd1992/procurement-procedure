@@ -451,7 +451,7 @@ Screens:
                                     PaddingLeft: =0
                                     PaddingRight: =0
                                     Size: =10
-                                    Text: ="Invoice SharePoint Link *"
+                                    Text: ="Attach Invoice File *"
                                     Width: |+
                                       =Parent.Width
                                     Wrap: =false
