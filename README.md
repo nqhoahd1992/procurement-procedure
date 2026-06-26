@@ -61,5 +61,5 @@ Pending Supplier Follow-up → (Step 1: Requester, Step 2: Procurement) → Comp
 
 ## Conventions
 
-- All UI text, field names, comments, and code are **English**. Vietnamese appears only as SharePoint system-column internal names (`'Tiêu đề'` = Title, `'Tệp đính kèm'` = Attachments — quote them in Power Fx) and the `vi-VN` locale.
+- All UI text, field names, comments, and code are **English**. SharePoint system column internal names are also English (site locale = en): `Title`, `Attachments`. The only remaining non-English is the `vi-VN` UserLocale.
 - Status strings are repeated as literals across screens (no shared constant) — when changing the flow, update every screen that references the string.

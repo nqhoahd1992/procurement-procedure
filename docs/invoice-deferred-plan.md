@@ -23,20 +23,27 @@ the Requester works directly with the Supplier.
 ## Three Procurement Paths
 
 ### Path A — Invoice available immediately (existing behavior, unchanged)
+Procurement buys directly and invoice is on hand. Sends Order Confirmation to Requester.
 ```
-Pending Procurement → [submit invoice] → Pending Accounting → Goods Receipt → Completed
+Pending Procurement → [Upload Order Confirmation + Submit Invoice] → Pending Accounting → Goods Receipt → Completed
 ```
 
 ### Path B — Procurement buys directly, invoice arrives late
+Procurement buys directly but invoice is not yet available. Sends Order Confirmation to Requester.
 ```
-Pending Procurement → [Defer Invoice] → Goods Receipt & Acceptance
+Pending Procurement → [Upload Order Confirmation + Defer Invoice] → Goods Receipt & Acceptance
   → [GR done] → Pending Invoice
   → InvoiceSubmissionScreen (Procurement, AI parse) → Pending Accounting → Completed
 ```
 
 ### Path C — Procurement is intermediary, Requester works directly with Supplier
+**Auto-detected** from the original request form — no manual choice by Procurement.
+Condition: `ProcurementType = "Invoice Supplied"` AND request has an attachment (Form1).
+In this path the Requester already holds the supplier relationship, so Order Confirmation is
+**not** sent (remittance already informs the Requester that payment was made).
+
 ```
-Pending Procurement → [Upload ủy nhiệm chi + Submit] → email to Requester
+Pending Procurement → [Upload remittance + Submit] → email to Requester with remittance
   → Goods Receipt & Acceptance (Requester attaches supplier invoice here)
   → [GR done] → Pending Invoice
   → InvoiceSubmissionScreen (Procurement views Requester's invoice, AI parse) → Pending Accounting → Completed
@@ -64,12 +71,13 @@ at SupplierFollowUpScreen (if not already submitted at GR stage).
 ### Task 1 — SharePoint Schema
 **File to reference:** `docs/sharepoint-schema.md`
 
-Add 3 new columns to `Procurement_Requests`:
+Add 4 new columns to `Procurement_Requests`:
 
 | Column | Type | Values / Notes |
 |---|---|---|
 | `InvoiceMode` | Choice | `Direct` / `Deferred` / `ViaRequester` — set at Procurement stage |
-| `PaymentAuthorizationURL` | Text (single line) | URL to uploaded ủy nhiệm chi file (Path C only) |
+| `OrderConfirmationURL` | Text (single line) | URL to order confirmation image uploaded by Procurement (Path A & B only) |
+| `RemittanceURL` | Text (single line) | URL to uploaded remittance file (Path C only) |
 | `RequesterInvoiceURL` | Text (single line) | URL to invoice attached by Requester at GR or SFU stage (Path C only) |
 
 ---
@@ -77,34 +85,71 @@ Add 3 new columns to `Procurement_Requests`:
 ### Task 2 — ProcurementExecutionScreen
 **File:** `Src/ProcurementExecutionScreen.pa.yaml`
 
-Replace the current single submit path with a 3-way choice:
+**Detect Via Requester path on screen load:**
+```
+// Set a local variable once when screen opens
+Set(locIsViaRequester,
+    gSelectedRequest.ProcurementType.Value = "Invoice Supplied" &&
+    !IsBlank(gSelectedRequest.Attachments)
+)
+```
 
-**UI changes:**
-- Add a radio/segmented control or 3 buttons:
-  - `Submit Invoice Now` → existing AI parse + submit flow (Path A)
+---
+
+**Branch A/B — Procurement sources the goods (`locIsViaRequester = false`)**
+
+UI changes:
+- Add **Order Confirmation upload** control (required before submitting either sub-path):
+  - File upload + label "Upload order confirmation to notify the Requester that the purchase is done."
+  - Applies to both Path A and Path B.
+- Keep the existing 2-way choice:
+  - `Submit Invoice Now` → AI parse + submit flow (Path A)
   - `Defer Invoice` → confirm button, no invoice needed (Path B)
-  - `Send Payment Authorization` → file upload field for ủy nhiệm chi (Path C)
 
-**Logic — Path B (Defer):**
+Logic — Path A (Direct):
+```
+Patch(Procurement_Requests, gSelectedRequest, {
+    InvoiceMode: "Direct",
+    OrderConfirmationURL: <uploaded order confirmation URL>,
+    Status: "Pending Accounting"
+    // + existing invoice fields
+})
+```
+Trigger Flow 7c to notify Requester with order confirmation link.
+
+Logic — Path B (Defer):
 ```
 Patch(Procurement_Requests, gSelectedRequest, {
     InvoiceMode: "Deferred",
+    OrderConfirmationURL: <uploaded order confirmation URL>,
     Status: "Goods Receipt & Acceptance"
 })
 ```
 Write `Procurement_ExecutionLog` row (StepNumber 1) without invoice data.
+Trigger Flow 7c to notify Requester with order confirmation link.
 
-**Logic — Path C (Via Requester):**
-- Show file upload control → on upload success, store URL in `PaymentAuthorizationURL`
+---
+
+**Branch C — Requester works directly with Supplier (`locIsViaRequester = true`)**
+
+UI changes:
+- Hide the Order Confirmation upload section entirely.
+- Hide the Submit Invoice Now / Defer Invoice choice.
+- Show **Remittance upload** control only:
+  - File upload + label "Upload remittance to send to the Requester for supplier invoice collection."
+
+Logic — Path C (Via Requester):
+- Show file upload control → on upload success, store URL in `RemittanceURL`.
 - On submit:
 ```
 Patch(Procurement_Requests, gSelectedRequest, {
     InvoiceMode: "ViaRequester",
-    PaymentAuthorizationURL: <uploaded file URL>,
+    RemittanceURL: <uploaded remittance URL>,
     Status: "Goods Receipt & Acceptance"
 })
 ```
-- Trigger Power Automate flow to email Requester with ủy nhiệm chi link.
+Write `Procurement_ExecutionLog` row (StepNumber 1).
+Trigger Flow 7a to email Requester with remittance link.
 
 ---
 
@@ -203,19 +248,23 @@ with a flag — decide at implementation time).
 
 ### Task 7 — Power Automate Flows
 
-**Flow 7a — Notify Requester: Payment Authorization Ready**
+**Flow 7a — Notify Requester: Remittance Ready**
 - Trigger: called from ProcurementExecutionScreen (Path C submit)
-- Parameters: `requesterEmail`, `requesterName`, `requestTitle`, `requestId`, `paymentAuthUrl`
-- Action: send Outlook email + Teams Adaptive Card to Requester with ủy nhiệm chi download link and instruction to collect invoice from supplier.
+- Parameters: `requesterEmail`, `requesterName`, `requestTitle`, `requestId`, `remittanceUrl`
+- Action: send Outlook email + Teams Adaptive Card to Requester with remittance download link and instruction to collect invoice from supplier.
 
 **Flow 7b — Notify Procurement: Invoice Provided by Requester**
 - Trigger: called from GoodsReceiptScreen or SupplierFollowUpScreen when `RequesterInvoiceURL` is set on submit
 - Parameters: `procurementEmail`, `procurementName`, `requestTitle`, `requestId`, `requesterInvoiceUrl`
 - Action: send Outlook email + Teams Adaptive Card to Procurement notifying that Requester has attached the invoice and it is ready to process.
 
-> Both flows can be created as new standalone flows or added as new `notificationType`
-> values to the existing `Procurement_Notify_Receipt_Assignee` flow if the parameter
-> sets are compatible.
+**Flow 7c — Notify Requester: Order Confirmation**
+- Trigger: called from ProcurementExecutionScreen on Path A or Path B submit (i.e. `locIsViaRequester = false`)
+- Parameters: `requesterEmail`, `requesterName`, `requestTitle`, `requestId`, `orderConfirmationUrl`
+- Action: send Outlook email + Teams Adaptive Card to Requester with the order confirmation image link, informing them that Procurement has placed the order. Purely informational — no action required from Requester.
+
+> All three flows can be created as standalone flows or consolidated into a single flow
+> with a `notificationType` parameter, if parameter sets are compatible.
 
 ---
 

@@ -41,7 +41,7 @@ Assignment notification flow (called from `GoodsReceiptScreen` and `SupplierFoll
   - Flow sends Outlook email + Teams Adaptive Card for assignment types; email only for Unassigned.
   - Connection: `app.admin@maxbiocare.com` pinned in "Run only users" — not invoker-provided.
 
-**Important:** SharePoint internal field names are Vietnamese for system columns — `'Tiêu đề'` = Title, `'Tệp đính kèm'` = Attachments. Custom columns are English (`Status`, `EstimatedCost`, `ManagerApproverID`, etc.). Reference Vietnamese-named columns with single quotes in Power Fx.
+**Important:** SharePoint system column internal names are English (site locale = en) — use `Title` for the title field and `Attachments` for attachments. Custom columns are also English (`Status`, `EstimatedCost`, `ManagerApproverID`, etc.).
 
 ## Global state (set in App.OnStart)
 

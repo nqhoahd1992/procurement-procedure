@@ -2,11 +2,11 @@
 
 Authoritative data model for the Max Biocare Procurement Procedure app, reconstructed from the unpacked `References/DataSources.json`. Site: `maxbiocare.sharepoint.com/sites/Powerapps`.
 
-> Only **custom / app-relevant columns** are listed. Every SharePoint list also carries the standard system columns (`ID`, `Created`, `Modified`, `Author`, `Editor`, `Tệp đính kèm`/Attachments, content-type, moderation, etc.) — omitted here for clarity. Update this file whenever a SharePoint column is added/renamed.
+> Only **custom / app-relevant columns** are listed. Every SharePoint list also carries the standard system columns (`ID`, `Created`, `Modified`, `Author`, `Editor`, `Attachments`, content-type, moderation, etc.) — omitted here for clarity. Update this file whenever a SharePoint column is added/renamed.
 
 ## Conventions
 
-- **System columns use Vietnamese internal names** — quote them in Power Fx: `'Tiêu đề'` (Title), `'Tệp đính kèm'` (Attachments).
+- **System columns use English internal names** (site locale = en) — use `Title` and `Attachments` directly in Power Fx, no quoting needed.
 - **Choice** columns: write `{Value: "..."}`, read `Col.Value`.
 - **Lookup / Person** columns: write `{Id: ..., Value: ...}`, read `Col.Value` / `Col.Id`. (These are SharePoint *lookup* columns pointing at another list — `Col.Value` resolves to the target's Title or ID per the `OdataQueryName` noted below.)
 - **Required** columns are flagged ⚠ — a `Patch` that omits them fails.
@@ -66,7 +66,7 @@ Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescrip
 | `SupplierFollowUpNotes` | Text (multiline) | |
 | `FollowUpCompletedAt` | DateTime | |
 | `InvoiceRegion` ⚠ | Choice | invoice target market |
-| `Tệp đính kèm` (Attachments) | Attachments | invoice/supporting files; written via `Form1`+`SubmitForm` (Patch can't write attachments) |
+| `Attachments` | Attachments | invoice/supporting files; written via `Form1`+`SubmitForm` (Patch can't write attachments) |
 
 ### `Status` choice values (exact strings — used as literals across all screens)
 
