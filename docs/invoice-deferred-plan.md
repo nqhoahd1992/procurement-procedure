@@ -73,30 +73,35 @@ Pending Procurement → [Upload remittance + Submit] → email to Requester with
   [GR Accepted] ──────────────────────────────────────────────────────────────────┐
                                                                                    │
   [GR Requires Follow-up] → Pending Supplier Follow-up (SFU Step 1: Requester)   │
-      │ Requester may attach supplier invoice at SFU Step 1 (optional)            │
-      │ If RequesterInvoiceURL blank after Step 1 → Pending Invoice (gate)        │
-      │   Requester uploads → back to Pending Supplier Follow-up                  │
-      ▼                                                                            │
-  SFU Step 2 (Procurement, if Step 1 indicates invoice change) — credit note      │
+      │ Requester may attach invoice at SFU Step 1 (optional)                     │
+      │ After Step 1 submit → always → Pending Invoice                            │
       │                                                                            │
       └─────────────────────────────────┐                                          │
                                         ▼                                          ▼
                                   Pending Invoice / InvoiceSubmissionScreen ◄─────┘
                                   ┌─────────────────────────────────────────┐
-                                  │ Requester view (if RequesterInvoiceURL  │
+                                  │ Requester (if RequesterInvoiceURL       │
                                   │ blank): upload supplier invoice         │
                                   │                                         │
-                                  │ Procurement view (once invoice set):    │
+                                  │ Procurement (once invoice set):         │
                                   │ AI parse + submit                       │
                                   └─────────────────────────────────────────┘
-                                        │
-                                        ▼
-                               Pending Accounting → Completed
+                                        │ After Procurement submits invoice:
+                              ┌─────────┴──────────────────┐
+                              │ SFU Step 1 = "invoice       │ SFU Step 1 = "accepted"
+                              │ change" → Step 2 pending    │ OR came from GR Accepted
+                              ▼                             ▼
+              Pending Supplier Follow-up          Pending Accounting
+              (SFU Step 2: Procurement             → Completed
+               enters credit note)
+                              │
+                              ▼
+                     Pending Accounting → Completed
 ```
 
-The supplier invoice is **not required at GR or SFU Step 1 time**. All Path C branches
-converge at `Pending Invoice`. InvoiceSubmissionScreen (= Pending Invoice screen) always
-required — `RequesterInvoiceURL` is the source for AI parse regardless of GR outcome.
+All Path C branches converge at `Pending Invoice`. InvoiceSubmissionScreen must complete
+**before** SFU Step 2 — Procurement processes the invoice first, then enters the credit note.
+Requester uploads invoice at Pending Invoice if not yet provided at GR or SFU Step 1.
 
 ---
 
@@ -118,27 +123,26 @@ GR "Requires Follow-up":
 
 ### SFU Step 1 (Requester) — on submit, ViaRequester path
 
-| RequesterInvoiceURL | Action |
-|---|---|
-| Set (attached at SFU Step 1) | Notify Procurement; Status stays `Pending Supplier Follow-up` (Step 2 unlocked if Step 1 indicates invoice change) |
-| Blank | Status → `Pending Invoice` (gate: Requester must upload invoice before Step 2 is unlocked) |
+Status always → `Pending Invoice` after SFU Step 1 (regardless of whether invoice was attached).
+InvoiceSubmissionScreen must complete before SFU Step 2.
+- If attachment present at Step 1: patch `RequesterInvoiceURL`, notify Procurement.
 
 ### SFU Step 2 (Procurement) — on submit, ViaRequester path
 
-SFU Step 2 only occurs when Step 1 selected "invoice change". Procurement enters credit note
-and submits. `RequesterInvoiceURL` is guaranteed present at this point.
-Status → `Pending Invoice` (all Path C branches converge here).
+SFU Step 2 only occurs when Step 1 selected "invoice change". `RequesterInvoiceURL` is
+guaranteed present (InvoiceSubmissionScreen already ran). Procurement enters credit note and submits.
+Status → `Pending Accounting`.
 
 ### Pending Invoice / InvoiceSubmissionScreen — on Procurement submit
 
-| InvoiceMode | GRCompleted | Action |
+| InvoiceMode | SFU Step 2 pending? | Action |
 |---|---|---|
-| `Deferred` | `false` | Set `InvoiceSubmitted = true` + invoice data; Status → `Pending Accounting` |
-| `Deferred` | `true` | Set `InvoiceSubmitted = true` + invoice data; Status → `Pending Accounting` |
-| `ViaRequester` | — | Set invoice data; Status → `Pending Accounting` |
+| `Deferred` | — | Set `InvoiceSubmitted = true` + invoice data; Status → `Pending Accounting` |
+| `ViaRequester` | No (GR Accepted or SFU "accepted") | Set invoice data; Status → `Pending Accounting` |
+| `ViaRequester` | Yes (SFU Step 1 = "invoice change", Step 2 not yet done) | Set invoice data; Status → `Pending Supplier Follow-up` (Step 2 now unlocked) |
 
-Always transitions to `Pending Accounting`. For Path B: GR later checks `AccountingCompleted`
-for the final merge.
+SFU Step 2 pending = StepNumber 4 log exists AND StepNumber 5 log does not exist.
+For Path B: GR later checks `AccountingCompleted` for the final merge.
 
 ### AccountingScreen — on submit (Path B only)
 
@@ -284,19 +288,14 @@ Trigger Flow 7a to email Requester with remittance link.
 
 **Logic — on submit SFU Step 1:**
 - If attachment present, patch `RequesterInvoiceURL` and trigger Flow 7b.
-- Determine next status (ViaRequester path):
-  ```
-  If(
-      gSelectedRequest.InvoiceMode = "ViaRequester" && IsBlank(gSelectedRequest.RequesterInvoiceURL),
-      "Pending Invoice",              // invoice gate — Requester must provide before Step 2
-      "Pending Supplier Follow-up"    // invoice already set; Step 2 can proceed
-  )
-  ```
+- ViaRequester path: always → `Pending Invoice` (InvoiceSubmissionScreen must run before Step 2).
+- Deferred path: same routing as GR Accepted (parallel merge table).
 
 **Logic — on submit SFU Step 2 (Procurement enters credit note and submits):**
-SFU Step 2 only runs when Step 1 indicated invoice change. After submit:
+SFU Step 2 only runs when Step 1 indicated invoice change. `RequesterInvoiceURL` is guaranteed
+set and InvoiceSubmissionScreen has already run. After submit:
 - `Direct` → `Completed`.
-- `ViaRequester` → `Pending Invoice` (`RequesterInvoiceURL` guaranteed set).
+- `ViaRequester` → `Pending Accounting`.
 - `Deferred` + not InvoiceSubmitted → `Pending Invoice`.
 - `Deferred` + InvoiceSubmitted + AccountingCompleted → `Completed`.
 - `Deferred` + InvoiceSubmitted + not AccountingCompleted → stay `Pending Accounting`; set `GRCompleted = true`.
@@ -338,9 +337,21 @@ If(
 
 **Logic — Procurement submits invoice (AI parse):**
 ```
+// Determine next status
+Set(locSFUStep2Pending,
+    !IsBlank(LookUp(Procurement_ExecutionLog,
+        RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4)) &&
+    IsBlank(LookUp(Procurement_ExecutionLog,
+        RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 5))
+)
+
 With({wPatched: Patch(Procurement_Requests, gSelectedRequest, {
     InvoiceSubmitted: true,
-    Status: "Pending Accounting",
+    Status: If(
+        gSelectedRequest.InvoiceMode = "ViaRequester" && locSFUStep2Pending,
+        "Pending Supplier Follow-up",   // Step 2 now unlocked
+        "Pending Accounting"
+    ),
     // + invoice fields
 })}, If(IsBlank(wPatched.ID), Notify("Save failed", NotificationType.Error)))
 ```
@@ -443,6 +454,12 @@ Task 5 and Task 7 can be done in parallel with Tasks 3–4.
 ---
 
 ## Decisions
+
+**HomeScreen: one status per request, not two.**
+For Path C Requires Follow-up, Procurement takes two actions sequentially:
+(1) `Pending Invoice` → process invoice, then (2) `Pending Supplier Follow-up` → credit note.
+The gallery shows whichever status the request is currently in. After Procurement submits at
+step (1), the request transitions to step (2) and reappears with the new status. No dual-row display needed.
 
 **InvoiceSubmissionScreen StepNumber in `Procurement_ExecutionLog`:** **StepNumber 6**
 Distinguishes the deferred/via-requester invoice submission from the initial procurement action (StepNumber 1).
