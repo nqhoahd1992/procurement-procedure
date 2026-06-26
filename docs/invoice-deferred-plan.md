@@ -100,7 +100,7 @@ Pending Procurement → [Upload remittance + Submit] → email to Requester with
 ```
 
 All Path C branches converge at `Pending Invoice`. InvoiceSubmissionScreen must complete
-**before** SFU Step 2 — Procurement processes the invoice first, then enters the credit note.
+**before** SFU Step 2 — Procurement processes the invoice first at **InvoiceSubmissionScreen**, then enters the credit note at **SupplierFollowUpScreen** (Step 2).
 Requester uploads invoice at Pending Invoice if not yet provided at GR or SFU Step 1.
 
 ---
