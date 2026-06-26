@@ -92,8 +92,8 @@ Pending Procurement → [Upload remittance + Submit] → email to Requester with
                               │ change" → Step 2 pending    │ OR came from GR Accepted
                               ▼                             ▼
               Pending Supplier Follow-up          Pending Accounting
-              (SFU Step 2: Procurement             → Completed
-               enters credit note)
+              (SFU Step 2: Procurement enters      → Completed
+               credit note at SupplierFollowUpScreen)
                               │
                               ▼
                      Pending Accounting → Completed
@@ -130,7 +130,8 @@ InvoiceSubmissionScreen must complete before SFU Step 2.
 ### SFU Step 2 (Procurement) — on submit, ViaRequester path
 
 SFU Step 2 only occurs when Step 1 selected "invoice change". `RequesterInvoiceURL` is
-guaranteed present (InvoiceSubmissionScreen already ran). Procurement enters credit note and submits.
+guaranteed present and InvoiceSubmissionScreen has already ran. Procurement enters credit note
+at **SupplierFollowUpScreen** (Step 2 section) and submits.
 Status → `Pending Accounting`.
 
 ### Pending Invoice / InvoiceSubmissionScreen — on Procurement submit
@@ -291,7 +292,7 @@ Trigger Flow 7a to email Requester with remittance link.
 - ViaRequester path: always → `Pending Invoice` (InvoiceSubmissionScreen must run before Step 2).
 - Deferred path: same routing as GR Accepted (parallel merge table).
 
-**Logic — on submit SFU Step 2 (Procurement enters credit note and submits):**
+**Logic — on submit SFU Step 2 (Procurement enters credit note at SupplierFollowUpScreen and submits):**
 SFU Step 2 only runs when Step 1 indicated invoice change. `RequesterInvoiceURL` is guaranteed
 set and InvoiceSubmissionScreen has already run. After submit:
 - `Direct` → `Completed`.
