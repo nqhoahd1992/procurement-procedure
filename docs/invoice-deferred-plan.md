@@ -372,19 +372,21 @@ No InvoiceMode branching needed — `Pending Accounting → Completed` for all p
 
 ## Implementation Phases (easiest → hardest)
 
-### Phase 0 — Reorder the baseline flow (no schema changes)
-**Touch:** `ProcurementExecutionScreen` line 424, `AccountingScreen` line 540, `GoodsReceiptScreen` line 837.
+### Phase 0 — Reorder the baseline flow (no schema changes) ✅ DONE
 
-Swap 3 status strings so the correct order `Procurement → GR → Accounting → Completed` is live
-for the existing Direct path before any new logic is added:
+Swapped status strings so the correct order `Procurement → GR → (SFU) → Accounting → Completed`
+is live for the existing Direct path. No new columns needed.
 
-| File | Change |
-|---|---|
-| `ProcurementExecutionScreen` | `"Pending Accounting"` → `"Goods Receipt & Acceptance"` |
-| `AccountingScreen` | `"Goods Receipt & Acceptance"` → `"Completed"` |
-| `GoodsReceiptScreen` | Switch branch `"Accepted" → "Completed"` → `"Accepted" → "Pending Accounting"` |
-
-After this phase the app is functional end-to-end for the simple case. No new columns needed yet.
+| File | Line | Change |
+|---|---|---|
+| `ProcurementExecutionScreen` | 1424 | `"Pending Accounting"` → `"Goods Receipt & Acceptance"` |
+| `AccountingScreen` | 540 | `"Goods Receipt & Acceptance"` → `"Completed"` |
+| `GoodsReceiptScreen` | 839 | Switch `"Accepted" → "Completed"` → `"Accepted" → "Pending Accounting"` |
+| `GoodsReceiptScreen` | 879 | notify message updated |
+| `SupplierFollowUpScreen` | 1463 | Step 1 `"Accepted" → "Completed"` → `"Accepted" → "Pending Accounting"` |
+| `SupplierFollowUpScreen` | 1506 | Step 1 notify message updated |
+| `SupplierFollowUpScreen` | 1541 | Step 2 `"Completed"` → `"Pending Accounting"` |
+| `SupplierFollowUpScreen` | 1572 | Step 2 notify message updated |
 
 ---
 

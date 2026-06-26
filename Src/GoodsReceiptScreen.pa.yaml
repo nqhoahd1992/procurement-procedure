@@ -836,7 +836,7 @@ Screens:
                                                 {
                                                     Status: {Value: Switch(
                                                         ddAcceptanceDecision_GR.Selected.Value,
-                                                        "Accepted",                    "Completed",
+                                                        "Accepted",                    "Pending Accounting",
                                                         "Rejected",                    "Rejected",
                                                         "Requires Supplier Follow-up", "Pending Supplier Follow-up"
                                                     )},
@@ -876,7 +876,7 @@ Screens:
                                                     SubmitForm(frmGRLog_GR);
                                                     Switch(
                                                         ddAcceptanceDecision_GR.Selected.Value,
-                                                        "Accepted",                    Notify("Goods receipt submitted. Request is now Completed.", NotificationType.Success),
+                                                        "Accepted",                    Notify("Goods receipt submitted. Request is now Pending Accounting.", NotificationType.Success),
                                                         "Rejected",                    Notify("Goods receipt submitted. Request is now Rejected.", NotificationType.Success),
                                                         "Requires Supplier Follow-up", Notify("Goods receipt submitted. Request is pending Supplier Follow-up.", NotificationType.Success)
                                                     );

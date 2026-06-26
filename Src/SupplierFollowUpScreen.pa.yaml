@@ -1460,7 +1460,7 @@ Screens:
                                                 {
                                                     Status: {Value: If(
                                                         ddAcceptanceDecision2_SFU.Selected.Value = "Accepted",
-                                                        "Completed",
+                                                        "Pending Accounting",
                                                         "Pending Supplier Follow-up"
                                                     )},
                                                     FollowUpReceiptBy: gCurrentEmployee.Title,
@@ -1503,7 +1503,7 @@ Screens:
                                                     SubmitForm(frmSFU1Log_SFU);
                                                     Switch(
                                                         ddAcceptanceDecision2_SFU.Selected.Value,
-                                                        "Accepted", Notify("Submitted. Request is now Completed.", NotificationType.Success),
+                                                        "Accepted", Notify("Submitted. Request is now Pending Accounting.", NotificationType.Success),
                                                         "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
                                                     );
                                                     Navigate(HomeScreen)
@@ -1538,7 +1538,7 @@ Screens:
                                         Procurement_Requests,
                                         gSelectedRequest,
                                         {
-                                            Status: {Value: "Completed"},
+                                            Status: {Value: "Pending Accounting"},
                                             CreditNote: If(
                                                 gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment",
                                                 txtCreditNote_SFU.Value,
@@ -1569,7 +1569,7 @@ Screens:
                                         If(
                                             IsBlank(wLog.ID),
                                             Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                            Notify("Follow-up completed. Request is now Completed.", NotificationType.Success);
+                                            Notify("Follow-up completed. Request is now Pending Accounting.", NotificationType.Success);
                                             Navigate(HomeScreen)
                                         )
                                     )

@@ -537,7 +537,7 @@ Screens:
                                     Procurement_Requests,
                                     gSelectedRequest,
                                     {
-                                        Status: {Value: "Goods Receipt & Acceptance"},
+                                        Status: {Value: "Completed"},
                                         AccountingHandlerID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                         AccountingCompletedAt: Now()
                                     }

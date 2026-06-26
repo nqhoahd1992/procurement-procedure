@@ -1421,7 +1421,7 @@ Screens:
                                                             Procurement_Requests,
                                                             gSelectedRequest,
                                                             {
-                                                                Status: {Value: "Pending Accounting"},
+                                                                Status: {Value: "Goods Receipt & Acceptance"},
                                                                 OfficialInvoiceLink: wOfficialInvoiceLink,
                                                                 AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
                                                                 ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
