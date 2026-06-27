@@ -15,19 +15,10 @@ Screens:
             Color: =RGBA(255, 255, 255, 1)
             FontWeight: =FontWeight.Bold
             Height: =60
-            Size: =18
+            Size: =14
             Text: ="Max Biocare Procurement - Accounting Handover"
             Width: =698
             X: =20
-      - btnBack_AC:
-          Control: Button@0.0.45
-          Properties:
-            Height: =36
-            OnSelect: =Navigate(RequestDetailScreen)
-            Text: ="← Back"
-            Width: =100
-            X: =Parent.Width - 120
-            Y: =12
       - rowInfoBlock_AC:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -499,9 +490,10 @@ Screens:
             DropShadow: =DropShadow.None
             Fill: =RGBA(255, 255, 255, 1)
             Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =12
-            LayoutJustifyContent: =LayoutJustifyContent.End
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
             PaddingBottom: =8
             PaddingLeft: =20
             PaddingRight: =20
@@ -513,63 +505,105 @@ Screens:
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
-            - btnCancel_AC:
+            - btnBack_AC:
                 Control: Button@0.0.45
                 Properties:
-                  Height: =44
+                  Height: =36
                   OnSelect: =Navigate(RequestDetailScreen)
-                  Text: ="Cancel"
-                  Width: =120
-            - btnSubmit_AC:
-                Control: Button@0.0.45
+                  Text: ="← Back"
+                  Width: =100
+                  X: =Parent.Width - 120
+                  Y: =40
+            - conActionBarBtn_AC:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =If(
-                        Not(chk1_AC.Checked && chk2_AC.Checked && chk3_AC.Checked &&
-                            chk4_AC.Checked && chk5_AC.Checked),
-                        Notify("Please complete all checklist items", NotificationType.Error),
-                        If(
-                            IsBlank(txtNotes_AC.Value),
-                            Notify("Accounting Notes is required", NotificationType.Error),
-                            With(
-                                {wPatched: Patch(
-                                    Procurement_Requests,
-                                    gSelectedRequest,
-                                    {
-                                        Status: {Value: "Completed"},
-                                        AccountingHandlerID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                        AccountingCompletedAt: Now()
-                                    }
-                                )},
-                                If(
-                                    IsBlank(wPatched.ID),
-                                    Notify("Failed to update status. Please try again.", NotificationType.Error),
-                                    With(
-                                        {wLog: Patch(
-                                            Procurement_ExecutionLog,
-                                            Defaults(Procurement_ExecutionLog),
-                                            {
-                                                Title: "Step 2 - Accounting Handover - " & gSelectedRequest.Title,
-                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                RequestIDText: Text(gSelectedRequest.ID),
-                                                StepNumber: 2,
-                                                StepName: {Value: "Accounting Handover"},
-                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                ExecutedAt: Now(),
-                                                Notes: txtNotes_AC.Value
-                                            }
-                                        )},
-                                        If(
-                                            IsBlank(wLog.ID),
-                                            Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                            Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
-                                            Navigate(HomeScreen)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                  Text: ="Submit →"
-                  Width: =120
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                Children:
+                  - btnCancel_AC:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: =Navigate(RequestDetailScreen)
+                        Text: ="Cancel"
+                        Width: =120
+                        X: =40
+                        Y: =40
+                  - btnSubmit_AC:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =If(
+                              Not(chk1_AC.Checked && chk2_AC.Checked && chk3_AC.Checked &&
+                                  chk4_AC.Checked && chk5_AC.Checked),
+                              Notify("Please complete all checklist items", NotificationType.Error),
+                              If(
+                                  IsBlank(txtNotes_AC.Value),
+                                  Notify("Accounting Notes is required", NotificationType.Error),
+                                  With(
+                                      {wPatched: Patch(
+                                          Procurement_Requests,
+                                          gSelectedRequest,
+                                          {
+                                              Status: {Value: "Completed"},
+                                              AccountingHandlerID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                              AccountingCompletedAt: Now()
+                                          }
+                                      )},
+                                      If(
+                                          IsBlank(wPatched.ID),
+                                          Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                          With(
+                                              {wLog: Patch(
+                                                  Procurement_ExecutionLog,
+                                                  Defaults(Procurement_ExecutionLog),
+                                                  {
+                                                      Title: "Step 2 - Accounting Handover - " & gSelectedRequest.Title,
+                                                      RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                      RequestIDText: Text(gSelectedRequest.ID),
+                                                      StepNumber: 2,
+                                                      StepName: {Value: "Accounting Handover"},
+                                                      ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                      ExecutedAt: Now(),
+                                                      Notes: txtNotes_AC.Value
+                                                  }
+                                              )},
+                                              If(
+                                                  IsBlank(wLog.ID),
+                                                  Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                  Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
+                                                  Navigate(HomeScreen)
+                                              )
+                                          )
+                                      )
+                                  )
+                              )
+                          )
+                        Text: ="Submit →"
+                        Width: =120
+                        X: =40
+                        Y: =40
+      - lblUserInfo_SFU_1:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.Title,
+                  gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300

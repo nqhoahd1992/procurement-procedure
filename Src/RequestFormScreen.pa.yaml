@@ -16,28 +16,20 @@ Screens:
             Color: =RGBA(255, 255, 255, 1)
             FontWeight: =FontWeight.Bold
             Height: =60
-            Size: =18
+            Size: =14
             Text: ="Max Biocare Procurement - New Request"
             Width: =718
             X: =20
-      - btnBack_1:
-          Control: Button@0.0.45
-          Properties:
-            Height: =36
-            OnSelect: =Navigate(HomeScreen)
-            Text: ="← Back"
-            Width: =100
-            X: =Parent.Width - 120
-            Y: =12
       - rowButtons:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
             Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =20
-            LayoutJustifyContent: =LayoutJustifyContent.End
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
             PaddingBottom: =8
             PaddingLeft: =20
             PaddingRight: =20
@@ -49,131 +41,161 @@ Screens:
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
-            - btnCancel_1:
+            - btnBack_1:
                 Control: Button@0.0.45
                 Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =Reset(ddDepartment_1);
-                    Reset(txtDescription_1);
-                    Reset(ddCategory_1);
-                    Reset(ddInvoiceRegion);
-                    Reset(ddPurchaseAccordance_2);
-                    Reset(txtEstimatedCost_1);
-                    Reset(ddCurrency_1);
-                    Reset(ddDeliveryLocation_1);
-                    Reset(txtBudgetRef_1);
-                    Reset(ddPreferredSupplier_1);
-                    Reset(dpDeliveryDate_1);
-                    Reset(ddManagerApprover_1);
-                    Reset(rdoProcurementType_1);
-                    Reset(rdoInvoiceType_1);
-                    Set(gPendingAttachments, Blank());
-                    NewForm(Form1);
-                    Navigate(HomeScreen)
-                  Text: ="Cancel"
-                  Width: =160
-            - btnSubmit_1:
-                Control: Button@0.0.45
+                  Height: =36
+                  OnSelect: =Navigate(HomeScreen)
+                  Text: ="← Back"
+                  Width: =100
+                  X: =Parent.Width - 120
+                  Y: =40
+            - rowButtonsWrap:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =If(
-                        IsBlank(ddDepartment_1.Selected) ||
-                        IsBlank(txtDescription_1.Value) ||
-                        IsBlank(ddCategory_1.Selected) ||
-                        IsBlank(ddCurrency_1.Selected) ||
-                        IsBlank(ddDeliveryLocation_1.Selected) ||
-                        IsBlank(dpDeliveryDate_1.SelectedDate) ||
-                        IsBlank(rdoProcurementType_1.Selected),
-                        Notify("Please fill in all required fields", NotificationType.Error),
-                        If(
-                            IsBlank(ddPurchaseAccordance_2.Selected),
-                            Notify("Please fill in all required fields", NotificationType.Error),
-                            If(
-                                IsBlank(ddInvoiceRegion.Selected),
-                                Notify("Please select an Invoice Target Market", NotificationType.Error),
-                                If(
-                                    IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
-                                    Notify("Estimated Cost is required and must be a number", NotificationType.Error),
-                                    If(
-                                        rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
-                                        IsBlank(rdoInvoiceType_1.Selected),
-                                        Notify("Please select an invoice type", NotificationType.Error),
-                                        If(
-                                            rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
-                                            CountRows(DataCardValue15.Attachments) = 0,
-                                            Notify("Please attach the invoice file before submitting", NotificationType.Error),
-                                            If(
-                                                Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                    ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")) &&
-                                                IsBlank(ddManagerApprover_1.Selected),
-                                                Notify("Please select a Manager Approver", NotificationType.Error),
-                                                With(
-                                                    {
-                                                        wNewRequest: Patch(
-                                                            Procurement_Requests,
-                                                            Defaults(Procurement_Requests),
-                                                            {
-                                                                Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
-                                                                RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                                RequesterEmail: User().Email,
-                                                                Department: ddDepartment_1.Selected.Value,
-                                                                ProcurementDescription: txtDescription_1.Value,
-                                                                BudgetReference: txtBudgetRef_1.Value,
-                                                                DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
-                                                                PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
-                                                                Category: {Value: ddCategory_1.Selected.Value},
-                                                                PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
-                                                                InvoiceRegion: {Value: ddInvoiceRegion.Selected.Value},
-                                                                Currency: {Value: ddCurrency_1.Selected.Value},
-                                                                EstimatedCost: Value(txtEstimatedCost_1.Value),
-                                                                RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
-                                                                ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
-                                                                InvoiceType: If(
-                                                                    rdoProcurementType_1.Selected.Value = "Invoice Supplied",
-                                                                    {Value: rdoInvoiceType_1.Selected.Value},
-                                                                    Blank()
-                                                                ),
-                                                                ManagerApproverID: If(
-                                                                    Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                        ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                        (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")),
-                                                                    {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
-                                                                    Blank()
-                                                                ),
-                                                                SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                                      ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                      (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
-                                                                Status: {Value: If(
-                                                                    ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                    ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
-                                                                    "Pending Executive",
-                                                                    "Pending Manager"
-                                                                )}
-                                                            }
-                                                        )
-                                                    },
-                                                    If(
-                                                        IsBlank(wNewRequest.ID),
-                                                        Notify("Failed to submit request. Please try again.", NotificationType.Error),
-                                                        Set(gPendingAttachments, DataCardValue15.Attachments);
-                                                        Set(gSelectedRequest, wNewRequest);
-                                                        EditForm(Form1);
-                                                        SubmitForm(Form1);
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                  Text: ="Submit Request →"
-                  Width: =200
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                Children:
+                  - btnCancel_1:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =Reset(ddDepartment_1);
+                          Reset(txtDescription_1);
+                          Reset(ddCategory_1);
+                          Reset(ddInvoiceRegion);
+                          Reset(ddPurchaseAccordance_2);
+                          Reset(txtEstimatedCost_1);
+                          Reset(ddCurrency_1);
+                          Reset(ddDeliveryLocation_1);
+                          Reset(txtBudgetRef_1);
+                          Reset(ddPreferredSupplier_1);
+                          Reset(dpDeliveryDate_1);
+                          Reset(ddManagerApprover_1);
+                          Reset(rdoProcurementType_1);
+                          Reset(rdoInvoiceType_1);
+                          Set(gPendingAttachments, Blank());
+                          NewForm(Form1);
+                          Navigate(HomeScreen)
+                        Text: ="Cancel"
+                        Width: =160
+                        X: =40
+                        Y: =40
+                  - btnSubmit_1:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =If(
+                              IsBlank(ddDepartment_1.Selected) ||
+                              IsBlank(txtDescription_1.Value) ||
+                              IsBlank(ddCategory_1.Selected) ||
+                              IsBlank(ddCurrency_1.Selected) ||
+                              IsBlank(ddDeliveryLocation_1.Selected) ||
+                              IsBlank(dpDeliveryDate_1.SelectedDate) ||
+                              IsBlank(rdoProcurementType_1.Selected),
+                              Notify("Please fill in all required fields", NotificationType.Error),
+                              If(
+                                  IsBlank(ddPurchaseAccordance_2.Selected),
+                                  Notify("Please fill in all required fields", NotificationType.Error),
+                                  If(
+                                      IsBlank(ddInvoiceRegion.Selected),
+                                      Notify("Please select an Invoice Target Market", NotificationType.Error),
+                                      If(
+                                          IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
+                                          Notify("Estimated Cost is required and must be a number", NotificationType.Error),
+                                          If(
+                                              rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                              IsBlank(rdoInvoiceType_1.Selected),
+                                              Notify("Please select an invoice type", NotificationType.Error),
+                                              If(
+                                                  rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                                  CountRows(DataCardValue15.Attachments) = 0,
+                                                  Notify("Please attach the invoice file before submitting", NotificationType.Error),
+                                                  If(
+                                                      Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                          ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                          (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")) &&
+                                                      IsBlank(ddManagerApprover_1.Selected),
+                                                      Notify("Please select a Manager Approver", NotificationType.Error),
+                                                      With(
+                                                          {
+                                                              wNewRequest: Patch(
+                                                                  Procurement_Requests,
+                                                                  Defaults(Procurement_Requests),
+                                                                  {
+                                                                      Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
+                                                                      RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                                      RequesterEmail: User().Email,
+                                                                      Department: ddDepartment_1.Selected.Value,
+                                                                      ProcurementDescription: txtDescription_1.Value,
+                                                                      BudgetReference: txtBudgetRef_1.Value,
+                                                                      DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
+                                                                      PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
+                                                                      Category: {Value: ddCategory_1.Selected.Value},
+                                                                      PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
+                                                                      InvoiceRegion: {Value: ddInvoiceRegion.Selected.Value},
+                                                                      Currency: {Value: ddCurrency_1.Selected.Value},
+                                                                      EstimatedCost: Value(txtEstimatedCost_1.Value),
+                                                                      RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
+                                                                      ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
+                                                                      InvoiceType: If(
+                                                                          rdoProcurementType_1.Selected.Value = "Invoice Supplied",
+                                                                          {Value: rdoInvoiceType_1.Selected.Value},
+                                                                          Blank()
+                                                                      ),
+                                                                      ManagerApproverID: If(
+                                                                          Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                              ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                              (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")),
+                                                                          {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
+                                                                          Blank()
+                                                                      ),
+                                                                      SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                                            ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                                            (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                      Status: {Value: If(
+                                                                          ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                          ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                          (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                          "Pending Executive",
+                                                                          "Pending Manager"
+                                                                      )}
+                                                                  }
+                                                              )
+                                                          },
+                                                          If(
+                                                              IsBlank(wNewRequest.ID),
+                                                              Notify("Failed to submit request. Please try again.", NotificationType.Error),
+                                                              Set(gPendingAttachments, DataCardValue15.Attachments);
+                                                              Set(gSelectedRequest, wNewRequest);
+                                                              EditForm(Form1);
+                                                              SubmitForm(Form1);
+                                                          )
+                                                      )
+                                                  )
+                                              )
+                                          )
+                                      )
+                                  )
+                              )
+                          )
+                        Text: ="Submit Request →"
+                        Width: =200
+                        X: =40
+                        Y: =40
       - containerScroll:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -213,9 +235,9 @@ Screens:
                         AlignInContainer: =AlignInContainer.Stretch
                         FontWeight: =FontWeight.Bold
                         Height: =24
-                        Size: =11
+                        Size: =12
                         Text: ="Requester:"
-                        Width: =86
+                        Width: =96
                         Y: =15
                   - lblRequesterValue_1:
                       Control: Label@2.5.1
@@ -404,7 +426,15 @@ Screens:
                         NumberOfColumns: =1
                         OnFailure: =Notify("Request saved but attachment upload failed. Please open the request and re-attach.", NotificationType.Warning); Navigate(HomeScreen)
                         OnSuccess: |-
-                          =Reset(ddDepartment_1);
+                          =If(
+                              Form1.LastSubmit.ProcurementType.Value = "Invoice Supplied" &&
+                              Not(IsBlank(First(Form1.LastSubmit.Attachments).AbsoluteUri)),
+                              Patch(Procurement_Requests,
+                                  {ID: Form1.LastSubmit.ID},
+                                  {RequesterInvoiceURL: First(Form1.LastSubmit.Attachments).AbsoluteUri}
+                              )
+                          );
+                          Reset(ddDepartment_1);
                           Reset(txtDescription_1);
                           Reset(ddCategory_1);
                           Reset(ddInvoiceRegion);
@@ -452,7 +482,7 @@ Screens:
                                     PaddingRight: =0
                                     Size: =10
                                     Text: ="Attach Invoice File *"
-                                    Width: |+
+                                    Width: |
                                       =Parent.Width
                                     Wrap: =false
                                     Y: =10
@@ -477,7 +507,7 @@ Screens:
                                     PressedColor: =RGBA(255, 255, 255, 1)
                                     PressedFill: =RGBA(0, 18, 107, 1)
                                     Tooltip: =Parent.DisplayName
-                                    Width: |+
+                                    Width: |
                                       =Parent.Width
                                     Y: =DataCardKey15.Y + DataCardKey15.Height + 5
                               - ErrorMessage15:
@@ -497,7 +527,7 @@ Screens:
                                     Size: =14
                                     Text: =Parent.Error
                                     Visible: =Parent.DisplayMode=DisplayMode.Edit
-                                    Width: |+
+                                    Width: |
                                       =Parent.Width
                                     Y: =DataCardValue15.Y + DataCardValue15.Height
             - rowDescPurchase:
@@ -900,3 +930,19 @@ Screens:
                         Size: =11
                         Text: ="⚠ This request will be escalated directly to Executive approval"
                         Width: =Parent.Width - 40
+      - lblUserInfo_1:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.Title,
+                  gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300

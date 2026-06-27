@@ -390,27 +390,45 @@ is live for the existing Direct path. No new columns needed.
 
 ---
 
-### Phase 1 — SharePoint schema
-**Touch:** SharePoint admin UI only — no Power Fx changes.
+### Phase 1 — SharePoint schema ✅ DONE
 
-Add 5 new columns to `Procurement_Requests` (see Task 1). All subsequent phases depend on these
-columns existing. `InvoiceSubmitted` defaults to `false`; all URL columns default to blank.
+Added 5 columns to `Procurement_Requests`:
+
+| Column | Type |
+|---|---|
+| `InvoiceMode` | Choice: `Direct` / `Deferred` / `ViaRequester` |
+| `InvoiceSubmitted` | Yes/No (default: No) |
+| `OrderConfirmationURL` | Single line of text |
+| `RemittanceURL` | Single line of text |
+| `RequesterInvoiceURL` | Single line of text |
+
+Note: `RequesterInvoiceURL` replaces the previous pattern of reading `gSelectedRequest.Attachments`
+as the invoice URL. It is set automatically via post-submit Patch in `RequestFormScreen.Form1.OnSuccess`
+(when `ProcurementType = "Invoice Supplied"`). Path C detection uses `!IsBlank(RequesterInvoiceURL)`
+instead of `!IsBlank(Attachments)`. The Form1 attachment upload control is kept as-is.
 
 ---
 
-### Phase 2 — AccountingScreen (trivial, unblocks testing of Phase 0 + 1)
-**Touch:** `Src/AccountingScreen.pa.yaml` — Task 5.5.
+### Phase 2 — AccountingScreen ✅ DONE (in Phase 0)
 
-Already simplified to `Status → "Completed"` with no branching. Verify the existing submit button
-patches this correctly. One-line change if not already done in Phase 0.
+`Status → "Completed"` already fixed in Phase 0 (line 540).
 
 ---
 
-### Phase 3 — ProcurementExecutionScreen: InvoiceMode + uploads
-**Touch:** `Src/ProcurementExecutionScreen.pa.yaml` — Task 2.
+### Phase 3 — RequestFormScreen + ProcurementExecutionScreen: InvoiceMode + uploads
+**Touch:** `Src/RequestFormScreen.pa.yaml`, `Src/ProcurementExecutionScreen.pa.yaml` — Task 2.
 
-Add `locIsViaRequester` detection, Order Confirmation upload (Path A/B), Remittance upload (Path C),
-Defer Invoice choice (Path B), and patch `InvoiceMode` + URL columns on submit.
+**RequestFormScreen changes:**
+- `Form1.OnSuccess`: add Patch to set `RequesterInvoiceURL` from `Form1.LastSubmit.Attachments.AbsoluteUri`
+  when `ProcurementType = "Invoice Supplied"`.
+
+**ProcurementExecutionScreen changes:**
+- Replace all `First(gSelectedRequest.Attachments).AbsoluteUri` (5 occurrences) → `gSelectedRequest.RequesterInvoiceURL`.
+- Add `locIsViaRequester` on `OnVisible`: `!IsBlank(gSelectedRequest.RequesterInvoiceURL)`.
+- Path A/B: add Order Confirmation upload + Submit Invoice Now / Defer Invoice choice.
+- Path C: show Remittance upload only; hide invoice section.
+- Patch `InvoiceMode` + URL columns on submit.
+
 After this phase, every new request gets `InvoiceMode` set correctly.
 
 ---

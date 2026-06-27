@@ -9,22 +9,13 @@ Screens:
             Fill: =RGBA(83, 74, 183, 1)
             Height: =60
             Width: =Parent.Width
-      - btnBack:
-          Control: Button@0.0.45
-          Properties:
-            Height: =36
-            OnSelect: =Navigate(RequestDetailScreen)
-            Text: ="← Back"
-            Width: =100
-            X: =Parent.Width - 120
-            Y: =12
       - lblScreenTitle:
           Control: Label@2.5.1
           Properties:
             Color: =RGBA(255, 255, 255, 1)
             FontWeight: =FontWeight.Bold
             Height: =60
-            Size: =18
+            Size: =14
             Text: ="Max Biocare Procurement - Department Manager Review"
             Width: =719
             X: =20
@@ -645,6 +636,7 @@ Screens:
             DropShadow: =DropShadow.None
             Fill: =RGBA(255, 255, 255, 1)
             Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =12
             LayoutJustifyContent: =LayoutJustifyContent.End
@@ -659,67 +651,114 @@ Screens:
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
-            - btnCancelReview:
+            - btnBack:
                 Control: Button@0.0.45
                 Properties:
-                  Height: =44
-                  OnSelect: =Navigate(HomeScreen)
-                  Text: ="Cancel"
-                  Width: =160
-            - btnSubmitReview:
-                Control: Button@0.0.45
+                  Height: =36
+                  OnSelect: =Navigate(RequestDetailScreen)
+                  Text: ="← Back"
+                  Width: =100
+                  X: =Parent.Width - 120
+                  Y: =40
+            - conActionBarBtn_2:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =If(
-                        Not(chkBizJustification.Checked) || Not(chkCostReasonable.Checked) || Not(chkWithinBudget.Checked) || Not(chkTimingAppropriate.Checked),
-                        Notify("Please complete all checklist items", NotificationType.Error),
-                        If(
-                            IsBlank(txtManagerRemarks.Value),
-                            Notify("Manager Remarks is required", NotificationType.Error),
-                            If(
-                                IsBlank(rdoApproved.Selected.Value),
-                                Notify("Please select a decision", NotificationType.Error),
-                                With(
-                                    {wLog: Patch(
-                                        Procurement_ApprovalLog,
-                                        Defaults(Procurement_ApprovalLog),
-                                        {
-                                            Title: "Step 2 - " & rdoApproved.Selected.Value & " - " & gSelectedRequest.Title,
-                                            RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                            RequestIDText: Text(gSelectedRequest.ID),
-                                            StepNumber: 2,
-                                            ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                            Decision: {Value: rdoApproved.Selected.Value},
-                                            ManagerRemarks: txtManagerRemarks.Value
-                                        }
-                                    )},
-                                    If(
-                                        IsBlank(wLog.ID),
-                                        Notify("Failed to save approval log. Please try again.", NotificationType.Error),
-                                        With(
-                                            {wReq: Patch(
-                                                Procurement_Requests,
-                                                gSelectedRequest,
-                                                {
-                                                    Status: {Value: If(
-                                                        rdoApproved.Selected.Value = "Approved (within budget)",
-                                                        "Pending Procurement",
-                                                        "Pending Executive"
-                                                    )}
-                                                }
-                                            )},
-                                            If(
-                                                IsBlank(wReq.ID),
-                                                Notify("Failed to update status. Please try again.", NotificationType.Error),
-                                                Notify("Decision submitted successfully", NotificationType.Success);
-                                                Navigate(HomeScreen)
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                  Text: ="Submit Decision →"
-                  Width: =200
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                Children:
+                  - btnCancelReview:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: =Navigate(HomeScreen)
+                        Text: ="Cancel"
+                        Width: =160
+                        X: =40
+                        Y: =40
+                  - btnSubmitReview:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =If(
+                              Not(chkBizJustification.Checked) || Not(chkCostReasonable.Checked) || Not(chkWithinBudget.Checked) || Not(chkTimingAppropriate.Checked),
+                              Notify("Please complete all checklist items", NotificationType.Error),
+                              If(
+                                  IsBlank(txtManagerRemarks.Value),
+                                  Notify("Manager Remarks is required", NotificationType.Error),
+                                  If(
+                                      IsBlank(rdoApproved.Selected.Value),
+                                      Notify("Please select a decision", NotificationType.Error),
+                                      With(
+                                          {wLog: Patch(
+                                              Procurement_ApprovalLog,
+                                              Defaults(Procurement_ApprovalLog),
+                                              {
+                                                  Title: "Step 2 - " & rdoApproved.Selected.Value & " - " & gSelectedRequest.Title,
+                                                  RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                  RequestIDText: Text(gSelectedRequest.ID),
+                                                  StepNumber: 2,
+                                                  ApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                  Decision: {Value: rdoApproved.Selected.Value},
+                                                  ManagerRemarks: txtManagerRemarks.Value
+                                              }
+                                          )},
+                                          If(
+                                              IsBlank(wLog.ID),
+                                              Notify("Failed to save approval log. Please try again.", NotificationType.Error),
+                                              With(
+                                                  {wReq: Patch(
+                                                      Procurement_Requests,
+                                                      gSelectedRequest,
+                                                      {
+                                                          Status: {Value: If(
+                                                              rdoApproved.Selected.Value = "Approved (within budget)",
+                                                              "Pending Procurement",
+                                                              "Pending Executive"
+                                                          )}
+                                                      }
+                                                  )},
+                                                  If(
+                                                      IsBlank(wReq.ID),
+                                                      Notify("Failed to update status. Please try again.", NotificationType.Error),
+                                                      Notify("Decision submitted successfully", NotificationType.Success);
+                                                      Navigate(HomeScreen)
+                                                  )
+                                              )
+                                          )
+                                      )
+                                  )
+                              )
+                          )
+                        Text: ="Submit Decision →"
+                        Width: =200
+                        X: =40
+                        Y: =40
+      - lblUserInfo_MRS:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.Title,
+                  gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300

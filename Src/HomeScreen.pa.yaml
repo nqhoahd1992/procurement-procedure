@@ -28,7 +28,7 @@ Screens:
             Color: =RGBA(255, 255, 255, 1)
             FontWeight: =FontWeight.Bold
             Height: =60
-            Size: =18
+            Size: =14
             Text: ="Max Biocare Procurement"
             Width: =400
             X: =20
@@ -37,6 +37,7 @@ Screens:
           Properties:
             Align: =Align.Right
             Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
             Height: =60
             Size: =12
             Text: |-
@@ -71,7 +72,6 @@ Screens:
                 Control: Label@2.5.1
                 Properties:
                   FontWeight: =FontWeight.Bold
-                  Size: =16
                   Text: |-
                     =Switch(gCurrentUser.Role.Value,
                         "Manager",     "My Requests",
@@ -88,7 +88,6 @@ Screens:
                   Height: =40
                   OnSelect: =Navigate(RequestFormScreen)
                   Text: ="+ New Request"
-                  Visible: =true
                   Width: =160
       - rowFilterBar:
           Control: GroupContainer@1.5.0

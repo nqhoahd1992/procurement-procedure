@@ -21,19 +21,10 @@ Screens:
             Color: =RGBA(255, 255, 255, 1)
             FontWeight: =FontWeight.Bold
             Height: =60
-            Size: =18
+            Size: =14
             Text: ="Max Biocare Procurement - Goods Receipt & Acceptance"
             Width: =773
             X: =20
-      - btnBack_GR:
-          Control: Button@0.0.45
-          Properties:
-            Height: =36
-            OnSelect: =Navigate(RequestDetailScreen)
-            Text: ="← Back"
-            Width: =100
-            X: =Parent.Width - 120
-            Y: =12
       - rowInfoBlock_GR:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -738,9 +729,10 @@ Screens:
             DropShadow: =DropShadow.None
             Fill: =RGBA(255, 255, 255, 1)
             Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =12
-            LayoutJustifyContent: =LayoutJustifyContent.End
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
             PaddingBottom: =8
             PaddingLeft: =20
             PaddingRight: =20
@@ -752,143 +744,190 @@ Screens:
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
-            - btnCancel_GR:
+            - btnBack_GR:
                 Control: Button@0.0.45
                 Properties:
-                  Height: =44
+                  Height: =36
                   OnSelect: =Navigate(RequestDetailScreen)
-                  Text: ="Cancel"
-                  Width: =120
-            - btnSaveAssignment_GR:
-                Control: Button@0.0.45
-                Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =If(
-                        IsBlank(ddAssignReceiver_GR.Selected.Title),
-                        Notify("Please select a person to assign", NotificationType.Error),
-                        If(
-                            Not(IsBlank(gSelectedRequest.GRAssignedToID)) &&
-                            gSelectedRequest.GRAssignedToID.Id <> ddAssignReceiver_GR.Selected.ID,
-                            Procurement_Notify_Receipt_Assignee.Run(
-                                LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).email,
-                                gSelectedRequest.GRAssignedToID.Value,
-                                gSelectedRequest.Title,
-                                gSelectedRequest.ID,
-                                "Unassigned",
-                                Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                gSelectedRequest.Category.Value
-                            )
-                        );
-                        With(
-                            {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {GRAssignedToID: {Id: ddAssignReceiver_GR.Selected.ID, Value: ddAssignReceiver_GR.Selected.Title}})},
-                            If(
-                                IsBlank(wPatched.ID),
-                                Notify("Failed to save assignment. Please try again.", NotificationType.Error),
-                                Set(gSelectedRequest, wPatched);
-                                Procurement_Notify_Receipt_Assignee.Run(
-                                    ddAssignReceiver_GR.Selected.email,
-                                    ddAssignReceiver_GR.Selected.Title,
-                                    gSelectedRequest.Title,
-                                    gSelectedRequest.ID,
-                                    "GoodsReceipt",
-                                    Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                    gSelectedRequest.Category.Value
-                                );
-                                Notify("Assignment saved to " & ddAssignReceiver_GR.Selected.Title, NotificationType.Success)
-                            )
-                        )
-                    )
-                  Text: ="Save Assignment"
-                  Visible: =gGRDelegationMode = "Assign to someone else"
-                  Width: =160
-                  X: =40
+                  Text: ="← Back"
+                  Width: =100
+                  X: =Parent.Width - 120
                   Y: =40
-            - btnSubmit_GR:
-                Control: Button@0.0.45
+            - conActionBarBtn_GR:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  Height: =44
-                  OnSelect: |-
-                    =With(
-                        {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
-                        If(
-                            Not(
-                            wLatest.RequesterEmail = gCurrentEmployee.Email && IsBlank(wLatest.GRAssignedToID)
-                            || Not(IsBlank(wLatest.GRAssignedToID)) && wLatest.GRAssignedToID.Id = gCurrentEmployee.ID
-                        ),
-                            Notify("This assignment has been reassigned to someone else. Your submission has been cancelled.", NotificationType.Warning);
-                            Navigate(HomeScreen),
-                            If(
-                                Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
-                                Notify("Please complete all checklist items", NotificationType.Error),
-                                If(
-                                    IsBlank(dpReceiptDate_GR.SelectedDate) ||
-                                    IsBlank(ddReceiptStatus_GR.Selected.Value) ||
-                                    IsBlank(ddAcceptanceDecision_GR.Selected.Value) ||
-                                    IsBlank(txtRemarks_GR.Value) ||
-                                    CountRows(attGRPhotos.Attachments) = 0,
-                                    Notify("Please fill in all required fields", NotificationType.Error),
-                                    With(
-                                        {
-                                            wPatched: Patch(
-                                                Procurement_Requests,
-                                                gSelectedRequest,
-                                                {
-                                                    Status: {Value: Switch(
-                                                        ddAcceptanceDecision_GR.Selected.Value,
-                                                        "Accepted",                    "Pending Accounting",
-                                                        "Rejected",                    "Rejected",
-                                                        "Requires Supplier Follow-up", "Pending Supplier Follow-up"
-                                                    )},
-                                                    GoodsReceiptBy: gCurrentEmployee.Title,
-                                                    GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
-                                                    GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
-                                                    GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
-                                                    GoodsReceiptRemarks: txtRemarks_GR.Value,
-                                                    GoodsReceiptAt: Now()
-                                                }
-                                            )
-                                        },
-                                        If(
-                                            IsBlank(wPatched.ID),
-                                            Notify("Failed to submit. Please try again.", NotificationType.Error),
-                                            With(
-                                                {wLog: Patch(
-                                                    Procurement_ExecutionLog,
-                                                    Defaults(Procurement_ExecutionLog),
-                                                    {
-                                                        Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
-                                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                        RequestIDText: Text(gSelectedRequest.ID),
-                                                        StepNumber: 3,
-                                                        StepName: {Value: "Goods Receipt & Acceptance"},
-                                                        ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                        ExecutedAt: Now(),
-                                                        Notes: txtRemarks_GR.Value
-                                                    }
-                                                )},
-                                                If(
-                                                    IsBlank(wLog.ID),
-                                                    Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                                    Set(gGRPendingAttachments, attGRPhotos.Attachments);
-                                                    Set(gGRLogEntry, wLog);
-                                                    EditForm(frmGRLog_GR);
-                                                    SubmitForm(frmGRLog_GR);
-                                                    Switch(
-                                                        ddAcceptanceDecision_GR.Selected.Value,
-                                                        "Accepted",                    Notify("Goods receipt submitted. Request is now Pending Accounting.", NotificationType.Success),
-                                                        "Rejected",                    Notify("Goods receipt submitted. Request is now Rejected.", NotificationType.Success),
-                                                        "Requires Supplier Follow-up", Notify("Goods receipt submitted. Request is pending Supplier Follow-up.", NotificationType.Success)
-                                                    );
-                                                    Navigate(HomeScreen)
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                  Text: ="Submit →"
-                  Visible: =gGRDelegationMode = "I will receive"
-                  Width: =160
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                Children:
+                  - btnCancel_GR:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: =Navigate(RequestDetailScreen)
+                        Text: ="Cancel"
+                        Width: =120
+                        X: =40
+                        Y: =40
+                  - btnSaveAssignment_GR:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =44
+                        OnSelect: |-
+                          =If(
+                              IsBlank(ddAssignReceiver_GR.Selected.Title),
+                              Notify("Please select a person to assign", NotificationType.Error),
+                              If(
+                                  Not(IsBlank(gSelectedRequest.GRAssignedToID)) &&
+                                  gSelectedRequest.GRAssignedToID.Id <> ddAssignReceiver_GR.Selected.ID,
+                                  Procurement_Notify_Receipt_Assignee.Run(
+                                      LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).email,
+                                      gSelectedRequest.GRAssignedToID.Value,
+                                      gSelectedRequest.Title,
+                                      gSelectedRequest.ID,
+                                      "Unassigned",
+                                      Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
+                                      gSelectedRequest.Category.Value
+                                  )
+                              );
+                              With(
+                                  {wPatched: Patch(Procurement_Requests, LookUp(Procurement_Requests, ID = gSelectedRequest.ID), {GRAssignedToID: {Id: ddAssignReceiver_GR.Selected.ID, Value: ddAssignReceiver_GR.Selected.Title}})},
+                                  If(
+                                      IsBlank(wPatched.ID),
+                                      Notify("Failed to save assignment. Please try again.", NotificationType.Error),
+                                      Set(gSelectedRequest, wPatched);
+                                      Procurement_Notify_Receipt_Assignee.Run(
+                                          ddAssignReceiver_GR.Selected.email,
+                                          ddAssignReceiver_GR.Selected.Title,
+                                          gSelectedRequest.Title,
+                                          gSelectedRequest.ID,
+                                          "GoodsReceipt",
+                                          Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
+                                          gSelectedRequest.Category.Value
+                                      );
+                                      Notify("Assignment saved to " & ddAssignReceiver_GR.Selected.Title, NotificationType.Success)
+                                  )
+                              )
+                          )
+                        Text: ="Save Assignment"
+                        Visible: =gGRDelegationMode = "Assign to someone else"
+                        Width: =160
+                        X: =40
+                        Y: =40
+                  - btnSubmit_GR:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =With(
+                              {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
+                              If(
+                                  Not(
+                                  wLatest.RequesterEmail = gCurrentEmployee.Email && IsBlank(wLatest.GRAssignedToID)
+                                  || Not(IsBlank(wLatest.GRAssignedToID)) && wLatest.GRAssignedToID.Id = gCurrentEmployee.ID
+                              ),
+                                  Notify("This assignment has been reassigned to someone else. Your submission has been cancelled.", NotificationType.Warning);
+                                  Navigate(HomeScreen),
+                                  If(
+                                      Not(chkGR1.Checked && chkGR2.Checked && chkGR3.Checked && chkGR4.Checked && chkGR5.Checked),
+                                      Notify("Please complete all checklist items", NotificationType.Error),
+                                      If(
+                                          IsBlank(dpReceiptDate_GR.SelectedDate) ||
+                                          IsBlank(ddReceiptStatus_GR.Selected.Value) ||
+                                          IsBlank(ddAcceptanceDecision_GR.Selected.Value) ||
+                                          IsBlank(txtRemarks_GR.Value) ||
+                                          CountRows(attGRPhotos.Attachments) = 0,
+                                          Notify("Please fill in all required fields", NotificationType.Error),
+                                          With(
+                                              {
+                                                  wPatched: Patch(
+                                                      Procurement_Requests,
+                                                      gSelectedRequest,
+                                                      {
+                                                          Status: {Value: Switch(
+                                                              ddAcceptanceDecision_GR.Selected.Value,
+                                                              "Accepted",                    "Pending Accounting",
+                                                              "Rejected",                    "Rejected",
+                                                              "Requires Supplier Follow-up", "Pending Supplier Follow-up"
+                                                          )},
+                                                          GoodsReceiptBy: gCurrentEmployee.Title,
+                                                          GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
+                                                          GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
+                                                          GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
+                                                          GoodsReceiptRemarks: txtRemarks_GR.Value,
+                                                          GoodsReceiptAt: Now()
+                                                      }
+                                                  )
+                                              },
+                                              If(
+                                                  IsBlank(wPatched.ID),
+                                                  Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                                  With(
+                                                      {wLog: Patch(
+                                                          Procurement_ExecutionLog,
+                                                          Defaults(Procurement_ExecutionLog),
+                                                          {
+                                                              Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
+                                                              RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                              RequestIDText: Text(gSelectedRequest.ID),
+                                                              StepNumber: 3,
+                                                              StepName: {Value: "Goods Receipt & Acceptance"},
+                                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                              ExecutedAt: Now(),
+                                                              Notes: txtRemarks_GR.Value
+                                                          }
+                                                      )},
+                                                      If(
+                                                          IsBlank(wLog.ID),
+                                                          Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                          Set(gGRPendingAttachments, attGRPhotos.Attachments);
+                                                          Set(gGRLogEntry, wLog);
+                                                          EditForm(frmGRLog_GR);
+                                                          SubmitForm(frmGRLog_GR);
+                                                          Switch(
+                                                              ddAcceptanceDecision_GR.Selected.Value,
+                                                              "Accepted",                    Notify("Goods receipt submitted. Request is now Pending Accounting.", NotificationType.Success),
+                                                              "Rejected",                    Notify("Goods receipt submitted. Request is now Rejected.", NotificationType.Success),
+                                                              "Requires Supplier Follow-up", Notify("Goods receipt submitted. Request is pending Supplier Follow-up.", NotificationType.Success)
+                                                          );
+                                                          Navigate(HomeScreen)
+                                                      )
+                                                  )
+                                              )
+                                          )
+                                      )
+                                  )
+                              )
+                          )
+                        Text: ="Submit →"
+                        Visible: =gGRDelegationMode = "I will receive"
+                        Width: =160
+                        X: =40
+                        Y: =40
+      - lblUserInfo_PE_1:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.Title,
+                  gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300
