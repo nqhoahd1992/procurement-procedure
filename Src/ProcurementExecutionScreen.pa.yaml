@@ -2,6 +2,7 @@ Screens:
   ProcurementExecutionScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: =Set(locIsViaRequester, Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)))
     Children:
       - rectHeader_PE:
           Control: Rectangle@2.3.0
@@ -508,7 +509,10 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    ((locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "Yes") ||
+                    (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now"))
                   Width: =Parent.Width
                 Children:
                   - chk5_PE:
@@ -543,7 +547,10 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    ((locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "Yes") ||
+                    (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now"))
                   Width: =Parent.Width
                 Children:
                   - chk6_PE:
@@ -629,6 +636,365 @@ Screens:
                         Height: =40
                         Placeholder: ="Paste Purchase Order Link (optional)..."
                         Width: =Parent.Width - 40
+            - rowFormConfirmation_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =150
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed" && Not(locIsViaRequester)
+                Children:
+                  - lblFormConfirmationLabel_PE_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =34
+                        PaddingBottom: =15
+                        Size: =11
+                        Text: ="Upload Confirmation *"
+                        Width: =Parent.Width - 40
+                  - formConfirmation:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Height: =100
+                        Item: =gSelectedRequest
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Attachment upload failed. Please try again.", NotificationType.Error)
+                        OnSuccess: |-
+                          =With(
+                              {
+                                  wURL: gSharePointAttachmentBase & Text(gSelectedRequest.ID) & "/" & EncodeUrl(gPendingNewAttName),
+                                  wOfficialInvoiceLink: If(
+                                      gPendingPath = "A",
+                                      If(
+                                          gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                          gSelectedRequest.RequesterInvoiceURL,
+                                          txtOfficialInvoiceDirect_PE.Value
+                                      ),
+                                      ""
+                                  )
+                              },
+                              With(
+                                  {wReq: Patch(
+                                      Procurement_Requests,
+                                      gSelectedRequest,
+                                      {
+                                          Status: {Value: "Goods Receipt & Acceptance"},
+                                          InvoiceMode: {Value: If(gPendingPath = "B", "Deferred", "Direct")},
+                                          InvoiceSubmitted: gPendingPath = "A",
+                                          OrderConfirmationURL: wURL,
+                                          OfficialInvoiceLink: wOfficialInvoiceLink,
+                                          AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                          ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                          ProcurementExecutedAt: Now()
+                                      }
+                                  )},
+                                  If(
+                                      IsBlank(wReq.ID),
+                                      Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                      Patch(
+                                          Procurement_ExecutionLog,
+                                          Defaults(Procurement_ExecutionLog),
+                                          {
+                                              Title: "Step 1 - Procurement Execution (" & If(gPendingPath = "B", "Deferred Invoice", "Direct Invoice") & ") - " & gSelectedRequest.Title,
+                                              RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                              RequestIDText: Text(gSelectedRequest.ID),
+                                              StepNumber: 1,
+                                              StepName: {Value: "Procurement Execution"},
+                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                              ExecutedAt: Now(),
+                                              HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                              HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
+                                              SupplierSummary: txtSupplierSummary_PE.Value,
+                                              PurchaseOrderLink: txtPurchaseOrder_PE.Value
+                                          }
+                                      );
+                                      If(
+                                          gPendingPath = "A",
+                                          Set(gSubmitInvoiceResult,
+                                              Submit_Invoice.Run(
+                                                  wOfficialInvoiceLink,
+                                                  gSelectedRequest.ID,
+                                                  Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
+                                                  txtInvDateValue_PE.Value,
+                                                  txtSupplierNameValue_PE.Value,
+                                                  txtBilledToValue_PE.Value,
+                                                  txtInvNumValue_PE.Value,
+                                                  Value(txtTotalAmountValue_PE.Value),
+                                                  Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
+                                                  txtCurrencyValue_PE.Value,
+                                                  gInvoiceResult.jobId,
+                                                  gInvoiceResult.confidenceScore,
+                                                  txtAttentionValue_PE.Value,
+                                                  txtDescriptionValue_PE.Value,
+                                                  gSelectedRequest.InvoiceRegion.Value,
+                                                  txtABNValue_PE.Value
+                                              )
+                                          );
+                                          If(
+                                              IsError(gSubmitInvoiceResult),
+                                              Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
+                                              Navigate(HomeScreen),
+                                              Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                              Navigate(HomeScreen)
+                                          ),
+                                          Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                          Navigate(HomeScreen)
+                                      )
+                                  )
+                              )
+                          )
+                        Width: =Parent.Width
+                        X: =40
+                        Y: =40
+                      Children:
+                        - dcConfirmation:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =Blank()
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attShadow_Confirmation.Attachments
+                              Width: =1314
+                              X: =0
+                              Y: =0
+                            Children:
+                              - lblOrderConfirmationLabel_DC:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =28
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: ="Order Confirmation Document *"
+                                    Width: =Parent.Width
+                              - attShadow_Confirmation:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =Parent.Default
+                                    MaxAttachments: =100
+                                    Width: =Parent.Width
+            - rowInvoiceChoice_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =90
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    Not(locIsViaRequester)
+                  Width: =Parent.Width
+                Children:
+                  - lblInvoiceChoiceLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Invoice Handling *"
+                        Width: =Parent.Width - 40
+                  - rdoInvoiceChoice_PE:
+                      Control: Radio@0.0.25
+                      Properties:
+                        DefaultSelectedItems: =["Submit Invoice Now"]
+                        Height: =40
+                        Items: =["Submit Invoice Now", "Defer Invoice"]
+                        Layout: ='RadioGroupCanvas.Layout'.Horizontal
+                        OnChange: |-
+                          =Set(gHasInvoiceResult, false);
+                          Set(gInvoiceResult, Blank())
+                        Width: =400
+            - rowFormRemittance_PE:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =160
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =rdoDecision_PE.Selected.Value = "Proceed" && locIsViaRequester
+                Children:
+                  - lblFormRemittanceLabel_PE:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        FontWeight: =FontWeight.Bold
+                        Height: =34
+                        LayoutMinHeight: =16
+                        LayoutMinWidth: =16
+                        PaddingBottom: =15
+                        Size: =11
+                        Text: ="Remittance *"
+                        Width: =Parent.Width - 40
+                  - formRemittance:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Item: =gSelectedRequest
+                        LayoutMinHeight: =100
+                        LayoutMinWidth: =16
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Attachment upload failed. Please try again.", NotificationType.Error)
+                        OnSuccess: |-
+                          =With(
+                              {
+                                  wURL: gSharePointAttachmentBase & Text(gSelectedRequest.ID) & "/" & EncodeUrl(gPendingNewAttName),
+                                  wInvoiceCorrect: rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                  wOfficialInvoiceLink: If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
+                                      gSelectedRequest.RequesterInvoiceURL,
+                                      ""
+                                  )
+                              },
+                              With(
+                                  {wReq: Patch(
+                                      Procurement_Requests,
+                                      gSelectedRequest,
+                                      {
+                                          Status: {Value: "Goods Receipt & Acceptance"},
+                                          InvoiceMode: {Value: "ViaRequester"},
+                                          InvoiceSubmitted: wInvoiceCorrect,
+                                          RemittanceURL: wURL,
+                                          OfficialInvoiceLink: wOfficialInvoiceLink,
+                                          AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                          ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                          ProcurementExecutedAt: Now()
+                                      }
+                                  )},
+                                  If(
+                                      IsBlank(wReq.ID),
+                                      Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                      Patch(
+                                          Procurement_ExecutionLog,
+                                          Defaults(Procurement_ExecutionLog),
+                                          {
+                                              Title: "Step 1 - Procurement Execution (" & If(wInvoiceCorrect, "Via Requester", "Deferred Invoice") & ") - " & gSelectedRequest.Title,
+                                              RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                              RequestIDText: Text(gSelectedRequest.ID),
+                                              StepNumber: 1,
+                                              StepName: {Value: "Procurement Execution"},
+                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                              ExecutedAt: Now(),
+                                              HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
+                                              HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
+                                              SupplierSummary: txtSupplierSummary_PE.Value,
+                                              PurchaseOrderLink: txtPurchaseOrder_PE.Value
+                                          }
+                                      );
+                                      If(
+                                          wInvoiceCorrect,
+                                          Set(gSubmitInvoiceResult,
+                                              Submit_Invoice.Run(
+                                                  wOfficialInvoiceLink,
+                                                  gSelectedRequest.ID,
+                                                  Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
+                                                  txtInvDateValue_PE.Value,
+                                                  txtSupplierNameValue_PE.Value,
+                                                  txtBilledToValue_PE.Value,
+                                                  txtInvNumValue_PE.Value,
+                                                  Value(txtTotalAmountValue_PE.Value),
+                                                  Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
+                                                  txtCurrencyValue_PE.Value,
+                                                  gInvoiceResult.jobId,
+                                                  gInvoiceResult.confidenceScore,
+                                                  txtAttentionValue_PE.Value,
+                                                  txtDescriptionValue_PE.Value,
+                                                  gSelectedRequest.InvoiceRegion.Value,
+                                                  txtABNValue_PE.Value
+                                              )
+                                          );
+                                          If(
+                                              IsError(gSubmitInvoiceResult),
+                                              Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
+                                              Navigate(HomeScreen),
+                                              Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                              Navigate(HomeScreen)
+                                          ),
+                                          Notify("Procurement execution submitted successfully", NotificationType.Success);
+                                          Navigate(HomeScreen)
+                                      )
+                                  )
+                              )
+                          )
+                        Width: =Parent.Width
+                        X: =40
+                        Y: =40
+                      Children:
+                        - dcRemittance:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =Blank()
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attShadow_Remittance.Attachments
+                              Width: =1314
+                              X: =0
+                              Y: =0
+                            Children:
+                              - lblRemittanceLabel_DC:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =28
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: ="Remittance Advice Document *"
+                                    Width: =Parent.Width
+                              - attShadow_Remittance:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =Parent.Default
+                                    MaxAttachments: =100
+                                    Width: =Parent.Width
             - rowInvoiceSection_PE:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -637,10 +1003,10 @@ Screens:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(245, 245, 250, 1)
                   FillPortions: =0
-                  Height: =If(rdoInvoiceCorrect_PE.Selected.Value = "No", 260, 180)
+                  Height: =180
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =8
-                  LayoutMinHeight: =If(rdoInvoiceCorrect_PE.Selected.Value = "No", 260, 180)
+                  LayoutMinHeight: =180
                   PaddingBottom: =12
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -651,7 +1017,9 @@ Screens:
                   RadiusTopRight: =0
                   Visible: |-
                     =rdoDecision_PE.Selected.Value = "Proceed" &&
-                    gSelectedRequest.InvoiceType.Value = "Official Invoice"
+                    (locIsViaRequester ||
+                    (rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now" &&
+                    gSelectedRequest.InvoiceType.Value = "Official Invoice"))
                   Width: =Parent.Width
                 Children:
                   - lblInvoiceSectionHeader_PE:
@@ -697,40 +1065,6 @@ Screens:
                           =Set(gHasInvoiceResult, false);
                           Set(gInvoiceResult, Blank())
                         Width: =200
-                  - rowNewInvoiceLink_PE:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        Height: =100
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Visible: =rdoInvoiceCorrect_PE.Selected.Value = "No"
-                        Width: =Parent.Width - 40
-                      Children:
-                        - lblNewInvoiceLinkLabel_PE:
-                            Control: HtmlViewer@2.1.0
-                            Properties:
-                              Height: =24
-                              HtmlText: ="<b>Correct Official Invoice URL <a href=""https://maxbiocare.sharepoint.com/sites/Powerapps/Invoice/Forms/AllItems.aspx"" target=""_blank"" style=""color:RGBA(56, 96, 178, 1);"">(From Invoice Staging)</a></b>"
-                              LayoutMinHeight: =16
-                              LayoutMinWidth: =16
-                              PaddingBottom: =0
-                              PaddingLeft: =0
-                              PaddingRight: =0
-                              PaddingTop: =0
-                              Size: =11
-                              Width: =Parent.Width
-                        - txtNewInvoiceLink_PE:
-                            Control: TextInput@0.0.54
-                            Properties:
-                              Height: =40
-                              Placeholder: ="Paste correct official invoice SharePoint or OneDrive link..."
-                              Width: =Parent.Width
             - rowOfficialInvoiceDirect_PE:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -748,6 +1082,8 @@ Screens:
                   RadiusTopRight: =0
                   Visible: |-
                     =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    Not(locIsViaRequester) &&
+                    rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now" &&
                     Not(gSelectedRequest.InvoiceType.Value = "Official Invoice")
                   Width: =Parent.Width
                 Children:
@@ -785,7 +1121,10 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
+                  Visible: |-
+                    =rdoDecision_PE.Selected.Value = "Proceed" &&
+                    ((locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "Yes") ||
+                    (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now"))
                   Width: =Parent.Width
                 Children:
                   - rowParseHeader_PE:
@@ -825,10 +1164,7 @@ Screens:
                                       IsBlank(
                                           If(
                                               gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                              If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                  gSelectedRequest.RequesterInvoiceURL,
-                                                  txtNewInvoiceLink_PE.Value
-                                              ),
+                                              gSelectedRequest.RequesterInvoiceURL,
                                               txtOfficialInvoiceDirect_PE.Value
                                           )
                                       ),
@@ -840,10 +1176,7 @@ Screens:
                                             Parse_Invoice.Run(
                                                 If(
                                                     gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                                    If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                        gSelectedRequest.RequesterInvoiceURL,
-                                                        txtNewInvoiceLink_PE.Value
-                                                    ),
+                                                    gSelectedRequest.RequesterInvoiceURL,
                                                     txtOfficialInvoiceDirect_PE.Value
                                                 ),
                                                 gSelectedRequest.ID
@@ -1378,7 +1711,7 @@ Screens:
                       Properties:
                         Appearance: ='ButtonCanvas.Appearance'.Primary
                         Height: =36
-                        OnSelect: =Navigate(RequestDetailScreen)
+                        OnSelect: =Navigate(HomeScreen)
                         Text: ="Cancel"
                         Width: =120
                         X: =40
@@ -1390,6 +1723,7 @@ Screens:
                         OnSelect: |-
                           =If(
                               rdoDecision_PE.Selected.Value = "Reject",
+                              // --- REJECT ---
                               If(
                                   IsBlank(txtRejectReason_PE.Value),
                                   Notify("Please enter a rejection reason", NotificationType.Error),
@@ -1425,121 +1759,116 @@ Screens:
                                       )
                                   )
                               ),
+                              // --- PROCEED ---
                               If(
-                                  Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked &&
-                                      chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
-                                  Notify("Please complete all checklist items", NotificationType.Error),
+                                  IsBlank(txtSupplierSummary_PE.Value) || IsBlank(ddAccountingHandler_PE.Selected),
+                                  Notify("Please fill in all required fields", NotificationType.Error),
                                   If(
-                                      IsBlank(txtSupplierSummary_PE.Value) ||
-                                      IsBlank(ddAccountingHandler_PE.Selected),
-                                      Notify("Please fill in all required fields", NotificationType.Error),
+                                      locIsViaRequester,
+                                      // --- PATH C: ViaRequester (requester paid supplier directly) ---
                                       If(
-                                          IsBlank(
+                                          rdoInvoiceCorrect_PE.Selected.Value = "No",
+                                          // PATH C-Deferred: invoice not correct, defer invoice submission
+                                          If(
+                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked),
+                                              Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
-                                                  gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                                  If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                      gSelectedRequest.RequesterInvoiceURL,
-                                                      txtNewInvoiceLink_PE.Value
-                                                  ),
-                                                  txtOfficialInvoiceDirect_PE.Value
+                                                  CountRows(attShadow_Remittance.Attachments) = 0,
+                                                  Notify("Please attach a remittance advice document", NotificationType.Error),
+                                                  Set(gPendingNewAttName, Last(attShadow_Remittance.Attachments).Name);
+                                                  Set(gPendingPath, "C");
+                                                  SubmitForm(formRemittance)
                                               )
                                           ),
-                                          Notify("Please provide an invoice link before submitting", NotificationType.Error),
+                                          // PATH C-Direct: invoice correct, submit now
                                           If(
-                                              Not(IsNumeric(Find("maxbiocare.sharepoint",
-                                                  If(
-                                                      gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                                      If(rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                          gSelectedRequest.RequesterInvoiceURL,
-                                                          txtNewInvoiceLink_PE.Value
-                                                      ),
-                                                      txtOfficialInvoiceDirect_PE.Value
-                                                  )
-                                              ))),
-                                              Notify("Please provide a valid SharePoint link (maxbiocare)", NotificationType.Error),
+                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
+                                              Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
-                                                  !gHasInvoiceResult,
-                                                  Notify("Please click 'Parse Invoice' to extract invoice data before submitting", NotificationType.Warning),
+                                                  IsBlank(gSelectedRequest.RequesterInvoiceURL),
+                                                  Notify("Please provide an invoice link before submitting", NotificationType.Error),
                                                   If(
-                                                      IsBlank(txtInvNumValue_PE.Value) ||
-                                                      IsBlank(txtInvDateValue_PE.Value) ||
-                                                      IsBlank(txtSupplierNameValue_PE.Value) ||
-                                                      IsBlank(txtBilledToValue_PE.Value) ||
-                                                      IsBlank(txtTotalAmountValue_PE.Value) ||
-                                                      IsBlank(txtCurrencyValue_PE.Value) ||
-                                                      IsBlank(txtDescriptionValue_PE.Value),
-                                                      Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting", NotificationType.Warning),
-                                                      With(
-                                                          {
-                                                              wOfficialInvoiceLink: If(
-                                                                  gSelectedRequest.InvoiceType.Value = "Official Invoice",
-                                                                  If(
-                                                                      rdoInvoiceCorrect_PE.Selected.Value = "Yes",
-                                                                      gSelectedRequest.RequesterInvoiceURL,
-                                                                      txtNewInvoiceLink_PE.Value
-                                                                  ),
-                                                                  txtOfficialInvoiceDirect_PE.Value
-                                                              )
-                                                          },
-                                                          With(
-                                                              {wReq: Patch(
-                                                                  Procurement_Requests,
-                                                                  gSelectedRequest,
-                                                                  {
-                                                                      Status: {Value: "Goods Receipt & Acceptance"},
-                                                                      OfficialInvoiceLink: wOfficialInvoiceLink,
-                                                                      AccountingHandlerID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
-                                                                      ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                                      ProcurementExecutedAt: Now()
-                                                                  }
-                                                              )},
+                                                      Not(IsNumeric(Find("maxbiocare.sharepoint", gSelectedRequest.RequesterInvoiceURL))),
+                                                      Notify("Please provide a valid SharePoint link (maxbiocare)", NotificationType.Error),
+                                                      If(
+                                                          !gHasInvoiceResult,
+                                                          Notify("Please click 'Parse Invoice' to extract invoice data before submitting", NotificationType.Warning),
+                                                          If(
+                                                              IsBlank(txtInvNumValue_PE.Value) ||
+                                                              IsBlank(txtInvDateValue_PE.Value) ||
+                                                              IsBlank(txtSupplierNameValue_PE.Value) ||
+                                                              IsBlank(txtBilledToValue_PE.Value) ||
+                                                              IsBlank(txtTotalAmountValue_PE.Value) ||
+                                                              IsBlank(txtCurrencyValue_PE.Value) ||
+                                                              IsBlank(txtDescriptionValue_PE.Value),
+                                                              Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting", NotificationType.Warning),
                                                               If(
-                                                                  IsBlank(wReq.ID),
-                                                                  Notify("Failed to submit. Please try again.", NotificationType.Error),
-                                                                  Patch(
-                                                                      Procurement_ExecutionLog,
-                                                                      Defaults(Procurement_ExecutionLog),
-                                                                      {
-                                                                          Title: "Step 1 - Procurement Execution - " & gSelectedRequest.Title,
-                                                                          RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                                          RequestIDText: Text(gSelectedRequest.ID),
-                                                                          StepNumber: 1,
-                                                                          StepName: {Value: "Procurement Execution"},
-                                                                          ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                                          ExecutedAt: Now(),
-                                                                          HandoverToID: {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value},
-                                                                          HandoverToIDText: ddAccountingHandler_PE.Selected.EmployeeID.Value,
-                                                                          SupplierSummary: txtSupplierSummary_PE.Value,
-                                                                          PurchaseOrderLink: txtPurchaseOrder_PE.Value
-                                                                      }
-                                                                  );
-                                                                  Set(gSubmitInvoiceResult,
-                                                                      Submit_Invoice.Run(
-                                                                          wOfficialInvoiceLink,
-                                                                          gSelectedRequest.ID,
-                                                                          Left(lblSuggestedFilename_PE.Text, Len(lblSuggestedFilename_PE.Text) - Len("." & Last(Split(lblSuggestedFilename_PE.Text, ".")).Value)),
-                                                                          txtInvDateValue_PE.Value,
-                                                                          txtSupplierNameValue_PE.Value,
-                                                                          txtBilledToValue_PE.Value,
-                                                                          txtInvNumValue_PE.Value,
-                                                                          Value(txtTotalAmountValue_PE.Value),
-                                                                          Value(If(IsBlank(txtTaxAmountValue_PE.Value), "0", txtTaxAmountValue_PE.Value)),
-                                                                          txtCurrencyValue_PE.Value,
-                                                                          gInvoiceResult.jobId,
-                                                                          gInvoiceResult.confidenceScore,
-                                                                          txtAttentionValue_PE.Value,
-                                                                          txtDescriptionValue_PE.Value,
-                                                                          gSelectedRequest.InvoiceRegion.Value,
-                                                                          txtABNValue_PE.Value
-                                                                      )
-                                                                  );
-                                                                  If(
-                                                                      IsError(gSubmitInvoiceResult),
-                                                                      Notify("Submission saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
-                                                                      Navigate(HomeScreen),
-                                                                      Notify("Procurement execution submitted successfully", NotificationType.Success);
-                                                                      Navigate(HomeScreen)
-                                                                  )
+                                                                  CountRows(attShadow_Remittance.Attachments) = 0,
+                                                                  Notify("Please attach a remittance advice document", NotificationType.Error),
+                                                                  Set(gPendingNewAttName, Last(attShadow_Remittance.Attachments).Name);
+                                                                  Set(gPendingPath, "C");
+                                                                  SubmitForm(formRemittance)
+                                                              )
+                                                          )
+                                                      )
+                                                  )
+                                              )
+                                          )
+                                      ),
+                                      If(
+                                          rdoInvoiceChoice_PE.Selected.Value = "Defer Invoice",
+                                          // --- PATH B: Deferred (invoice arrives later) ---
+                                          If(
+                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked),
+                                              Notify("Please complete all checklist items", NotificationType.Error),
+                                              If(
+                                                  CountRows(attShadow_Confirmation.Attachments) = 0,
+                                                  Notify("Please attach an order confirmation document", NotificationType.Error),
+                                                  Set(gPendingNewAttName, Last(attShadow_Confirmation.Attachments).Name);
+                                                  Set(gPendingPath, "B");
+                                                  SubmitForm(formConfirmation)
+                                              )
+                                          ),
+                                          // --- PATH A: Direct (invoice on hand now) ---
+                                          If(
+                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
+                                              Notify("Please complete all checklist items", NotificationType.Error),
+                                              If(
+                                                  IsBlank(
+                                                      If(
+                                                          gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                          gSelectedRequest.RequesterInvoiceURL,
+                                                          txtOfficialInvoiceDirect_PE.Value
+                                                      )
+                                                  ),
+                                                  Notify("Please provide an invoice link before submitting", NotificationType.Error),
+                                                  If(
+                                                      Not(IsNumeric(Find("maxbiocare.sharepoint",
+                                                          If(
+                                                              gSelectedRequest.InvoiceType.Value = "Official Invoice",
+                                                              gSelectedRequest.RequesterInvoiceURL,
+                                                              txtOfficialInvoiceDirect_PE.Value
+                                                          )
+                                                      ))),
+                                                      Notify("Please provide a valid SharePoint link (maxbiocare)", NotificationType.Error),
+                                                      If(
+                                                          !gHasInvoiceResult,
+                                                          Notify("Please click 'Parse Invoice' to extract invoice data before submitting", NotificationType.Warning),
+                                                          If(
+                                                              IsBlank(txtInvNumValue_PE.Value) ||
+                                                              IsBlank(txtInvDateValue_PE.Value) ||
+                                                              IsBlank(txtSupplierNameValue_PE.Value) ||
+                                                              IsBlank(txtBilledToValue_PE.Value) ||
+                                                              IsBlank(txtTotalAmountValue_PE.Value) ||
+                                                              IsBlank(txtCurrencyValue_PE.Value) ||
+                                                              IsBlank(txtDescriptionValue_PE.Value),
+                                                              Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting", NotificationType.Warning),
+                                                              If(
+                                                                  CountRows(attShadow_Confirmation.Attachments) = 0,
+                                                                  Notify("Please attach an order confirmation document", NotificationType.Error),
+                                                                  Set(gPendingNewAttName, Last(attShadow_Confirmation.Attachments).Name);
+                                                                  Set(gPendingPath, "A");
+                                                                  SubmitForm(formConfirmation)
                                                               )
                                                           )
                                                       )

@@ -1398,7 +1398,7 @@ Screens:
                       Control: Button@0.0.45
                       Properties:
                         Height: =36
-                        OnSelect: =Navigate(RequestDetailScreen)
+                        OnSelect: =Navigate(HomeScreen)
                         Text: ="Cancel"
                         Visible: =IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 5))
                         Width: =120
@@ -1481,7 +1481,7 @@ Screens:
                                                       {
                                                           Status: {Value: If(
                                                               ddAcceptanceDecision2_SFU.Selected.Value = "Accepted",
-                                                              "Pending Accounting",
+                                                              If(!wLatest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting"),
                                                               "Pending Supplier Follow-up"
                                                           )},
                                                           FollowUpReceiptBy: gCurrentEmployee.Title,
@@ -1524,7 +1524,7 @@ Screens:
                                                           SubmitForm(frmSFU1Log_SFU);
                                                           Switch(
                                                               ddAcceptanceDecision2_SFU.Selected.Value,
-                                                              "Accepted", Notify("Submitted. Request is now Pending Accounting.", NotificationType.Success),
+                                                              "Accepted", Notify("Submitted. Request is now " & If(!wLatest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success),
                                                               "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
                                                           );
                                                           Navigate(HomeScreen)
@@ -1561,7 +1561,7 @@ Screens:
                                               Procurement_Requests,
                                               gSelectedRequest,
                                               {
-                                                  Status: {Value: "Pending Accounting"},
+                                                  Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
                                                   CreditNote: If(
                                                       gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment",
                                                       txtCreditNote_SFU.Value,
@@ -1592,7 +1592,7 @@ Screens:
                                               If(
                                                   IsBlank(wLog.ID),
                                                   Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                                  Notify("Follow-up completed. Request is now Pending Accounting.", NotificationType.Success);
+                                                  Notify("Follow-up completed. Request is now " & If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success);
                                                   Navigate(HomeScreen)
                                               )
                                           )

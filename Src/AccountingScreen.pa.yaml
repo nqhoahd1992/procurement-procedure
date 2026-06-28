@@ -519,6 +519,7 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
                   Height: =36
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
@@ -526,12 +527,16 @@ Screens:
                   LayoutJustifyContent: =LayoutJustifyContent.End
                   LayoutMinHeight: =16
                   LayoutMinWidth: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
                 Children:
                   - btnCancel_AC:
                       Control: Button@0.0.45
                       Properties:
                         Height: =36
-                        OnSelect: =Navigate(RequestDetailScreen)
+                        OnSelect: =Navigate(HomeScreen)
                         Text: ="Cancel"
                         Width: =120
                         X: =40

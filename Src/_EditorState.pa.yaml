@@ -16,4 +16,6 @@ EditorState:
     - ProcurementExecutionScreen
     - AccountingScreen
     - GoodsReceiptScreen
+    - InvoiceSubmissionScreen
+    - RequesterInvoiceScreen
     - SupplierFollowUpScreen

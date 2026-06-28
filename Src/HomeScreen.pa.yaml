@@ -153,6 +153,15 @@ Screens:
                   Text: ="Pending Accounting"
                   Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Accounting" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
                   Width: =180
+            - btnFilterPendingInvoice:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =If(gStatusFilter = "Pending Invoice", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
+                  Height: =50
+                  OnSelect: =Set(gStatusFilter, "Pending Invoice")
+                  Text: ="Pending Invoice"
+                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
+                  Width: =150
             - btnFilterGoodsReceipt:
                 Control: Button@0.0.45
                 Properties:
@@ -202,6 +211,7 @@ Screens:
                           ),
                           "Procurement", Filter(Procurement_Requests,
                               Status.Value = "Pending Procurement" ||
+                              Status.Value = "Pending Invoice" ||
                               Status.Value = "Pending Accounting" ||
                               Status.Value = "Goods Receipt & Acceptance" ||
                               Status.Value = "Pending Supplier Follow-up" ||
@@ -228,7 +238,7 @@ Screens:
                   ),
                   "ID", SortOrder.Descending
               )
-            OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+            OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
             TemplateSize: =80
             Visible: =Not(IsBlank(gCurrentEmployee.ID))
             Width: =Parent.Width
@@ -239,16 +249,16 @@ Screens:
                 Properties:
                   Fill: =RGBA(0, 0, 0, 0)
                   Height: =80
-                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Width: =Parent.Width
             - lblRequestTitle:
                 Control: Label@2.5.1
                 Properties:
                   FontWeight: =FontWeight.Semibold
                   Height: =28
-                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Text: =ThisItem.Title
-                  Width: =Parent.Width - 260
+                  Width: =Parent.Width - 500
                   X: =16
                   Y: =13
             - lblRequestStatus:
@@ -264,6 +274,7 @@ Screens:
                         "Pending Executive", RGBA(133, 79, 11, 1),
                         "Pending Procurement", RGBA(133, 79, 11, 1),
                         "Pending Accounting", RGBA(133, 79, 11, 1),
+                        "Pending Invoice", RGBA(133, 79, 11, 1),
                         RGBA(68, 68, 65, 1)
                     )
                   Fill: |-
@@ -275,10 +286,11 @@ Screens:
                         "Pending Executive", RGBA(250, 238, 218, 1),
                         "Pending Procurement", RGBA(250, 238, 218, 1),
                         "Pending Accounting", RGBA(250, 238, 218, 1),
+                        "Pending Invoice", RGBA(250, 238, 218, 1),
                         RGBA(241, 239, 232, 1)
                     )
                   Height: =28
-                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Size: =11
                   Text: |-
                     =If(
@@ -298,7 +310,7 @@ Screens:
                 Properties:
                   Color: =RGBA(136, 135, 128, 1)
                   Height: =24
-                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Size: =11
                   Text: |-
                     ="ID: " & ThisItem.ID & " | " & ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | EstimatedCost: " & ThisItem.Currency.Value & " " & Text(ThisItem.EstimatedCost, "[#,###]"))
@@ -311,7 +323,7 @@ Screens:
                   Align: =Align.Right
                   Color: =RGBA(136, 135, 128, 1)
                   Height: =24
-                  OnSelect: =Set(gSelectedRequest, ThisItem);Navigate(RequestDetailScreen)
+                  OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Size: =11
                   Text: |-
                     =ThisItem.RequesterID.Value &
@@ -324,9 +336,22 @@ Screens:
                             ""
                         )
                     )
+                  Visible: =Not(ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted)
                   Width: =420
                   X: =Parent.Width - 440
                   Y: =44
+            - btnSubmitInvoice:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =RGBA(133, 79, 11, 1)
+                  FontWeight: =FontWeight.Semibold
+                  Height: =24
+                  OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequesterInvoiceScreen)
+                  Text: ="Submit Invoice"
+                  Visible: =ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted
+                  Width: =200
+                  X: =926
+                  Y: =15
             - rectSeparator:
                 Control: Rectangle@2.3.0
                 Properties:

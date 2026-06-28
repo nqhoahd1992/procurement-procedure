@@ -34,5 +34,6 @@ App:
       Set(gSFU1LogEntry, Blank());
       Set(gSFU1PendingAttachments, Blank());
       Set(gGRDelegationMode, "I will receive");
-      Set(gSFU1DelegationMode, "I will receive")
+      Set(gSFU1DelegationMode, "I will receive");
+      Set(gSharePointAttachmentBase, "https://maxbiocare.sharepoint.com/sites/Powerapps/Lists/Procurement_Requests/Attachments/")
     Theme: =PowerAppsTheme
