@@ -834,71 +834,75 @@ Screens:
                                     IsBlank(txtCurrencyValue_ISS.Value) ||
                                     IsBlank(txtDescriptionValue_ISS.Value),
                                     Notify("Some invoice fields could not be extracted. Please fill them in manually before submitting.", NotificationType.Warning),
-                            With(
-                                {wPatched: Patch(
-                                    Procurement_Requests,
-                                    gSelectedRequest,
-                                    {
-                                        InvoiceSubmitted: true,
-                                        Status: {Value: If(locSFUStep2Pending, "Pending Supplier Follow-up", "Pending Accounting")},
-                                        OfficialInvoiceLink: locInvoiceURL_ISS
-                                    }
-                                )},
-                                If(
-                                    IsBlank(wPatched.ID),
-                                    Notify("Failed to save. Please try again.", NotificationType.Error),
                                     With(
-                                        {wLog: Patch(
-                                            Procurement_ExecutionLog,
-                                            Defaults(Procurement_ExecutionLog),
+                                        {wPatched: Patch(
+                                            Procurement_Requests,
+                                            gSelectedRequest,
                                             {
-                                                Title: "Step 6 - Invoice Submission - " & gSelectedRequest.Title,
-                                                RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
-                                                RequestIDText: Text(gSelectedRequest.ID),
-                                                StepNumber: 6,
-                                                StepName: {Value: "Invoice Submission"},
-                                                ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                ExecutedAt: Now()
+                                                InvoiceSubmitted: true,
+                                                Status: If(
+                                                    gSelectedRequest.Status.Value = "Pending Invoice",
+                                                    {Value: If(locSFUStep2Pending, "Pending Supplier Follow-up", "Pending Accounting")},
+                                                    gSelectedRequest.Status
+                                                ),
+                                                OfficialInvoiceLink: locInvoiceURL_ISS
                                             }
                                         )},
                                         If(
-                                            IsBlank(wLog.ID),
-                                            Notify("Saved but log write failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
-                                            Navigate(HomeScreen),
-                                            Set(gSubmitInvoiceResult,
-                                                Submit_Invoice.Run(
-                                                    locInvoiceURL_ISS,
-                                                    gSelectedRequest.ID,
-                                                    Left(lblSuggestedFilename_ISS.Text, Len(lblSuggestedFilename_ISS.Text) - Len("." & Last(Split(lblSuggestedFilename_ISS.Text, ".")).Value)),
-                                                    txtInvDateValue_ISS.Value,
-                                                    txtSupplierNameValue_ISS.Value,
-                                                    txtBilledToValue_ISS.Value,
-                                                    txtInvNumValue_ISS.Value,
-                                                    Value(txtTotalAmountValue_ISS.Value),
-                                                    Value(If(IsBlank(txtTaxAmountValue_ISS.Value), "0", txtTaxAmountValue_ISS.Value)),
-                                                    txtCurrencyValue_ISS.Value,
-                                                    gInvoiceResult.jobId,
-                                                    gInvoiceResult.confidenceScore,
-                                                    txtAttentionValue_ISS.Value,
-                                                    txtDescriptionValue_ISS.Value,
-                                                    gSelectedRequest.InvoiceRegion.Value,
-                                                    txtABNValue_ISS.Value
+                                            IsBlank(wPatched.ID),
+                                            Notify("Failed to save. Please try again.", NotificationType.Error),
+                                            With(
+                                                {wLog: Patch(
+                                                    Procurement_ExecutionLog,
+                                                    Defaults(Procurement_ExecutionLog),
+                                                    {
+                                                        Title: "Step 6 - Invoice Submission - " & gSelectedRequest.Title,
+                                                        RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                        RequestIDText: Text(gSelectedRequest.ID),
+                                                        StepNumber: 6,
+                                                        StepName: {Value: "Invoice Submission"},
+                                                        ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                        ExecutedAt: Now()
+                                                    }
+                                                )},
+                                                If(
+                                                    IsBlank(wLog.ID),
+                                                    Notify("Saved but log write failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
+                                                    Navigate(HomeScreen),
+                                                    Set(gSubmitInvoiceResult,
+                                                        Submit_Invoice.Run(
+                                                            locInvoiceURL_ISS,
+                                                            gSelectedRequest.ID,
+                                                            Left(lblSuggestedFilename_ISS.Text, Len(lblSuggestedFilename_ISS.Text) - Len("." & Last(Split(lblSuggestedFilename_ISS.Text, ".")).Value)),
+                                                            txtInvDateValue_ISS.Value,
+                                                            txtSupplierNameValue_ISS.Value,
+                                                            txtBilledToValue_ISS.Value,
+                                                            txtInvNumValue_ISS.Value,
+                                                            Value(txtTotalAmountValue_ISS.Value),
+                                                            Value(If(IsBlank(txtTaxAmountValue_ISS.Value), "0", txtTaxAmountValue_ISS.Value)),
+                                                            txtCurrencyValue_ISS.Value,
+                                                            gInvoiceResult.jobId,
+                                                            gInvoiceResult.confidenceScore,
+                                                            txtAttentionValue_ISS.Value,
+                                                            txtDescriptionValue_ISS.Value,
+                                                            gSelectedRequest.InvoiceRegion.Value,
+                                                            txtABNValue_ISS.Value
+                                                        )
+                                                    );
+                                                    If(
+                                                        IsError(gSubmitInvoiceResult),
+                                                        Notify("Saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
+                                                        Navigate(HomeScreen),
+                                                        Notify(If(gSelectedRequest.Status.Value = "Pending Invoice", "Invoice submitted successfully. Request is now " & If(locSFUStep2Pending, "Pending Supplier Follow-up.", "Pending Accounting."), "Invoice submitted successfully. Goods Receipt is still in progress."), NotificationType.Success);
+                                                        Navigate(HomeScreen)
+                                                    )
                                                 )
-                                            );
-                                            If(
-                                                IsError(gSubmitInvoiceResult),
-                                                Notify("Saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
-                                                Navigate(HomeScreen),
-                                                Notify("Invoice submitted successfully. Request is now " & If(locSFUStep2Pending, "Pending Supplier Follow-up.", "Pending Accounting."), NotificationType.Success);
-                                                Navigate(HomeScreen)
                                             )
                                         )
                                     )
                                 )
                             )
                         )
-                    )
-                    )
                     )
                   Text: ="Submit Invoice →"
                   Width: =180

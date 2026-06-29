@@ -94,10 +94,10 @@ Screens:
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
-            Height: =80
+            Height: =100
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =8
-            PaddingBottom: =8
+            PaddingBottom: =20
             PaddingLeft: =20
             PaddingRight: =20
             PaddingTop: =20
@@ -200,7 +200,7 @@ Screens:
           Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
           Properties:
             BorderColor: =RGBA(210, 209, 199, 1)
-            Height: =Parent.Height - 220
+            Height: =Parent.Height - 240
             Items: |-
               =SortByColumns(
                   Filter(
@@ -242,7 +242,7 @@ Screens:
             TemplateSize: =80
             Visible: =Not(IsBlank(gCurrentEmployee.ID))
             Width: =Parent.Width
-            Y: =220
+            Y: =240
           Children:
             - rectRowHitArea:
                 Control: Rectangle@2.3.0
@@ -340,18 +340,53 @@ Screens:
                   Width: =420
                   X: =Parent.Width - 440
                   Y: =44
-            - btnSubmitInvoice:
-                Control: Button@0.0.45
+            - rowInvoiceActions:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
                 Properties:
-                  BasePaletteColor: =RGBA(133, 79, 11, 1)
-                  FontWeight: =FontWeight.Semibold
+                  DropShadow: =DropShadow.None
                   Height: =24
-                  OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequesterInvoiceScreen)
-                  Text: ="Submit Invoice"
-                  Visible: =ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted
-                  Width: =200
-                  X: =926
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  PaddingRight: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =440
+                  X: =Parent.Width - 680
                   Y: =15
+                Children:
+                  - btnSubmitInvoice:
+                      Control: Button@0.0.45
+                      Properties:
+                        BasePaletteColor: =RGBA(133, 79, 11, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequesterInvoiceScreen)
+                        Text: ="Submit Invoice"
+                        Visible: |-
+                          =ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted &&
+                          (
+                              gCurrentUser.Role.Value <> "Procurement" && gCurrentUser.Role.Value <> "Admin" ||
+                              ThisItem.RequesterEmail = gCurrentEmployee.Email
+                          )
+                        Width: =160
+                  - btnProcessInvoice:
+                      Control: Button@0.0.45
+                      Properties:
+                        BasePaletteColor: =RGBA(83, 74, 183, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(InvoiceSubmissionScreen)
+                        Text: ="Process Invoice"
+                        Visible: |-
+                          =ThisItem.InvoiceMode.Value = "ViaRequester" && !IsBlank(ThisItem.RequesterInvoiceURL) &&
+                          !ThisItem.InvoiceSubmitted &&
+                          (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin")
+                        Width: =160
             - rectSeparator:
                 Control: Rectangle@2.3.0
                 Properties:
