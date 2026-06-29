@@ -11,6 +11,8 @@ Screens:
         Set(gInvoiceResult, Blank());
         Set(gParsingInvoice, false);
         Set(locInvoiceVerified, Blank());
+        Set(locOfficialInvoiceURL_ISS, "");
+        Set(gPendingInvName_ISS, "");
         Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID))
     Children:
       - rectHeader_ISS:
@@ -381,9 +383,11 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =210
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
-                  LayoutMinHeight: =110
+                  LayoutMinHeight: =160
                   PaddingBottom: =8
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -395,21 +399,70 @@ Screens:
                   Visible: =gSelectedRequest.InvoiceMode.Value = "Deferred"
                   Width: =Parent.Width
                 Children:
-                  - lblOfficialInvoiceInputLabel_ISS:
-                      Control: HtmlViewer@2.1.0
+                  - lblOfficialInvoiceHeader_ISS:
+                      Control: Label@2.5.1
                       Properties:
-                        Font: =Font.'Open Sans'
-                        Height: =36
-                        HtmlText: ="<span style='font-weight:bold;font-size:13px;'>Official Invoice SharePoint Link (<a href='https://maxbiocare.sharepoint.com/sites/Powerapps/Invoice/Forms/AllItems.aspx' target='_blank'>Click here to access the SharePoint library</a>) *</span>"
-                        LayoutMinHeight: =16
-                        LayoutMinWidth: =16
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Upload Supplier Invoice *"
                         Width: =Parent.Width - 40
-                  - txtOfficialInvoiceISS:
-                      Control: TextInput@0.0.54
+                  - lblOfficialInvoiceHint_ISS:
+                      Control: Label@2.5.1
                       Properties:
-                        Height: =40
-                        Placeholder: ="Paste the SharePoint link to the official invoice from the Invoice Library"
+                        Color: =RGBA(136, 135, 128, 1)
+                        Size: =10
+                        Text: ="Upload the invoice file received from the supplier. Then click 'Extract Invoice' to parse it."
                         Width: =Parent.Width - 40
+                  - formOfficialInvoice_ISS:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Height: =120
+                        Item: =gSelectedRequest
+                        LayoutMinWidth: =100
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Upload failed. Please try again.", NotificationType.Error)
+                        OnSuccess: |-
+                          =Set(locOfficialInvoiceURL_ISS,
+                              gSharePointAttachmentBase & Text(gSelectedRequest.ID) & "/" & EncodeUrl(gPendingInvName_ISS)
+                          );
+                          Set(gParsingInvoice, true);
+                          Set(gHasInvoiceResult, false);
+                          Set(gInvoiceResult,
+                              IfError(
+                                  Parse_Invoice.Run(locOfficialInvoiceURL_ISS, gSelectedRequest.ID),
+                                  Blank()
+                              )
+                          );
+                          Set(gHasInvoiceResult, true);
+                          Set(gParsingInvoice, false)
+                        Width: =Parent.Width - 40
+                      Children:
+                        - dcOfficialInvoice_ISS:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =Blank()
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attOfficialInvoice_ISS.Attachments
+                              Width: =Parent.Width
+                              X: =0
+                              Y: =0
+                            Children:
+                              - attOfficialInvoice_ISS:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =Parent.Default
+                                    MaxAttachments: =1
+                                    Width: =Parent.Width
             - rowParseInvoice_ISS:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -417,10 +470,11 @@ Screens:
                   AlignInContainer: =AlignInContainer.Start
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(241, 239, 232, 1)
-                  Height: =120
+                  FillPortions: =0
+                  Height: =310
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =8
-                  LayoutMinHeight: =360
+                  LayoutMinHeight: =300
                   PaddingBottom: =16
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -467,31 +521,27 @@ Screens:
                               Height: =36
                               OnSelect: |-
                                 =If(
-                                    IsBlank(
-                                        If(
-                                            gSelectedRequest.InvoiceMode.Value = "ViaRequester",
-                                            gSelectedRequest.RequesterInvoiceURL,
-                                            txtOfficialInvoiceISS.Value
-                                        )
+                                    gSelectedRequest.InvoiceMode.Value = "ViaRequester",
+                                    If(
+                                        IsBlank(gSelectedRequest.RequesterInvoiceURL),
+                                        Notify("Please provide an invoice link before parsing.", NotificationType.Error),
+                                        Set(gParsingInvoice, true);
+                                        Set(gHasInvoiceResult, false);
+                                        Set(gInvoiceResult,
+                                            IfError(
+                                                Parse_Invoice.Run(gSelectedRequest.RequesterInvoiceURL, gSelectedRequest.ID),
+                                                Blank()
+                                            )
+                                        );
+                                        Set(gHasInvoiceResult, true);
+                                        Set(gParsingInvoice, false)
                                     ),
-                                    Notify("Please provide an invoice link before parsing.", NotificationType.Error),
-                                    Set(gParsingInvoice, true);
-                                    Set(gHasInvoiceResult, false);
-                                    Set(gInvoiceResult,
-                                        IfError(
-                                            Parse_Invoice.Run(
-                                                If(
-                                                    gSelectedRequest.InvoiceMode.Value = "ViaRequester",
-                                                    gSelectedRequest.RequesterInvoiceURL,
-                                                    txtOfficialInvoiceISS.Value
-                                                ),
-                                                gSelectedRequest.ID
-                                            ),
-                                            Blank()
-                                        )
-                                    );
-                                    Set(gHasInvoiceResult, true);
-                                    Set(gParsingInvoice, false)
+                                    If(
+                                        CountRows(attOfficialInvoice_ISS.Attachments) = 0,
+                                        Notify("Please attach the invoice file before extracting.", NotificationType.Error),
+                                        Set(gPendingInvName_ISS, Last(attOfficialInvoice_ISS.Attachments).Name);
+                                        SubmitForm(formOfficialInvoice_ISS)
+                                    )
                                 )
                               Text: |-
                                 ="🔍 Extract Invoice"
@@ -937,7 +987,7 @@ Screens:
                         If(
                             gSelectedRequest.InvoiceMode.Value = "ViaRequester",
                             gSelectedRequest.RequesterInvoiceURL,
-                            txtOfficialInvoiceISS.Value
+                            locOfficialInvoiceURL_ISS
                         )
                     );
                     If(

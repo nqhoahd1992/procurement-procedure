@@ -3,7 +3,8 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =ClearCollect(colExecutionLog, Filter(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID)));
+        =Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
+        ClearCollect(colExecutionLog, Filter(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID)));
         ClearCollect(colApprovalLog, Filter(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID)));
         Set(gGRHasAttachments, CountRows(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).Attachments) > 0);
         Set(gSFU1HasAttachments, CountRows(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4).Attachments) > 0);
