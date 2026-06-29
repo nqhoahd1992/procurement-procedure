@@ -10,6 +10,7 @@ Screens:
         Set(gHasInvoiceResult, false);
         Set(gInvoiceResult, Blank());
         Set(gParsingInvoice, false);
+        Set(locInvoiceVerified, Blank());
         Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID))
     Children:
       - rectHeader_ISS:
@@ -169,6 +170,8 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(250, 238, 218, 1)
+                  FillPortions: =0
+                  Height: =140
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =8
                   PaddingBottom: =16
@@ -209,7 +212,8 @@ Screens:
                               gSelectedRequest.RequesterEmail,
                               gSelectedRequest.RequesterID.Value,
                               gSelectedRequest.Title,
-                              gSelectedRequest.ID
+                              Text(gSelectedRequest.ID),
+                              ""
                           );
                           Notify("Reminder sent to " & gSelectedRequest.RequesterID.Value & ".", NotificationType.Success)
                         Text: ="Remind Requester"
@@ -220,6 +224,8 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(219, 234, 254, 1)
+                  FillPortions: =0
+                  Height: =80
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   PaddingBottom: =12
@@ -253,6 +259,123 @@ Screens:
                         Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", gSelectedRequest.RequesterInvoiceURL)
                         Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                         Width: =Parent.Width - 40
+            - rowVerifyInvoice_ISS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(245, 245, 250, 1)
+                  FillPortions: =0
+                  Height: =110
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =12
+                  PaddingBottom: =16
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =gSelectedRequest.InvoiceMode.Value = "ViaRequester" && Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
+                  Width: =Parent.Width
+                Children:
+                  - lblVerifyQuestion_ISS:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Is this invoice correct?"
+                        Width: =Parent.Width - 40
+                  - rowVerifyButtons_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: =36
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =8
+                        LayoutMinHeight: =60
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 40
+                      Children:
+                        - btnInvoiceCorrect_ISS:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =If(locInvoiceVerified = true, RGBA(5, 102, 178, 1), RGBA(210, 209, 199, 1))
+                              Height: =36
+                              OnSelect: =Set(locInvoiceVerified, true)
+                              Text: ="Yes — proceed"
+                              Width: =160
+                        - btnInvoiceIncorrect_ISS:
+                            Control: Button@0.0.45
+                            Properties:
+                              BasePaletteColor: =If(locInvoiceVerified = false, RGBA(163, 45, 45, 1), RGBA(210, 209, 199, 1))
+                              Height: =36
+                              OnSelect: =Set(locInvoiceVerified, false)
+                              Text: ="No — request re-upload"
+                              Width: =200
+            - rowRequestReupload_ISS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(252, 235, 235, 1)
+                  FillPortions: =0
+                  Height: =110
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =8
+                  PaddingBottom: =16
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =locInvoiceVerified = false
+                  Width: =Parent.Width
+                Children:
+                  - lblReuploadMsg_ISS:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(163, 45, 45, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        Size: =12
+                        Text: ="Invoice rejected. Notify the Requester to upload the corrected file."
+                        Width: =Parent.Width - 40
+                  - btnRequestReupload_ISS:
+                      Control: Button@0.0.45
+                      Properties:
+                        BasePaletteColor: =RGBA(163, 45, 45, 1)
+                        Height: =36
+                        OnSelect: |-
+                          =With(
+                              {wPatched: Patch(Procurement_Requests, gSelectedRequest, {RequesterInvoiceURL: ""})},
+                              If(
+                                  IsBlank(wPatched.ID),
+                                  Notify("Failed. Please try again.", NotificationType.Error),
+                                  Procurement_Notify_Remind_Invoice.Run(
+                                      gSelectedRequest.RequesterEmail,
+                                      gSelectedRequest.RequesterID.Value,
+                                      gSelectedRequest.Title,
+                                      Text(gSelectedRequest.ID),
+                                      gCurrentEmployee.Title
+                                  );
+                                  Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
+                                  Set(locInvoiceVerified, Blank());
+                                  Notify("Requester has been notified to re-upload the invoice.", NotificationType.Success)
+                              )
+                          )
+                        Text: ="Request Re-upload"
+                        Width: =180
             - rowOfficialInvoiceInput_ISS:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -306,6 +429,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
+                  Visible: =gSelectedRequest.InvoiceMode.Value <> "ViaRequester" || locInvoiceVerified = true
                   Width: =Parent.Width
                 Children:
                   - rowParseHeader_ISS:
@@ -806,7 +930,7 @@ Screens:
                 Control: Button@0.0.45
                 Properties:
                   BasePaletteColor: =RGBA(83, 74, 183, 1)
-                  DisplayMode: =If(gSelectedRequest.InvoiceMode.Value = "ViaRequester" && IsBlank(gSelectedRequest.RequesterInvoiceURL), DisplayMode.Disabled, DisplayMode.Edit)
+                  DisplayMode: =If(gSelectedRequest.InvoiceMode.Value = "ViaRequester" && (IsBlank(gSelectedRequest.RequesterInvoiceURL) || locInvoiceVerified <> true), DisplayMode.Disabled, DisplayMode.Edit)
                   Height: =36
                   OnSelect: |-
                     =Set(locInvoiceURL_ISS,

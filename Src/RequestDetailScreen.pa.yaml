@@ -687,7 +687,7 @@ Screens:
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
                         RadiusTopRight: =0
-                        Visible: =gSelectedRequest.ProcurementType.Value = "Invoice Supplied"
+                        Visible: =gSelectedRequest.InvoiceMode.Value = "ViaRequester" && Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                         Width: =Parent.Width
                       Children:
                         - lblInvoiceLinkLabel_1:

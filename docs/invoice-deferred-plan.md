@@ -35,16 +35,28 @@ Pending Procurement → [Upload Order Confirmation + Submit Invoice]
 
 ### Path B — Procurement buys directly, invoice arrives late
 Procurement buys directly but invoice is not yet available. Sends Order Confirmation to Requester.
-GR proceeds first; invoice is submitted at `InvoiceSubmissionScreen` when it arrives.
-Accounting always comes last.
+GR proceeds first. Procurement can submit the invoice **at any time** via "Submit Invoice" button
+on HomeScreen (visible when `InvoiceMode = "Deferred" && !InvoiceSubmitted`), or wait until
+status reaches `Pending Invoice` (set automatically by GR/SFU when invoice is still missing).
 
 ```
 Pending Procurement → [Upload Order Confirmation + Defer Invoice]
   → Goods Receipt & Acceptance
-      │ Accepted, invoice not yet submitted → Pending Invoice (InvoiceSubmissionScreen)
-      │ Accepted, invoice already submitted → Pending Accounting
-      │ Requires Follow-up → Pending Supplier Follow-up → ... → Pending Invoice → Pending Accounting
-  → Pending Invoice (Procurement submits invoice) → Pending Accounting → Completed
+      ├─ Accepted, InvoiceSubmitted=true  → Pending Accounting → Completed
+      │       (Procurement submitted invoice proactively via HomeScreen button during GR)
+      ├─ Accepted, InvoiceSubmitted=false → Pending Invoice
+      │       → [Procurement submits ISS] → Pending Accounting → Completed
+      └─ Requires Follow-up → Pending Supplier Follow-up
+              ├─ [SFU Step 1: Accepted] InvoiceSubmitted=true  → Pending Accounting → Completed
+              ├─ [SFU Step 1: Accepted] InvoiceSubmitted=false → Pending Invoice
+              │       → [Procurement submits ISS] → Pending Accounting → Completed
+              ├─ [SFU Step 1: Accepted with Adjustment] InvoiceSubmitted=true
+              │       → Pending Supplier Follow-up (Step 2 unlocked)
+              │           → [SFU Step 2] → Pending Accounting → Completed
+              └─ [SFU Step 1: Accepted with Adjustment] InvoiceSubmitted=false → Pending Invoice
+                      → [Procurement submits ISS, locSFUStep2Pending=true]
+                          → Pending Supplier Follow-up (Step 2 unlocked)
+                              → [SFU Step 2] → Pending Accounting → Completed
 ```
 
 ### Path C — Procurement is intermediary, Requester works directly with Supplier
@@ -70,14 +82,27 @@ From `Goods Receipt & Acceptance` onward, Path C-Deferred follows the same routi
 Path C-Direct goes directly to `Pending Accounting` after GR Accepted.
 
 ```
-                    ┌─ Path C-Direct: Accepted → Pending Accounting → Completed
+                            ┌─── Accepted, InvoiceSubmitted=true → Pending Accounting → Completed
 Goods Receipt & Acceptance ─┤
-                    ├─ Path C-Deferred / Accepted → Pending Invoice → Pending Accounting → Completed
-                    └─ Any path / Requires Follow-up → Pending Supplier Follow-up → ...
+(Path C-Direct always       ├─── Accepted, InvoiceSubmitted=false → Pending Invoice
+has InvoiceSubmitted=true   │       → [Procurement submits ISS] → Pending Accounting → Completed
+so takes the top branch)    │
+                            └─── Requires Follow-up → Pending Supplier Follow-up
+                                 ├─ [SFU Step 1: Accepted] InvoiceSubmitted=true
+                                 │       → Pending Accounting → Completed
+                                 ├─ [SFU Step 1: Accepted] InvoiceSubmitted=false
+                                 │       → Pending Invoice → [ISS] → Pending Accounting → Completed
+                                 ├─ [SFU Step 1: Accepted with Adjustment] InvoiceSubmitted=true
+                                 │       → Pending Supplier Follow-up (Step 2 unlocked)
+                                 │           → [SFU Step 2] → Pending Accounting → Completed
+                                 └─ [SFU Step 1: Accepted with Adjustment] InvoiceSubmitted=false
+                                         → Pending Invoice → [ISS, locSFUStep2Pending=true]
+                                             → Pending Supplier Follow-up (Step 2 unlocked)
+                                                 → [SFU Step 2] → Pending Accounting → Completed
 ```
 
-All Path C branches converge at `Pending Accounting → Completed`.
-InvoiceSubmissionScreen must complete **before** SFU Step 2 (Path C-Deferred only).
+All branches converge at `Pending Accounting → Completed`.
+InvoiceSubmissionScreen must complete **before** SFU Step 2 (Path B / Path C-Deferred only).
 
 ### Requester invoice upload (Path C-Deferred only)
 
@@ -111,9 +136,14 @@ GR "Requires Follow-up": → `Pending Supplier Follow-up` for all InvoiceModes.
 
 ### SFU Step 1 (Requester) — on submit (all paths)
 
-Routing is identical regardless of InvoiceMode — always check `InvoiceSubmitted`:
-- `InvoiceSubmitted = false` → `Pending Invoice`
-- `InvoiceSubmitted = true` → `Pending Accounting`
+Routing depends on both **outcome** and **InvoiceSubmitted** — InvoiceMode does not affect the decision:
+
+| Outcome | InvoiceSubmitted | Next Status |
+|---|---|---|
+| Accepted | `true` | `Pending Accounting` |
+| Accepted | `false` | `Pending Invoice` → [ISS] → `Pending Accounting` |
+| Accepted with Adjustment | `true` | `Pending Supplier Follow-up` (Step 2 runs immediately) |
+| Accepted with Adjustment | `false` | `Pending Invoice` → [ISS, `locSFUStep2Pending=true`] → `Pending Supplier Follow-up` (Step 2 unlocked) |
 
 Requester uploads corrected invoice separately via RequesterInvoiceScreen (accessible from HomeScreen) — not part of the SFU Step 1 form.
 

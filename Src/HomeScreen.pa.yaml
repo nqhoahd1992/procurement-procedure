@@ -377,13 +377,23 @@ Screens:
                   - btnProcessInvoice:
                       Control: Button@0.0.45
                       Properties:
-                        BasePaletteColor: =RGBA(83, 74, 183, 1)
+                        BasePaletteColor: |-
+                          =If(
+                              ThisItem.InvoiceMode.Value = "Deferred",
+                              RGBA(83, 74, 183, 1),
+                              If(IsBlank(ThisItem.RequesterInvoiceURL), RGBA(133, 79, 11, 1), RGBA(83, 74, 183, 1))
+                          )
                         FontWeight: =FontWeight.Semibold
                         Height: =24
                         OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(InvoiceSubmissionScreen)
-                        Text: ="Process Invoice"
+                        Text: |-
+                          =If(
+                              ThisItem.InvoiceMode.Value = "Deferred",
+                              "Submit Invoice",
+                              If(IsBlank(ThisItem.RequesterInvoiceURL), "Remind Requester", "Process Invoice")
+                          )
                         Visible: |-
-                          =ThisItem.InvoiceMode.Value = "ViaRequester" && !IsBlank(ThisItem.RequesterInvoiceURL) &&
+                          =(ThisItem.InvoiceMode.Value = "ViaRequester" || ThisItem.InvoiceMode.Value = "Deferred") &&
                           !ThisItem.InvoiceSubmitted &&
                           (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin")
                         Width: =160
