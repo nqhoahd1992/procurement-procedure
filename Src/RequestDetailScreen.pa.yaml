@@ -124,8 +124,12 @@ Screens:
                         If(Not(IsBlank(gSelectedRequest.ConditionsText)), 88, 0) +
                         If(Not(IsBlank(gSelectedRequest.AccountingHandlerID)), 68, 0) +
                         If(
+                            gSelectedRequest.Status.Value = "Goods Receipt & Acceptance" ||
+                            gSelectedRequest.Status.Value = "Pending Supplier Follow-up" ||
+                            gSelectedRequest.Status.Value = "Pending Invoice" ||
+                            gSelectedRequest.Status.Value = "Pending Accounting" ||
                             gSelectedRequest.Status.Value = "Completed" ||
-                            gSelectedRequest.Status.Value = "Pending Supplier Follow-up",
+                            (gSelectedRequest.Status.Value = "Rejected" && Not(IsBlank(gSelectedRequest.GoodsReceiptBy))),
                             200 +
                             If(Not(IsBlank(gSelectedRequest.GoodsReceiptRemarks)), 70, 0) +
                             If(Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)), 160, 0) +
@@ -886,8 +890,12 @@ Screens:
                         RadiusTopLeft: =0
                         RadiusTopRight: =0
                         Visible: |-
-                          =gSelectedRequest.Status.Value = "Completed" ||
-                          gSelectedRequest.Status.Value = "Pending Supplier Follow-up"
+                          =gSelectedRequest.Status.Value = "Goods Receipt & Acceptance" ||
+                          gSelectedRequest.Status.Value = "Pending Supplier Follow-up" ||
+                          gSelectedRequest.Status.Value = "Pending Invoice" ||
+                          gSelectedRequest.Status.Value = "Pending Accounting" ||
+                          gSelectedRequest.Status.Value = "Completed" ||
+                          (gSelectedRequest.Status.Value = "Rejected" && Not(IsBlank(gSelectedRequest.GoodsReceiptBy)))
                         Width: =Parent.Width
                       Children:
                         - divider:

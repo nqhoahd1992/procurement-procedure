@@ -53,7 +53,7 @@ Screens:
           Properties:
             DropShadow: =DropShadow.None
             Fill: =RGBA(245, 245, 250, 1)
-            Height: =100
+            Height: =180
             LayoutDirection: =LayoutDirection.Vertical
             LayoutGap: =4
             PaddingBottom: =12
@@ -72,7 +72,8 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
-                  Height: =60
+                  FillPortions: =0
+                  Height: =32
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =16
@@ -88,6 +89,7 @@ Screens:
                   - lblInfoTitle_ISS:
                       Control: Label@2.5.1
                       Properties:
+                        FillPortions: =1
                         FontWeight: =FontWeight.Bold
                         Height: =24
                         PaddingLeft: =0
@@ -118,45 +120,189 @@ Screens:
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =24
-                  LayoutMinHeight: =24
+                  LayoutMinHeight: =44
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
                   Width: =Parent.Width - 40
                 Children:
-                  - lblInfoRequester_ISS:
-                      Control: Label@2.5.1
+                  - colRequester_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: |-
-                          ="Requester: " & gSelectedRequest.RequesterID.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =240
-                  - lblInfoCategory_ISS:
-                      Control: Label@2.5.1
+                      Children:
+                        - lblInfoRequesterLabel_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Requester"
+                              Width: =240
+                        - lblInfoRequesterValue_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.RequesterID.Value
+                              Width: =240
+                  - colCategory_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        Size: =11
-                        Text: |-
-                          ="Category: " & gSelectedRequest.Category.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =240
-                  - lblInfoInvoiceMode_ISS:
-                      Control: Label@2.5.1
+                      Children:
+                        - lblInfoCategoryLabel_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Category"
+                              Width: =240
+                        - lblInfoCategoryValue_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.Category.Value
+                              Width: =240
+                  - colCost_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        Size: =11
-                        Text: |-
-                          ="Invoice Path: " & gSelectedRequest.InvoiceMode.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =240
+                      Children:
+                        - lblInfoCostLabel_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Estimated Cost"
+                              Width: =240
+                        - lblInfoCostValue_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Width: =240
+            - rowInfoLine3_ISS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =24
+                  LayoutMinHeight: =44
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - colInvoiceMode_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =240
+                      Children:
+                        - lblInfoInvoiceModeLabel_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Invoice Path"
+                              Width: =240
+                        - lblInfoInvoiceModeValue_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.InvoiceMode.Value
+                              Width: =240
+                  - colSupplier_ISS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =400
+                      Children:
+                        - lblInfoSupplierLabel_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Preferred Supplier"
+                              Width: =400
+                        - lblInfoSupplierValue_ISS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.PreferredSupplier), "—", gSelectedRequest.PreferredSupplier)
+                              Width: =400
       - conScrollable_ISS:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
-            Height: =Parent.Height - 220
+            Height: =Parent.Height - 300
             LayoutDirection: =LayoutDirection.Vertical
             LayoutOverflowY: =LayoutOverflow.Scroll
             RadiusBottomLeft: =0
@@ -164,7 +310,7 @@ Screens:
             RadiusTopLeft: =0
             RadiusTopRight: =0
             Width: =Parent.Width
-            Y: =160
+            Y: =240
           Children:
             - rowWaitingForRequester_ISS:
                 Control: GroupContainer@1.5.0

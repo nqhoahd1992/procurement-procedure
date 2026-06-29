@@ -44,13 +44,13 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
-                  Height: =36
+                  FillPortions: =0
+                  Height: =32
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =16
                   LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                   LayoutMinHeight: =24
-                  PaddingRight: =1
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
@@ -89,34 +89,75 @@ Screens:
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =24
-                  LayoutMinHeight: =24
+                  LayoutMinHeight: =44
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
                   Width: =Parent.Width - 40
                 Children:
-                  - lblInfoRequester_AC:
-                      Control: Label@2.5.1
+                  - colRequester_AC:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: |-
-                          ="Requester: " & gSelectedRequest.RequesterID.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =300
-                  - lblInfoDept_AC:
-                      Control: Label@2.5.1
+                      Children:
+                        - lblInfoRequesterLabel_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Requester"
+                              Width: =300
+                        - lblInfoRequesterValue_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.RequesterID.Value
+                              Width: =300
+                  - colDept_AC:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        FillPortions: =1
-                        Height: =20
-                        LayoutMinWidth: =300
-                        PaddingLeft: =0
-                        Size: =11
-                        Text: |-
-                          ="Dept: " & gSelectedRequest.Department
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =600
+                      Children:
+                        - lblInfoDeptLabel_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Department"
+                              Width: =600
+                        - lblInfoDeptValue_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.Department
+                              Width: =600
             - rowInfoLine3_AC:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -125,7 +166,7 @@ Screens:
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =24
-                  LayoutMinHeight: =24
+                  LayoutMinHeight: =44
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
@@ -134,33 +175,99 @@ Screens:
                   X: =40
                   Y: =40
                 Children:
-                  - lblInfoCategory_AC:
-                      Control: Label@2.5.1
+                  - colCategory_AC:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        PaddingLeft: =0
-                        Size: =11
-                        Text: |-
-                          ="Category: " & gSelectedRequest.Category.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =300
-                  - lblInfoCost_AC:
-                      Control: Label@2.5.1
+                      Children:
+                        - lblInfoCategoryLabel_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Category"
+                              Width: =300
+                        - lblInfoCategoryValue_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.Category.Value
+                              Width: =300
+                  - colCost_AC:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        PaddingLeft: =0
-                        Size: =11
-                        Text: |-
-                          ="Estimated Cost: " & gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =300
-                  - lblInfoTargetInvoice_AC:
-                      Control: Label@2.5.1
+                      Children:
+                        - lblInfoCostLabel_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Estimated Cost"
+                              Width: =300
+                        - lblInfoCostValue_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Width: =300
+                  - colCostCenter_AC:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
                       Properties:
-                        Height: =20
-                        PaddingLeft: =0
-                        Size: =11
-                        Text: |-
-                          ="Cost Center: " & gSelectedRequest.InvoiceRegion.Value
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
                         Width: =240
+                      Children:
+                        - lblInfoCostCenterLabel_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Cost Center"
+                              Width: =240
+                        - lblInfoCostCenterValue_AC:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.InvoiceRegion.Value), "—", gSelectedRequest.InvoiceRegion.Value)
+                              Width: =240
       - conScrollable_AC:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
