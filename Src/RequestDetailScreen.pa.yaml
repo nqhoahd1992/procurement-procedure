@@ -131,7 +131,7 @@ Screens:
                             If(Not(IsBlank(gSelectedRequest.FollowUpReceiptBy)), 160, 0) +
                             If(Not(IsBlank(gSelectedRequest.FollowUpRemarks)), 70, 0) +
                             If(Not(IsBlank(gSelectedRequest.SupplierFollowUpNotes)), 70, 0) +
-                            If(Not(IsBlank(gSelectedRequest.CreditNote)), 80, 0) +
+                            If(Not(IsBlank(gSelectedRequest.CreditNote)), 100, 0) +
                             If(gGRHasAttachments, 50, 0) +
                             If(gSFU1HasAttachments, 70, 0) +
                             If(gSFU2HasAttachments, 50, 0),
@@ -1517,9 +1517,14 @@ Screens:
                               - lblCreditNoteValue:
                                   Control: Label@2.5.1
                                   Properties:
-                                    Height: =24
+                                    Color: =RGBA(56, 96, 178, 1)
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =48
+                                    OnSelect: =If(Not(IsBlank(gSelectedRequest.CreditNote)), Launch(gSelectedRequest.CreditNote, {}, LaunchTarget.New))
                                     Size: =11
-                                    Text: =gSelectedRequest.CreditNote
+                                    Text: =If(IsBlank(gSelectedRequest.CreditNote), "—", gSelectedRequest.CreditNote)
+                                    Underline: =Not(IsBlank(gSelectedRequest.CreditNote))
+                                    VerticalAlign: =VerticalAlign.Top
                                     Width: =Parent.Width
             - rowApprovalTitle:
                 Control: GroupContainer@1.5.0

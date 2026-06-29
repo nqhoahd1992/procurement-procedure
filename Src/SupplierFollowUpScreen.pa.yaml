@@ -7,7 +7,9 @@ Screens:
         Set(gSFU1PendingAttachments, Blank());
         NewForm(frmSFU1Log_SFU);
         Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
-        Set(gSFU1DelegationMode, If(IsBlank(gSelectedRequest.SFU1AssignedToID) || gSelectedRequest.SFU1AssignedToID.Id = 0 || gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID, "I will receive", "Assign to someone else"))
+        Set(gSFU1DelegationMode, If(IsBlank(gSelectedRequest.SFU1AssignedToID) || gSelectedRequest.SFU1AssignedToID.Id = 0 || gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID, "I will receive", "Assign to someone else"));
+        Set(locCreditNoteURL_SFU, "");
+        Set(gPendingCreditNoteName_SFU, "")
     Children:
       - rectHeader_SFU:
           Control: Rectangle@2.3.0
@@ -1241,6 +1243,7 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
+                  FillPortions: =0
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   PaddingBottom: =8
@@ -1257,22 +1260,97 @@ Screens:
                     gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment"
                   Width: =Parent.Width
                 Children:
-                  - lblCreditNoteLabel_SFU:
-                      Control: HtmlViewer@2.1.0
+                  - lblCreditNoteHeader_SFU:
+                      Control: Label@2.5.1
                       Properties:
-                        Font: =Font.'Open Sans'
-                        HtmlText: ="<span style='font-weight:bold;font-size:13px;'>Credit Note SharePoint Link (<a href='https://maxbiocare.sharepoint.com/sites/Powerapps/Credit%20Notes/Forms/AllItems.aspx' target='_blank'>Click here to access the SharePoint library where credit note are stored</a>) *</span>"
-                        LayoutMinHeight: =16
-                        LayoutMinWidth: =16
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Upload Credit Note *"
                         Width: =Parent.Width - 40
-                        X: =40
-                        Y: =40
-                  - txtCreditNote_SFU:
-                      Control: TextInput@0.0.54
+                  - lblCreditNoteHint_SFU:
+                      Control: Label@2.5.1
                       Properties:
-                        Height: =40
-                        Placeholder: ="Enter credit note reference..."
+                        Color: =RGBA(136, 135, 128, 1)
+                        Size: =10
+                        Text: ="Upload the credit note file from the supplier."
                         Width: =Parent.Width - 40
+                  - formCreditNote_SFU:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Height: =120
+                        Item: =gSelectedRequest
+                        LayoutMinWidth: =100
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Upload failed. Please try again.", NotificationType.Error)
+                        OnSuccess: |-
+                          =Set(locCreditNoteURL_SFU,
+                              gSharePointAttachmentBase & Text(gSelectedRequest.ID) & "/" & EncodeUrl(gPendingCreditNoteName_SFU)
+                          );
+                          With(
+                              {wPatched: Patch(
+                                  Procurement_Requests,
+                                  gSelectedRequest,
+                                  {
+                                      Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
+                                      CreditNote: locCreditNoteURL_SFU,
+                                      SupplierFollowUpNotes: txtFollowUpNotes_SFU.Value,
+                                      FollowUpCompletedAt: Now()
+                                  }
+                              )},
+                              If(
+                                  IsBlank(wPatched.ID),
+                                  Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                  With(
+                                      {wLog: Patch(
+                                          Procurement_ExecutionLog,
+                                          Defaults(Procurement_ExecutionLog),
+                                          {
+                                              Title: "Step 5 - Supplier Follow-up Procurement - " & gSelectedRequest.Title,
+                                              RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                              RequestIDText: Text(gSelectedRequest.ID),
+                                              StepNumber: 5,
+                                              StepName: {Value: "Supplier Follow-up — Procurement"},
+                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                              ExecutedAt: Now()
+                                          }
+                                      )},
+                                      If(
+                                          IsBlank(wLog.ID),
+                                          Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                          Notify("Follow-up completed. Request is now " & If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success);
+                                          Navigate(HomeScreen)
+                                      )
+                                  )
+                              )
+                          )
+                        Width: =Parent.Width - 40
+                      Children:
+                        - dcCreditNote_SFU:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =Blank()
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attCreditNote_SFU.Attachments
+                              Width: =Parent.Width
+                              X: =0
+                              Y: =0
+                            Children:
+                              - attCreditNote_SFU:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =Parent.Default
+                                    MaxAttachments: =1
+                                    Width: =Parent.Width
             - rowStep2Notes_SFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -1482,7 +1560,7 @@ Screens:
                                                           Status: {Value: If(
                                                               ddAcceptanceDecision2_SFU.Selected.Value = "Accepted",
                                                               If(!wLatest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting"),
-                                                              "Pending Supplier Follow-up"
+                                                              If(!wLatest.InvoiceSubmitted, "Pending Invoice", "Pending Supplier Follow-up")
                                                           )},
                                                           FollowUpReceiptBy: gCurrentEmployee.Title,
                                                           FollowUpReceiptDate: dpReceiptDate2_SFU.SelectedDate,
@@ -1525,8 +1603,9 @@ Screens:
                                                           Switch(
                                                               ddAcceptanceDecision2_SFU.Selected.Value,
                                                               "Accepted", Notify("Submitted. Request is now " & If(!wLatest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success),
-                                                              "Accepted with Adjustment", Notify("Submitted. Procurement team has been notified for invoice adjustment.", NotificationType.Success)
+                                                              "Accepted with Adjustment", Notify("Submitted. Request is now " & If(!wLatest.InvoiceSubmitted, "Pending Invoice.", "Pending Supplier Follow-up."), NotificationType.Success)
                                                           );
+                                                          Refresh(Procurement_Requests);
                                                           Navigate(HomeScreen)
                                                       )
                                                   )
@@ -1552,26 +1631,24 @@ Screens:
                               IsBlank(txtFollowUpNotes_SFU.Value),
                               Notify("Supplier Follow-up Notes is required", NotificationType.Error),
                               If(
-                                  gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment" &&
-                                  IsBlank(txtCreditNote_SFU.Value),
-                                  Notify("Credit Note is required for Invoice Adjustment", NotificationType.Error),
+                                  gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment",
+                                  If(
+                                      CountRows(attCreditNote_SFU.Attachments) = 0,
+                                      Notify("Credit Note file is required for Invoice Adjustment", NotificationType.Error),
+                                      Set(gPendingCreditNoteName_SFU, Last(attCreditNote_SFU.Attachments).Name);
+                                      SubmitForm(formCreditNote_SFU)
+                                  ),
                                   With(
-                                      {
-                                          wPatched: Patch(
-                                              Procurement_Requests,
-                                              gSelectedRequest,
-                                              {
-                                                  Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
-                                                  CreditNote: If(
-                                                      gSelectedRequest.FollowUpAcceptanceDecision.Value = "Accepted with Adjustment",
-                                                      txtCreditNote_SFU.Value,
-                                                      ""
-                                                  ),
-                                                  SupplierFollowUpNotes: txtFollowUpNotes_SFU.Value,
-                                                  FollowUpCompletedAt: Now()
-                                              }
-                                          )
-                                      },
+                                      {wPatched: Patch(
+                                          Procurement_Requests,
+                                          gSelectedRequest,
+                                          {
+                                              Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
+                                              CreditNote: "",
+                                              SupplierFollowUpNotes: txtFollowUpNotes_SFU.Value,
+                                              FollowUpCompletedAt: Now()
+                                          }
+                                      )},
                                       If(
                                           IsBlank(wPatched.ID),
                                           Notify("Failed to submit. Please try again.", NotificationType.Error),
@@ -1592,6 +1669,7 @@ Screens:
                                               If(
                                                   IsBlank(wLog.ID),
                                                   Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                  Refresh(Procurement_Requests);
                                                   Notify("Follow-up completed. Request is now " & If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success);
                                                   Navigate(HomeScreen)
                                               )
