@@ -8,12 +8,12 @@ Screens:
           Control: Label@2.5.1
           Properties:
             Align: =Align.Center
-            Color: =RGBA(163, 45, 45, 1)
-            Fill: =RGBA(252, 235, 235, 1)
+            Color: =If(gAppReady, RGBA(163, 45, 45, 1), RGBA(136, 135, 128, 1))
+            Fill: =If(gAppReady, RGBA(252, 235, 235, 1), RGBA(255, 255, 255, 1))
             Height: =Parent.Height - 60
             Size: =12
-            Text: ="⚠ Your account was not found in the system. Please contact your administrator."
-            Visible: =IsBlank(gCurrentEmployee.ID)
+            Text: =If(gAppReady, "⚠ Your account was not found in the system. Please contact your administrator.", "Checking your account...")
+            Visible: =Not(gAppReady) || IsBlank(gCurrentEmployee.ID)
             Width: =Parent.Width
             Y: =60
       - rectHeader:
@@ -55,6 +55,7 @@ Screens:
             DropShadow: =DropShadow.None
             Height: =80
             LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =10
             LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
             PaddingBottom: =20
             PaddingLeft: =20
@@ -71,7 +72,9 @@ Screens:
             - lblSectionTitle:
                 Control: Label@2.5.1
                 Properties:
+                  FillPortions: =1
                   FontWeight: =FontWeight.Bold
+                  Size: =14
                   Text: |-
                     =Switch(gCurrentUser.Role.Value,
                         "Manager",     "My Requests",
@@ -94,13 +97,15 @@ Screens:
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
-            Height: =100
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =48
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
-            LayoutGap: =8
-            PaddingBottom: =20
+            LayoutOverflowX: =LayoutOverflow.Scroll
+            PaddingBottom: =12
             PaddingLeft: =20
             PaddingRight: =20
-            PaddingTop: =20
+            PaddingTop: =12
             RadiusBottomLeft: =0
             RadiusBottomRight: =0
             RadiusTopLeft: =0
@@ -109,98 +114,203 @@ Screens:
             Width: =Parent.Width
             Y: =140
           Children:
-            - btnFilterAll:
-                Control: Button@0.0.45
+            - lblFilterAll:
+                Control: Label@2.5.1
                 Properties:
-                  BasePaletteColor: =If(IsBlank(gStatusFilter), RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
+                  Align: =Align.Center
+                  Color: =If(IsBlank(gStatusFilter), RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(IsBlank(gStatusFilter), FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
                   OnSelect: =Set(gStatusFilter, Blank())
+                  PaddingLeft: =0
+                  PaddingRight: =8
+                  Size: =11
                   Text: ="All"
-                  Width: =83
-            - btnFilterPendingManager:
-                Control: Button@0.0.45
+                  Width: =50
+            - divFilter1:
+                Control: Rectangle@2.3.0
                 Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Manager", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterPendingManager:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Manager", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Manager", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
                   OnSelect: =Set(gStatusFilter, "Pending Manager")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
                   Text: ="Pending Manager"
-                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Admin"
-                  Width: =160
-            - btnFilterPendingExec:
-                Control: Button@0.0.45
-                Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Executive", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
-                  OnSelect: =Set(gStatusFilter, "Pending Executive")
-                  Text: ="Pending Executive"
-                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Manager" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
-                  Width: =160
-            - btnFilterPendingProcurement:
-                Control: Button@0.0.45
-                Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Procurement", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
-                  OnSelect: =Set(gStatusFilter, "Pending Procurement")
-                  Text: ="Pending Procurement"
-                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
-                  Width: =180
-            - btnFilterPendingAccounting:
-                Control: Button@0.0.45
-                Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Accounting", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
-                  OnSelect: =Set(gStatusFilter, "Pending Accounting")
-                  Text: ="Pending Accounting"
-                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Accounting" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
-                  Width: =180
-            - btnFilterPendingInvoice:
-                Control: Button@0.0.45
-                Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Invoice", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
-                  OnSelect: =Set(gStatusFilter, "Pending Invoice")
-                  Text: ="Pending Invoice"
-                  Visible: =Not(gIsSpecialRole) || gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"
-                  Width: =150
-            - btnFilterGoodsReceipt:
-                Control: Button@0.0.45
-                Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Goods Receipt & Acceptance", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
-                  OnSelect: =Set(gStatusFilter, "Goods Receipt & Acceptance")
-                  Text: ="Goods Receipt"
                   Width: =140
-            - btnFilterPendingSupplierFollowUp:
-                Control: Button@0.0.45
+            - divFilter2:
+                Control: Rectangle@2.3.0
                 Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Pending Supplier Follow-up", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterPendingExec:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Executive", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Executive", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
+                  OnSelect: =Set(gStatusFilter, "Pending Executive")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Pending Executive"
+            - divFilter3:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterPendingProcurement:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Procurement", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Procurement", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
+                  OnSelect: =Set(gStatusFilter, "Pending Procurement")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Pending Procurement"
+                  Width: =170
+            - divFilter4:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterPendingAccounting:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Accounting", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Accounting", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
+                  OnSelect: =Set(gStatusFilter, "Pending Accounting")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Pending Accounting"
+                  Width: =160
+            - divFilter5:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterPendingInvoice:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Invoice", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Invoice", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
+                  OnSelect: =Set(gStatusFilter, "Pending Invoice")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Pending Invoice"
+                  Width: =130
+            - divFilter6:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterGoodsReceipt:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Goods Receipt & Acceptance", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Goods Receipt & Acceptance", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
+                  OnSelect: =Set(gStatusFilter, "Goods Receipt & Acceptance")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Goods Receipt"
+                  Width: =120
+            - divFilter7:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterSFU:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Pending Supplier Follow-up", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Pending Supplier Follow-up", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
                   OnSelect: =Set(gStatusFilter, "Pending Supplier Follow-up")
-                  Text: ="Pending Supplier Follow-up"
-                  Width: =150
-            - btnFilterCompleted:
-                Control: Button@0.0.45
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
+                  Text: ="Supplier Follow-up"
+            - divFilter8:
+                Control: Rectangle@2.3.0
                 Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Completed", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterCompleted:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Completed", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Completed", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
                   OnSelect: =Set(gStatusFilter, "Completed")
+                  PaddingLeft: =8
+                  PaddingRight: =8
+                  Size: =11
                   Text: ="Completed"
-                  Width: =110
-            - btnFilterRejected:
-                Control: Button@0.0.45
+                  Width: =120
+            - divFilter9:
+                Control: Rectangle@2.3.0
                 Properties:
-                  BasePaletteColor: =If(gStatusFilter = "Rejected", RGBA(83, 74, 183, 1), RGBA(210, 209, 199, 1))
-                  Height: =50
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =16
+                  Width: =1
+            - lblFilterRejected:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =If(gStatusFilter = "Rejected", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
+                  FontWeight: =If(gStatusFilter = "Rejected", FontWeight.Bold, FontWeight.Semibold)
+                  Height: =24
                   OnSelect: =Set(gStatusFilter, "Rejected")
+                  PaddingLeft: =8
+                  PaddingRight: =0
+                  Size: =11
                   Text: ="Rejected"
-                  Visible: =Not(gCurrentUser.Role.Value = "Accounting")
-                  Width: =100
+                  Width: =120
       - galRequests:
           Control: Gallery@2.15.0
           Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
           Properties:
             BorderColor: =RGBA(210, 209, 199, 1)
-            Height: =Parent.Height - 240
+            Height: =Parent.Height - 188
             Items: |-
               =SortByColumns(
                   Filter(
@@ -242,7 +352,7 @@ Screens:
             TemplateSize: =80
             Visible: =Not(IsBlank(gCurrentEmployee.ID))
             Width: =Parent.Width
-            Y: =240
+            Y: =188
           Children:
             - rectRowHitArea:
                 Control: Rectangle@2.3.0
@@ -258,7 +368,7 @@ Screens:
                   Height: =28
                   OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Text: =ThisItem.Title
-                  Width: =Parent.Width - 500
+                  Width: =Parent.Width - 600
                   X: =16
                   Y: =13
             - lblRequestStatus:
@@ -289,6 +399,7 @@ Screens:
                         "Pending Invoice", RGBA(250, 238, 218, 1),
                         RGBA(241, 239, 232, 1)
                     )
+                  FontWeight: =FontWeight.Semibold
                   Height: =28
                   OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Size: =11
@@ -302,8 +413,8 @@ Screens:
                         ),
                         ThisItem.Status.Value
                     )
-                  Width: =200
-                  X: =Parent.Width - 220
+                  Width: =220
+                  X: =Parent.Width - 240
                   Y: =13
             - lblRequestMeta:
                 Control: Label@2.5.1
@@ -348,15 +459,14 @@ Screens:
                   Height: =24
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
+                  LayoutGap: =10
                   LayoutJustifyContent: =LayoutJustifyContent.End
-                  PaddingRight: =8
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Width: =440
-                  X: =Parent.Width - 680
+                  Width: =328
+                  X: =Parent.Width - 600
                   Y: =15
                 Children:
                   - btnSubmitInvoice:
