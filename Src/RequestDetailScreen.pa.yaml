@@ -91,15 +91,7 @@ Screens:
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
-            Height: |-
-              =Parent.Height - 120 -
-                If(
-                    Not(
-                        gSelectedRequest.Status.Value = "Completed" ||
-                        gSelectedRequest.Status.Value = "Rejected"
-                    ),
-                    60, 0
-                )
+            Height: =Parent.Height - 180
             LayoutDirection: =LayoutDirection.Vertical
             LayoutOverflowY: =LayoutOverflow.Scroll
             RadiusBottomLeft: =0
@@ -1597,7 +1589,7 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =9
-                        Text: =If(ThisItem.StepNumber = 2, "Step 2 — Department Manager", "Step 3 — Executive")
+                        Text: =If(ThisItem.StepNumber = 2, "Department Manager", "Executive")
                         Width: =300
                         X: =20
                         Y: =19
@@ -1758,11 +1750,12 @@ Screens:
                         Size: =9
                         Text: |-
                           =Switch(ThisItem.StepNumber,
-                              1, "Step 1 — Procurement Execution",
-                              2, "Step 2 — Accounting Handover",
-                              3, "Step 3 — Goods Receipt & Acceptance",
-                              4, "Step 4 — Supplier Follow-up 1",
-                              5, "Step 5 — Supplier Follow-up 2",
+                              1, "Procurement Execution",
+                              2, "Accounting Handover",
+                              3, "Goods Receipt & Acceptance",
+                              4, "Supplier Follow-up 1",
+                              5, "Supplier Follow-up 2",
+                              6, "Submission Invoice",
                               "—"
                           )
                         Width: =300
@@ -1879,11 +1872,6 @@ Screens:
             RadiusBottomRight: =0
             RadiusTopLeft: =0
             RadiusTopRight: =0
-            Visible: |-
-              =Not(
-                  gSelectedRequest.Status.Value = "Completed" ||
-                  gSelectedRequest.Status.Value = "Rejected"
-              )
             Width: =Parent.Width
             Y: =Parent.Height - 60
           Children:
