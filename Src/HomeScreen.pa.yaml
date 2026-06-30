@@ -88,10 +88,11 @@ Screens:
             - btnNewRequest:
                 Control: Button@0.0.45
                 Properties:
-                  Height: =40
+                  Height: =36
+                  Icon: ="Add"
                   OnSelect: =Navigate(RequestFormScreen)
-                  Text: ="+ New Request"
-                  Width: =160
+                  Text: ="New Request"
+                  Width: =150
       - rowFilterBar:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -454,7 +455,7 @@ Screens:
                   OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                   Size: =11
                   Text: |-
-                    ="ID: " & ThisItem.ID & " | " & ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | EstimatedCost: " & ThisItem.Currency.Value & " " & Text(ThisItem.EstimatedCost, "[#,###]"))
+                    ="ID: " & ThisItem.ID & " | " & ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | Estimated Cost: " & ThisItem.Currency.Value & " " & Text(ThisItem.EstimatedCost, "[#,###]"))
                   Width: =600
                   X: =16
                   Y: =44

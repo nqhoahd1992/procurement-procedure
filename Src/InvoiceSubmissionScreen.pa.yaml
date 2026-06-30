@@ -1169,7 +1169,7 @@ Screens:
             - btnSubmit_ISS:
                 Control: Button@0.0.45
                 Properties:
-                  BasePaletteColor: =RGBA(83, 74, 183, 1)
+                  BasePaletteColor: =RGBA(5, 102, 178, 1)
                   DisplayMode: =If(gSelectedRequest.InvoiceMode.Value = "ViaRequester" && (IsBlank(gSelectedRequest.RequesterInvoiceURL) || locInvoiceVerified <> true), DisplayMode.Disabled, DisplayMode.Edit)
                   Height: =36
                   OnSelect: |-
