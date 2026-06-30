@@ -66,13 +66,12 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   FillPortions: =0
-                  Height: =32
+                  Height: =34
                   LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutGap: =16
                   LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                   LayoutMinHeight: =24
-                  PaddingRight: =1
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
