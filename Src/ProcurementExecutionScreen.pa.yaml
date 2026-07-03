@@ -1746,15 +1746,20 @@ Screens:
                               Size: =9
                               Text: |-
                                 =If(gHasInvoiceResult,
-                                    If(IsBlank(txtInvDateValue_PE.Value), "", Substitute(txtInvDateValue_PE.Value, "-", "")) &
-                                    If(IsBlank(txtSupplierNameValue_PE.Value), "", " - " & txtSupplierNameValue_PE.Value) &
-                                    If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
-                                    If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
-                                    If(IsBlank(txtAttentionValue_PE.Value), "", " - " & txtAttentionValue_PE.Value) &
-                                    If(IsBlank(txtDescriptionValue_PE.Value), "", " - " & txtDescriptionValue_PE.Value) &
-                                    If(IsBlank(txtTotalAmountValue_PE.Value), "", " - " & txtCurrencyValue_PE.Value & Text(Value(txtTotalAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
-                                    If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
-                                    "." & Last(Split(gInvoiceResult.suggestedFilename, ".")).Value,
+                                    With(
+                                        {
+                                            wName: If(IsBlank(txtInvDateValue_PE.Value), "", Substitute(txtInvDateValue_PE.Value, "-", "")) &
+                                                If(IsBlank(txtSupplierNameValue_PE.Value), "", " - " & txtSupplierNameValue_PE.Value) &
+                                                If(IsBlank(txtBilledToValue_PE.Value), "", " - " & txtBilledToValue_PE.Value) &
+                                                If(IsBlank(txtInvNumValue_PE.Value), "", " - " & txtInvNumValue_PE.Value) &
+                                                If(IsBlank(txtAttentionValue_PE.Value), "", " - " & txtAttentionValue_PE.Value) &
+                                                If(IsBlank(txtDescriptionValue_PE.Value), "", " - " & txtDescriptionValue_PE.Value) &
+                                                If(IsBlank(txtTotalAmountValue_PE.Value), "", " - " & txtCurrencyValue_PE.Value & " " & Text(Value(txtTotalAmountValue_PE.Value), "[$-en-US]#,##0.00")) &
+                                                If(IsBlank(txtTaxAmountValue_PE.Value), "", " - GST " & txtCurrencyValue_PE.Value & " " & Text(Value(txtTaxAmountValue_PE.Value), "[$-en-US]#,##0.00"))
+                                        },
+                                        Substitute(Substitute(Substitute(Substitute(Substitute(Substitute(Substitute(Substitute(Substitute(Substitute(wName, "\", ""), "/", ""), ":", ""), "*", ""), "?", ""), """", ""), "<", ""), ">", ""), "#", ""), "%", "") &
+                                        "." & Last(Split(gInvoiceResult.suggestedFilename, ".")).Value
+                                    ),
                                     "—"
                                 )
                               Width: =Parent.Width - 24
