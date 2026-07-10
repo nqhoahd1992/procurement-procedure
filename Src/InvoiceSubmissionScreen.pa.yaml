@@ -248,7 +248,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =240
             - rowInfoLine3_ISS:
                 Control: GroupContainer@1.5.0
@@ -683,7 +683,7 @@ Screens:
                         - lblParseInvoiceHeader_ISS:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =28
                               PaddingLeft: =0
                               PaddingRight: =0
@@ -1149,7 +1149,7 @@ Screens:
                   - lblAccountingHandlerLabel_ISS:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         PaddingLeft: =0
                         PaddingRight: =0

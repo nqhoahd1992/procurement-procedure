@@ -16,13 +16,22 @@ Authoritative data model for the Max Biocare Procurement Procedure app, reconstr
 
 ## `Procurement_Requests` — central request record
 
-Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescription`, `Category`, `PurchaseAccordance`, `EstimatedCost`, `Currency`, `RequiredDeliveryDate`, `DeliveryLocation`, `RequesterID`, `InvoiceRegion`.
+Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescription`, `Category`, `PurchaseAccordance`, `EstimatedCost`, `Currency`, `RequiredDeliveryDate`, `DeliveryLocation`, `RequesterID`, `InvoiceRegion`, `CostCenter`, `ProjectID`.
+
+**Not yet created on SharePoint** — `CostCenter` (Text) must be added to this list before `RequestFormScreen`'s `txtCostCenter_1` field can be wired (see row below). Deliberately **Text, not Choice** — same reasoning as `project-list`'s own `Project_List.CostCenter` (also Text, see that repo's schema doc): the value is just passed through, so there's no Choice value set to keep in sync across the two separate Power Apps. `txtCostCenter_1` is a free-text `ModernTextInput` (no dropdown/Items list at all — the earlier hard-coded 6-warehouse-name combo was replaced), pre-filled from the selected Project but user-editable.
+
+**`RequestFormScreen` has a required `ddProject_1` picker** (`Project_List`, sourced directly — this app must have `Project_List` added as a data source in Studio, same site but a separate Power Apps canvas app from `project-list`). Every new procurement request must be tied to a project — submit is blocked with "Please select the Project this request is for" until `ddProject_1.Selected` is non-blank, checked *before* the rest of the required-field validation.
+
+Once a project is selected, it auto-fills `Department` (`ddDepartment_1`, a `ComboBox` via `DefaultSelectedItems`), `Currency` (`txtCurrency_1`, a free-text `ModernTextInput` via `Default: =ddProject_1.Selected.Currency`), and `Cost Center` (`txtCostCenter_1`, same pattern via `Default: =ddProject_1.Selected.CostCenter`). All 3 fields are then **read-only** — `DisplayMode: =If(IsBlank(ddProject_1.Selected), DisplayMode.Disabled, DisplayMode.View)` — disabled until a project is chosen, then view-only (auto-filled value shown, not user-editable) once it is. The user cannot override them manually; changing `ddProject_1` recomputes and re-displays all 3. `Cost Center`→`InvoiceRegion` still goes through the country lookup `Switch` (unchanged, now reading `txtCostCenter_1.Text` instead of a combo's `.Selected.Value`) on top of this.
+
+`txtCurrency_1` sits in the same row/group as `txtEstimatedCost_1` (`colEstimatedCostRow`, mirroring `project-list/CreateProjectScreen.pa.yaml`'s `colBudgetAmountRow` pattern: the amount field takes `FillPortions: =1`, the currency field is a small fixed-width sibling) — replaces the old separate `colCurrency` column and the `ddCurrency_1` ComboBox.
 
 | Column | Type | Notes |
 |---|---|---|
 | `Tiêu đề` (Title) | Text | Auto-built: `<employee> - <Category> - <dd/mm/yyyy>` |
 | `Status` ⚠ | Choice | **Drives the workflow** — value list below |
 | `RequesterEmail` ⚠ | Text | `User().Email`; "my requests" filter key |
+| `ProjectID` ⚠ | Text | **New, not yet created on SharePoint** — the related `project-list` project's business key (`Project_List.ProjectID`, e.g. `PROJ-AU-QA-2026-017`), set from the required `ddProject_1` picker on `RequestFormScreen` (every request must be tied to a project — see picker note below). Also the join column the future `Project_SyncActualCost` flow was already waiting on (see `project-list/CLAUDE.md` §Next) |
 | `Department` ⚠* | Text | Plain text (\*not required in schema, but set on submit) |
 | `ProcurementType` ⚠ | Choice | incl. `Invoice Supplied` |
 | `InvoiceType` | Choice | incl. `Official Invoice`; blank unless ProcurementType = Invoice Supplied |
@@ -33,10 +42,11 @@ Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescrip
 | `PreferredSupplier` | Text | Supplier title |
 | `PurchaseAccordance` ⚠ | Choice | incl. `Urgent`, `Unplanned` (auto-escalate to Executive) |
 | `EstimatedCost` ⚠ | Number | |
-| `Currency` ⚠ | Choice | incl. `AUD` |
+| `Currency` ⚠ | Text | Free-typed via `txtCurrency_1` (pre-filled from the selected Project's `Currency`, e.g. `AUD`/`MYR`/`SGD`/`VND`) — **not** a Choice column, same reasoning as `CostCenter` below (just passed through, no cross-app Choice value set to sync) |
 | `BudgetReference` | Text | |
 | `RequiredDeliveryDate` ⚠ | Date | |
-| `DeliveryLocation` ⚠ | Choice | |
+| `DeliveryLocation` ⚠ | Choice | Independent from `CostCenter` below — delivery destination for goods, not the warehouse/office used for invoice filing |
+| `CostCenter` ⚠ | Text | **New, not yet created on SharePoint** — plain Text (not Choice), filled directly from `project-list`'s `Project_List.CostCenter` (also Text) without keeping two Choice value sets in sync. Free-text field on `RequestFormScreen` (`txtCostCenter_1`, a `ModernTextInput` — no dropdown/Items list), pre-filled from the selected Project but user-editable. `InvoiceRegion` (below) is auto-derived from it via a `Switch` lookup table, not separately picked |
 | `RequesterID` ⚠ | Lookup→Employee List | `{Id,Value}` (→Title) |
 | `ManagerApproverID` | Lookup→Employee List | blank when manager review skipped |
 | `SkippedManagerReview` | Yes/No | true when Urgent/Unplanned **or** (EstimatedCost > 5000 AND Currency = AUD) |
@@ -65,7 +75,7 @@ Required ⚠: `Status`, `RequesterEmail`, `ProcurementType`, `ProcurementDescrip
 | `FollowUpReceiptAt` | DateTime | |
 | `SupplierFollowUpNotes` | Text (multiline) | |
 | `FollowUpCompletedAt` | DateTime | |
-| `InvoiceRegion` ⚠ | Choice | invoice target market |
+| `InvoiceRegion` ⚠ | Choice | Country code (`AU`/`MY`/`SG`) used to file the invoice into the correct storage folder. **No longer directly user-selected** — auto-derived on submit from `CostCenter` (above) via a `Switch` lookup table in `RequestFormScreen.pa.yaml` (warehouse/office → country) |
 | `Attachments` | Attachments | invoice/supporting files; written via `Form1`+`SubmitForm` (Patch can't write attachments) |
 
 ### `Status` choice values (exact strings — used as literals across all screens)

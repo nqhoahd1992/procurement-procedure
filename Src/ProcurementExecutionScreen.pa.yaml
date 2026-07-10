@@ -256,7 +256,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =300
                   - colCostCenter_PE:
                       Control: GroupContainer@1.5.0
@@ -326,7 +326,7 @@ Screens:
                   - lblDecisionLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Procurement Decision *"
@@ -365,7 +365,7 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         Color: =RGBA(163, 45, 45, 1)
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         PaddingLeft: =0
                         PaddingRight: =0
@@ -450,7 +450,7 @@ Screens:
                   - lblChecklistHeader_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Procurement Execution Checklist *"
@@ -702,7 +702,7 @@ Screens:
                   - lblSupplierSummaryLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Supplier Selection / Negotiation Summary *"
@@ -736,7 +736,7 @@ Screens:
                   - lblPurchaseOrderLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Purchase Order Link"
@@ -770,7 +770,7 @@ Screens:
                   - lblFormConfirmationLabel_PE_1:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =34
                         PaddingBottom: =15
                         Size: =11
@@ -932,7 +932,7 @@ Screens:
                   - lblInvoiceChoiceLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Invoice Handling *"
@@ -1203,7 +1203,7 @@ Screens:
                   - lblOfficialInvoiceDirectLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         PaddingLeft: =0
                         Size: =11
@@ -1311,7 +1311,7 @@ Screens:
                         - lblParseInvoiceHeader_PE:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =28
                               PaddingLeft: =0
                               PaddingRight: =0
@@ -1802,7 +1802,7 @@ Screens:
                   - lblAccountingHandlerLabel_PE:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         PaddingLeft: =0
                         PaddingRight: =0

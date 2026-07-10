@@ -188,6 +188,31 @@ Layout: ='RadioGroupCanvas.Layout'.Horizontal
 
 ---
 
+## 7. A control property cannot reference another property of the SAME control
+
+**Wrong:**
+```yaml
+- ddCostCenter_1:
+    Control: ComboBox@0.0.51
+    Properties:
+      DefaultSelectedItems: =Filter(ddCostCenter_1.Items, Value = someValue)  # ← self-reference
+      Items: =["A", "B", "C"]
+```
+Studio error: `Incompatible types for comparison. These types can't be compared: Error, Text.`
+
+**Correct:**
+```yaml
+- ddCostCenter_1:
+    Control: ComboBox@0.0.51
+    Properties:
+      DefaultSelectedItems: =Filter(["A", "B", "C"], Value = someValue)  # ← literal repeated, no self-reference
+      Items: =["A", "B", "C"]
+```
+
+**Rule:** A control property referencing another property of that *same* control (e.g. `DefaultSelectedItems` reading `Items`) creates a dependency Power Fx's type checker flags as circular — the referenced property's static type resolves to `Error`, breaking any comparison against it. Duplicate the literal instead of cross-referencing sibling properties on the same control (consistent with this codebase's existing "no shared constants" convention — see `CLAUDE.md`). Referencing a *different* control's property (e.g. `ddOther.Items`) is fine; the problem is specifically same-control self-reference.
+
+---
+
 ## 4. Global var initialisation
 
 Declare all attachment globals in `App.OnStart`:

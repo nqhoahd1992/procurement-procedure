@@ -210,7 +210,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =240
             - rowInfoLine3_RIS:
                 Control: GroupContainer@1.5.0
@@ -390,7 +390,7 @@ Screens:
                   - lblUploadHeader_RIS:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Upload Corrected Supplier Invoice *"

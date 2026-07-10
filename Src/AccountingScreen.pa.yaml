@@ -235,7 +235,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =300
                   - colCostCenter_AC:
                       Control: GroupContainer@1.5.0
@@ -414,7 +414,7 @@ Screens:
                   - lblChecklistHeader_AC:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Accounting Checklist *"
@@ -623,7 +623,7 @@ Screens:
                   - lblNotesLabel_AC:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Accounting Notes *"

@@ -197,7 +197,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =240
                   - colDept_SFU:
                       Control: GroupContainer@1.5.0
@@ -266,7 +266,7 @@ Screens:
                   - lblGR1Header_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt — Round 1"
@@ -464,7 +464,7 @@ Screens:
                   - lblStep1Header_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt — Round 2"
@@ -502,7 +502,7 @@ Screens:
                   - lblDelegationHeader_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Round 2 Receiver"
@@ -629,7 +629,7 @@ Screens:
                   - lblStep1ChecklistHeader_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =12
                         Text: ="Goods Receipt Checklist *"
@@ -859,7 +859,7 @@ Screens:
                         - lblReceiptDate2Label_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: ="Receipt Date *"
@@ -888,7 +888,7 @@ Screens:
                         - lblReceiptStatus2Label_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: ="Receipt Status *"
@@ -919,7 +919,7 @@ Screens:
                         - lblAcceptanceDecision2Label_SFU:
                             Control: Label@2.5.1
                             Properties:
-                              FontWeight: =FontWeight.Bold
+                              FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
                               Text: ="Acceptance Decision *"
@@ -955,7 +955,7 @@ Screens:
                   - lblRemarks2Label_SFU:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Remarks *"
@@ -1026,7 +1026,7 @@ Screens:
                                   Control: Label@2.5.1
                                   MetadataKey: FieldName
                                   Properties:
-                                    FontWeight: =FontWeight.Bold
+                                    FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     PaddingLeft: =0
                                     PaddingRight: =0

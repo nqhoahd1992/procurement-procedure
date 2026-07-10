@@ -171,7 +171,7 @@ Screens:
                               FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
-                              Text: =gSelectedRequest.Currency.Value & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
                               Width: =240
                   - colCostCenter_3:
                       Control: GroupContainer@1.5.0
@@ -441,7 +441,7 @@ Screens:
                               "Reason: Urgent purchase",
                           If(gSelectedRequest.PurchaseAccordance.Value = "Unplanned",
                               "Reason: Unplanned purchase",
-                          If(gSelectedRequest.EstimatedCost > 5000 && gSelectedRequest.Currency.Value = "AUD",
+                          If(gSelectedRequest.EstimatedCost > 5000 && gSelectedRequest.Currency = "AUD",
                               "Reason: Estimated cost exceeds threshold (AUD 5,000)",
                           "")))
                         Width: =Parent.Width
@@ -629,7 +629,7 @@ Screens:
                   - lblExecutiveDecisionLabel:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =28
                         Size: =12
                         Text: ="Executive Decision *"
@@ -662,7 +662,7 @@ Screens:
                   - lblApprovalConditionsLabel:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =28
                         Size: =12
                         Text: ="Approval Conditions *"
@@ -697,7 +697,7 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         Color: =RGBA(163, 45, 45, 1)
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =28
                         Size: =12
                         Text: ="Rejection Reason *"

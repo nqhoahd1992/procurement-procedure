@@ -72,13 +72,14 @@ Screens:
                       Properties:
                         Height: =36
                         OnSelect: |-
-                          =Reset(ddDepartment_1);
+                          =Reset(ddProject_1);
+                          Reset(ddDepartment_1);
                           Reset(txtDescription_1);
                           Reset(ddCategory_1);
-                          Reset(ddInvoiceRegion);
+                          Reset(txtCostCenter_1);
                           Reset(ddPurchaseAccordance_2);
                           Reset(txtEstimatedCost_1);
-                          Reset(ddCurrency_1);
+                          Reset(txtCurrency_1);
                           Reset(ddDeliveryLocation_1);
                           Reset(txtBudgetRef_1);
                           Reset(ddPreferredSupplier_1);
@@ -99,10 +100,13 @@ Screens:
                         Height: =36
                         OnSelect: |-
                           =If(
+                              IsBlank(ddProject_1.Selected),
+                              Notify("Please select the Project this request is for", NotificationType.Error),
+                              If(
                               IsBlank(ddDepartment_1.Selected) ||
                               IsBlank(txtDescription_1.Value) ||
                               IsBlank(ddCategory_1.Selected) ||
-                              IsBlank(ddCurrency_1.Selected) ||
+                              IsBlank(txtCurrency_1.Text) ||
                               IsBlank(ddDeliveryLocation_1.Selected) ||
                               IsBlank(dpDeliveryDate_1.SelectedDate) ||
                               IsBlank(rdoProcurementType_1.Selected),
@@ -111,8 +115,8 @@ Screens:
                                   IsBlank(ddPurchaseAccordance_2.Selected),
                                   Notify("Please fill in all required fields", NotificationType.Error),
                                   If(
-                                      IsBlank(ddInvoiceRegion.Selected),
-                                      Notify("Please select an Invoice Target Market", NotificationType.Error),
+                                      IsBlank(txtCostCenter_1.Text),
+                                      Notify("Please select a Cost Center", NotificationType.Error),
                                       If(
                                           IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
                                           Notify("Estimated Cost is required and must be a number", NotificationType.Error),
@@ -127,7 +131,7 @@ Screens:
                                                   If(
                                                       Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                           ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                          (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")) &&
+                                                          (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD")) &&
                                                       IsBlank(ddManagerApprover_1.Selected),
                                                       Notify("Please select a Manager Approver", NotificationType.Error),
                                                       With(
@@ -139,6 +143,7 @@ Screens:
                                                                       Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
                                                                       RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                                                       RequesterEmail: User().Email,
+                                                                      ProjectID: ddProject_1.Selected.ProjectID,
                                                                       Department: ddDepartment_1.Selected.Value,
                                                                       ProcurementDescription: txtDescription_1.Value,
                                                                       BudgetReference: txtBudgetRef_1.Value,
@@ -146,8 +151,17 @@ Screens:
                                                                       PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
                                                                       Category: {Value: ddCategory_1.Selected.Value},
                                                                       PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
-                                                                      InvoiceRegion: {Value: ddInvoiceRegion.Selected.Value},
-                                                                      Currency: {Value: ddCurrency_1.Selected.Value},
+                                                                      CostCenter: txtCostCenter_1.Text,
+                                                                      InvoiceRegion: {Value: Switch(
+                                                                          txtCostCenter_1.Text,
+                                                                          "Office Melbourne (Head Quarter)", "AU",
+                                                                          "Port Melbourne Warehouse", "AU",
+                                                                          "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU",
+                                                                          "Max Biocare Research Park - Mar-Nuka Bay", "AU",
+                                                                          "Malay Warehouse", "MY",
+                                                                          "Singapore Warehouse", "SG"
+                                                                      )},
+                                                                      Currency: txtCurrency_1.Text,
                                                                       EstimatedCost: Value(txtEstimatedCost_1.Value),
                                                                       RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
                                                                       ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
@@ -159,17 +173,17 @@ Screens:
                                                                       ManagerApproverID: If(
                                                                           Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                               ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                              (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")),
+                                                                              (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD")),
                                                                           {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
                                                                           Blank()
                                                                       ),
                                                                       SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                                             ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                            (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                                            (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD"),
                                                                       Status: {Value: If(
                                                                           ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                           ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                          (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"),
+                                                                          (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD"),
                                                                           "Pending Executive",
                                                                           "Pending Manager"
                                                                       )}
@@ -191,6 +205,7 @@ Screens:
                                       )
                                   )
                               )
+                          )
                           )
                         Text: ="Submit Request →"
                         Width: =200
@@ -253,6 +268,69 @@ Screens:
                         Size: =12
                         Text: =gCurrentEmployee.Title
                         Width: =525
+            - rowProject:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =8
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - lblProjectLabel_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Related Project *"
+                        Width: =400
+                  - ddProject_1:
+                      Control: ComboBox@0.0.51
+                      Properties:
+                        Height: =40
+                        InputTextPlaceholder: ="Choose the project this request is for"
+                        Items: |-
+                          =Sort(
+                              Filter(Project_List, ProjectStatus.Value = "Not Started" ||
+                                  ProjectStatus.Value = "In Planning" ||
+                                  ProjectStatus.Value = "In Progress" ||
+                                  ProjectStatus.Value = "On Hold" ||
+                                  ProjectStatus.Value = "Completed" ||
+                                  ProjectStatus.Value = "Cancelled"),
+                              Title,
+                              SortOrder.Ascending
+                          )
+                        Width: =600
+                      Children:
+                        - Title_Proj:
+                            Control: ComboBoxDataField@1.5.0
+                            Variant: textualColumn
+                            IsLocked: true
+                            Properties:
+                              FieldDisplayName: ="Title"
+                              FieldName: ="Title"
+                              FieldType: ="E"
+                              Order: =1
+                  - lblViewProjectList:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(56, 96, 178, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =20
+                        OnSelect: =Launch("https://apps.powerapps.com/play/e/default-6292eb61-3778-47c8-b769-a982698418cc/a/4c275f4f-228e-4dbd-af2b-fc3835168257?tenantId=6292eb61-3778-47c8-b769-a982698418cc", {}, LaunchTarget.New)
+                        Size: =10
+                        Text: ="🔗 View Project List (lookup project details)"
+                        Underline: =true
+                        Width: =400
             - rowDeptCategory:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -295,6 +373,8 @@ Screens:
                         - ddDepartment_1:
                             Control: ComboBox@0.0.51
                             Properties:
+                              DefaultSelectedItems: =Filter(Choices('Employee List'.Department), Value = ddProject_1.Selected.Department)
+                              DisplayMode: =If(IsBlank(ddProject_1.Selected), DisplayMode.Disabled, DisplayMode.View)
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
                               Items: =Choices('Employee List'.Department)
@@ -434,13 +514,14 @@ Screens:
                                   {RequesterInvoiceURL: First(Form1.LastSubmit.Attachments).AbsoluteUri}
                               )
                           );
+                          Reset(ddProject_1);
                           Reset(ddDepartment_1);
                           Reset(txtDescription_1);
                           Reset(ddCategory_1);
-                          Reset(ddInvoiceRegion);
+                          Reset(txtCostCenter_1);
                           Reset(ddPurchaseAccordance_2);
                           Reset(txtEstimatedCost_1);
-                          Reset(ddCurrency_1);
+                          Reset(txtCurrency_1);
                           Reset(ddDeliveryLocation_1);
                           Reset(txtBudgetRef_1);
                           Reset(ddPreferredSupplier_1);
@@ -576,7 +657,7 @@ Screens:
                               InputTextPlaceholder: ="Choose an option"
                               Items: =Choices(Procurement_Requests.PurchaseAccordance)
                               Width: =Parent.Width
-                  - colInvoiceRegion:
+                  - colCostCenter_1:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
                       Properties:
@@ -591,7 +672,7 @@ Screens:
                         X: =40
                         Y: =40
                       Children:
-                        - lblInvoiceRegionLabel:
+                        - lblCostCenterLabel_1:
                             Control: Label@2.5.1
                             Properties:
                               FontWeight: =FontWeight.Bold
@@ -601,12 +682,17 @@ Screens:
                               Width: =300
                               X: =40
                               Y: =40
-                        - ddInvoiceRegion:
-                            Control: ComboBox@0.0.51
+                        - txtCostCenter_1:
+                            Control: ModernTextInput@1.1.1
                             Properties:
+                              Default: =ddProject_1.Selected.CostCenter.Value
+                              DisplayMode: =If(IsBlank(ddProject_1.Selected), DisplayMode.Disabled, DisplayMode.View)
+                              FontWeight: =""
                               Height: =40
-                              InputTextPlaceholder: ="Choose an option"
-                              Items: =Choices(Procurement_Requests.InvoiceRegion)
+                              MaxLength: =-1
+                              Placeholder: ="Enter cost center location"
+                              Size: =0
+                              TriggerOutput: =TriggerOutput.FocusOut
                               Width: =Parent.Width
                               X: =40
                               Y: =40
@@ -697,7 +783,7 @@ Screens:
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
                         RadiusTopRight: =0
-                        Width: =180
+                        Width: =280
                       Children:
                         - lblEstimatedCostLabel_1:
                             Control: Label@2.5.1
@@ -706,41 +792,45 @@ Screens:
                               Height: =24
                               Size: =11
                               Text: ="Estimated Cost *"
-                              Width: =180
-                        - txtEstimatedCost_1:
-                            Control: TextInput@0.0.54
+                              Width: =280
+                        - colEstimatedCostRow:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
                               Height: =40
-                              Placeholder: ="Please enter an amount"
-                              Width: =Parent.Width
-                  - colCurrency:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =160
-                      Children:
-                        - lblCurrencyLabel_1:
-                            Control: Label@2.5.1
-                            Properties:
-                              FontWeight: =FontWeight.Bold
-                              Height: =24
-                              Size: =11
-                              Text: ="Currency *"
-                              Width: =160
-                        - ddCurrency_1:
-                            Control: ComboBox@0.0.51
-                            Properties:
-                              Height: =40
-                              InputTextPlaceholder: ="Choose an option"
-                              Items: =Choices(Procurement_Requests.Currency)
-                              Width: =Parent.Width
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutGap: =10
+                              LayoutMinHeight: =16
+                              LayoutMinWidth: =16
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - txtEstimatedCost_1:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    FillPortions: =1
+                                    Height: =40
+                                    LayoutMinWidth: =120
+                                    Placeholder: ="Please enter an amount"
+                                    Width: =Parent.Width
+                              - txtCurrency_1:
+                                  Control: ModernTextInput@1.1.1
+                                  Properties:
+                                    Default: =ddProject_1.Selected.Currency
+                                    DisplayMode: =If(IsBlank(ddProject_1.Selected), DisplayMode.Disabled, DisplayMode.View)
+                                    FontWeight: =""
+                                    Height: =40
+                                    LayoutMinHeight: =16
+                                    LayoutMinWidth: =16
+                                    MaxLength: =-1
+                                    Placeholder: ="Currency"
+                                    Size: =0
+                                    TriggerOutput: =TriggerOutput.FocusOut
+                                    Width: =100
                   - colBudgetRef:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
@@ -874,7 +964,7 @@ Screens:
                   Visible: |-
                     =Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                         ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                        (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD"))
+                        (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD"))
                   Width: =Parent.Width
                 Children:
                   - lblManagerApproverLabel_1:
@@ -919,7 +1009,7 @@ Screens:
                   Visible: |-
                     =ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                     ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                    (Value(txtEstimatedCost_1.Value) > 5000 && ddCurrency_1.Selected.Value = "AUD")
+                    (Value(txtEstimatedCost_1.Value) > 5000 && txtCurrency_1.Text = "AUD")
                   Width: =Parent.Width
                 Children:
                   - lblEscalationNotice_1:
