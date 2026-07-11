@@ -133,10 +133,9 @@ Screens:
                 Control: Label@2.5.1
                 Properties:
                   Color: =RGBA(30, 80, 150, 1)
-                  Fill: =RGBA(235, 244, 255, 1)
                   Height: =28
-                  PaddingLeft: =8
-                  PaddingRight: =8
+                  PaddingLeft: =0
+                  PaddingRight: =0
                   Size: =10
                   Text: |-
                     ="Note: The request is currently in " & gSelectedRequest.Status.Value & " phase. Submitting here completes the invoice step — the request will stay in its current stage."
