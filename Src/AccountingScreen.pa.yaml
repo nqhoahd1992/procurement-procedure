@@ -736,7 +736,7 @@ Screens:
                                               If(
                                                   IsBlank(wLog.ID),
                                                   Notify("Failed to save execution log. Please try again.", NotificationType.Error),
-                                                  Notify("Accounting handover completed. Request is now pending Goods Receipt & Acceptance.", NotificationType.Success);
+                                                  Notify("Accounting handover completed. Request is now Completed.", NotificationType.Success);
                                                   Navigate(HomeScreen)
                                               )
                                           )
