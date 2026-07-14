@@ -856,7 +856,9 @@ Screens:
                                                   txtAttentionValue_PE.Value,
                                                   txtDescriptionValue_PE.Value,
                                                   gSelectedRequest.InvoiceRegion.Value,
-                                                  txtABNValue_PE.Value
+                                                  txtABNValue_PE.Value,
+                                                  "Procurement App",
+                                                  gSelectedRequest.ProjectID
                                               )
                                           );
                                           If(
@@ -1056,7 +1058,9 @@ Screens:
                                                   txtAttentionValue_PE.Value,
                                                   txtDescriptionValue_PE.Value,
                                                   gSelectedRequest.InvoiceRegion.Value,
-                                                  txtABNValue_PE.Value
+                                                  txtABNValue_PE.Value,
+                                                  "Procurement App",
+                                                  gSelectedRequest.ProjectID
                                               )
                                           );
                                           If(

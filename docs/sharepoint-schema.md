@@ -210,7 +210,7 @@ Required ⚠: none. Bound to the "Preferred Supplier" picker via `Sort(Suppliers
 
 ## Power Automate flows (Logic flows connector)
 
-Both are called from `ProcurementExecutionScreen` via `<Flow>.Run(...)`.
+Both are called from `ProcurementExecutionScreen` (and `Submit_Invoice` also from `InvoiceSubmissionScreen`) via `<Flow>.Run(...)`.
 
 ### `Parse_Invoice.Run(invoiceLink, requestId)` — AI invoice extraction
 
@@ -223,7 +223,7 @@ Both are called from `ProcurementExecutionScreen` via `<Flow>.Run(...)`.
 
 ### `Submit_Invoice.Run(...)` — writes the official invoice + `Procurement_InvoiceData`
 
-16 positional args (the trigger names them `text`, `number`, `text_1`…); the app passes them in this order:
+18 positional args (the trigger names them `text`, `number`, `text_1`…); the app passes them in this order at all three call sites (`ProcurementExecutionScreen` Path A / Path C-Direct, `InvoiceSubmissionScreen`):
 
 | # | Trigger param | App value |
 |---|---|---|
@@ -240,8 +240,10 @@ Both are called from `ProcurementExecutionScreen` via `<Flow>.Run(...)`.
 | 11 | `text_7` | AI jobId |
 | 12 | `number_3` | AI confidenceScore |
 | 13 | `text_8` | attention |
-| 14 | `text_9` | (reserved — empty string) |
+| 14 | `text_9` | invoice **Description** field value |
 | 15 | `text_10` | invoice region |
 | 16 | `text_11` | ABN |
+| 17 | `text_12` | source app name (`"Procurement App"`) |
+| 18 | `text_13` | `gSelectedRequest.ProjectID` |
 
 **Returns**: `newinvoicelink` (string).
