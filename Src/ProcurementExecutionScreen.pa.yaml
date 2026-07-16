@@ -1161,6 +1161,7 @@ Screens:
                         Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", gSelectedRequest.RequesterInvoiceURL)
                         Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                         Width: =Parent.Width
+                        Wrap: =false
                   - lblInvoiceCorrectLabel_PE:
                       Control: Label@2.5.1
                       Properties:

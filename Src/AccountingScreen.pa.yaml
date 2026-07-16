@@ -322,6 +322,7 @@ Screens:
                         Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", gSelectedRequest.OfficialInvoiceLink)
                         Underline: =true
                         Width: =Parent.Width - 40
+                        Wrap: =false
                   - lblSupplierSummaryRefTitle_AC:
                       Control: Label@2.5.1
                       Properties:
@@ -394,6 +395,7 @@ Screens:
                         Underline: =Not(IsBlank(gSelectedRequest.CreditNote))
                         VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
+                        Wrap: =false
             - rowChecklistHeader_AC:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout

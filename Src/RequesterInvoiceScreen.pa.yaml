@@ -352,6 +352,7 @@ Screens:
                         Text: =gSelectedRequest.RequesterInvoiceURL
                         Underline: =true
                         Width: =Parent.Width - 40
+                        Wrap: =false
                   - btnRemoveInvoice_RIS:
                       Control: Button@0.0.45
                       Properties:
