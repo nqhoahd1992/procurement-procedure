@@ -533,13 +533,14 @@ Screens:
                                 =If(
                                     Not(IsBlank(gSelectedRequest.SFU1AssignedToID)),
                                     Procurement_Notify_Receipt_Assignee.Run(
-                                    LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).email,
+                                    LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).Email,
                                     gSelectedRequest.SFU1AssignedToID.Value,
                                     gSelectedRequest.Title,
                                     gSelectedRequest.ID,
                                     "Unassigned",
                                     Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                    gSelectedRequest.Category.Value
+                                    gSelectedRequest.Category.Value,
+                                    "Max Biocare Procurement"
                                     )
                                 );
                                 Set(gSFU1DelegationMode, "I will receive");
@@ -1585,13 +1586,14 @@ Screens:
                               Not(IsBlank(gSelectedRequest.SFU1AssignedToID)) &&
                               gSelectedRequest.SFU1AssignedToID.Id <> ddAssignReceiver_SFU.Selected.ID,
                               Procurement_Notify_Receipt_Assignee.Run(
-                                  LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).email,
+                                  LookUp('Employee List', ID = gSelectedRequest.SFU1AssignedToID.Id).Email,
                                   gSelectedRequest.SFU1AssignedToID.Value,
                                   gSelectedRequest.Title,
                                   gSelectedRequest.ID,
                                   "Unassigned",
                                   Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                  gSelectedRequest.Category.Value
+                                  gSelectedRequest.Category.Value,
+                                  "Max Biocare Procurement"
                               )
                             );
                             With(
@@ -1601,13 +1603,14 @@ Screens:
                                 Notify("Failed to save assignment. Please try again.", NotificationType.Error),
                                 Set(gSelectedRequest, wPatched);
                                 Procurement_Notify_Receipt_Assignee.Run(
-                                  ddAssignReceiver_SFU.Selected.email,
+                                  ddAssignReceiver_SFU.Selected.Email,
                                   ddAssignReceiver_SFU.Selected.Title,
                                   gSelectedRequest.Title,
                                   gSelectedRequest.ID,
                                   "SupplierFollowUp",
                                   Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                  gSelectedRequest.Category.Value
+                                  gSelectedRequest.Category.Value,
+                                  "Max Biocare Procurement"
                                 );
                                 Notify("Assignment saved to " & ddAssignReceiver_SFU.Selected.Title, NotificationType.Success)
                               )

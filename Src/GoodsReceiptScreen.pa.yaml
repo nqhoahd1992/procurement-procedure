@@ -299,13 +299,14 @@ Screens:
                                 =If(
                                     Not(IsBlank(gSelectedRequest.GRAssignedToID)),
                                     Procurement_Notify_Receipt_Assignee.Run(
-                                    LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).email,
+                                    LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).Email,
                                     gSelectedRequest.GRAssignedToID.Value,
                                     gSelectedRequest.Title,
                                     gSelectedRequest.ID,
                                     "Unassigned",
                                     Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                    gSelectedRequest.Category.Value
+                                    gSelectedRequest.Category.Value,
+                                    "Max Biocare Procurement"
                                     )
                                 );
                                 Set(gGRDelegationMode, "I will receive");
@@ -882,13 +883,14 @@ Screens:
                                   Not(IsBlank(gSelectedRequest.GRAssignedToID)) &&
                                   gSelectedRequest.GRAssignedToID.Id <> ddAssignReceiver_GR.Selected.ID,
                                   Procurement_Notify_Receipt_Assignee.Run(
-                                      LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).email,
+                                      LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).Email,
                                       gSelectedRequest.GRAssignedToID.Value,
                                       gSelectedRequest.Title,
                                       gSelectedRequest.ID,
                                       "Unassigned",
                                       Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                      gSelectedRequest.Category.Value
+                                      gSelectedRequest.Category.Value,
+                                      "Max Biocare Procurement"
                                   )
                               );
                               With(
@@ -898,13 +900,14 @@ Screens:
                                       Notify("Failed to save assignment. Please try again.", NotificationType.Error),
                                       Set(gSelectedRequest, wPatched);
                                       Procurement_Notify_Receipt_Assignee.Run(
-                                          ddAssignReceiver_GR.Selected.email,
+                                          ddAssignReceiver_GR.Selected.Email,
                                           ddAssignReceiver_GR.Selected.Title,
                                           gSelectedRequest.Title,
                                           gSelectedRequest.ID,
                                           "GoodsReceipt",
                                           Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
-                                          gSelectedRequest.Category.Value
+                                          gSelectedRequest.Category.Value,
+                                          "Max Biocare Procurement"
                                       );
                                       Notify("Assignment saved to " & ddAssignReceiver_GR.Selected.Title, NotificationType.Success)
                                   )
