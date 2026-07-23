@@ -100,110 +100,115 @@ Screens:
                         Height: =36
                         OnSelect: |-
                           =If(
-                              rdoHasProject.Selected.Value = "Yes" && IsBlank(ddProject_1.Selected),
-                              Notify("Please select the Project this request is for", NotificationType.Error),
+                              IsBlank(rdoHasProject.Selected),
+                              Notify("Please select whether this request is related to a Project", NotificationType.Error),
                               If(
-                              IsBlank(ddDepartment_1.Selected) ||
-                              IsBlank(txtDescription_1.Value) ||
-                              IsBlank(ddCategory_1.Selected) ||
-                              IsBlank(ddDeliveryLocation_1.Selected) ||
-                              IsBlank(dpDeliveryDate_1.SelectedDate) ||
-                              IsBlank(rdoProcurementType_1.Selected),
-                              Notify("Please fill in all required fields", NotificationType.Error),
-                              If(
-                                  IsBlank(ddPurchaseAccordance_2.Selected),
-                                  Notify("Please fill in all required fields", NotificationType.Error),
+                                  rdoHasProject.Selected.Value = "Yes" && IsBlank(ddProject_1.Selected),
+                                  Notify("Please select the Project this request is for", NotificationType.Error),
                                   If(
-                                      IsBlank(ddCostCenter_1.Selected),
-                                      Notify("Please select a Cost Center", NotificationType.Error),
+                                      IsBlank(ddDepartment_1.Selected) ||
+                                      IsBlank(txtDescription_1.Value) ||
+                                      IsBlank(ddCategory_1.Selected) ||
+                                      IsBlank(ddDeliveryLocation_1.Selected) ||
+                                      IsBlank(dpDeliveryDate_1.SelectedDate) ||
+                                      IsBlank(rdoProcurementType_1.Selected),
+                                      Notify("Please fill in all required fields", NotificationType.Error),
                                       If(
-                                          IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
-                                          Notify("Estimated Cost is required and must be a number", NotificationType.Error),
+                                          IsBlank(ddPurchaseAccordance_2.Selected),
+                                          Notify("Please fill in all required fields", NotificationType.Error),
                                           If(
-                                              rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
-                                              IsBlank(rdoInvoiceType_1.Selected),
-                                              Notify("Please select an invoice type", NotificationType.Error),
+                                              IsBlank(ddCostCenter_1.Selected),
+                                              Notify("Please select a Cost Center", NotificationType.Error),
                                               If(
-                                                  rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
-                                                  CountRows(DataCardValue15.Attachments) = 0,
-                                                  Notify("Please attach the invoice file before submitting", NotificationType.Error),
+                                                  IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
+                                                  Notify("Estimated Cost is required and must be a number", NotificationType.Error),
                                                   If(
-                                                      Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                          ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                          (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")) &&
-                                                      IsBlank(ddManagerApprover_1.Selected),
-                                                      Notify("Please select a Manager Approver", NotificationType.Error),
-                                                      With(
-                                                          {
-                                                              wNewRequest: Patch(
-                                                                  Procurement_Requests,
-                                                                  Defaults(Procurement_Requests),
-                                                                  {
-                                                                      Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
-                                                                      RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                                      RequesterEmail: User().Email,
-                                                                      ProjectID: ddProject_1.Selected.ProjectID,
-                                                                      Department: ddDepartment_1.Selected.Value,
-                                                                      ProcurementDescription: txtDescription_1.Value,
-                                                                      BudgetReference: txtBudgetRef_1.Value,
-                                                                      DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
-                                                                      PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
-                                                                      Category: {Value: ddCategory_1.Selected.Value},
-                                                                      PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
-                                                                      CostCenter: {Value: ddCostCenter_1.Selected.Value},
-                                                                      InvoiceRegion: {Value: Switch(
-                                                                          ddCostCenter_1.Selected.Value,
-                                                                          "Office Melbourne (Head Quarter)", "AU",
-                                                                          "Port Melbourne Warehouse", "AU",
-                                                                          "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU",
-                                                                          "Max Biocare Research Park - Mar-Nuka Bay", "AU",
-                                                                          "Malay Warehouse", "MY",
-                                                                          "Singapore Warehouse", "SG"
-                                                                      )},
-                                                                      Currency: Switch(
-                                                                          ddCostCenter_1.Selected.Value,
-                                                                          "Office Melbourne (Head Quarter)", "AUD",
-                                                                          "Port Melbourne Warehouse", "AUD",
-                                                                          "Max Biocare Research Park - Natural Inspirations@Yinnar", "AUD",
-                                                                          "Max Biocare Research Park - Mar-Nuka Bay", "AUD",
-                                                                          "Malay Warehouse", "MYR",
-                                                                          "Singapore Warehouse", "SGD"
-                                                                      ),
-                                                                      EstimatedCost: Value(txtEstimatedCost_1.Value),
-                                                                      RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
-                                                                      ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
-                                                                      InvoiceType: If(
-                                                                          rdoProcurementType_1.Selected.Value = "Invoice Supplied",
-                                                                          {Value: rdoInvoiceType_1.Selected.Value},
-                                                                          Blank()
-                                                                      ),
-                                                                      ManagerApproverID: If(
-                                                                          Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                              ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                              (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")),
-                                                                          {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
-                                                                          Blank()
-                                                                      ),
-                                                                      SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                                            ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                            (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
-                                                                      Status: {Value: If(
-                                                                          ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
-                                                                          ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                          (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
-                                                                          "Pending Executive",
-                                                                          "Pending Manager"
-                                                                      )}
-                                                                  }
-                                                              )
-                                                          },
+                                                      rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                                      IsBlank(rdoInvoiceType_1.Selected),
+                                                      Notify("Please select an invoice type", NotificationType.Error),
+                                                      If(
+                                                          rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
+                                                          CountRows(DataCardValue15.Attachments) = 0,
+                                                          Notify("Please attach the invoice file before submitting", NotificationType.Error),
                                                           If(
-                                                              IsBlank(wNewRequest.ID),
-                                                              Notify("Failed to submit request. Please try again.", NotificationType.Error),
-                                                              Set(gPendingAttachments, DataCardValue15.Attachments);
-                                                              Set(gSelectedRequest, wNewRequest);
-                                                              EditForm(Form1);
-                                                              SubmitForm(Form1);
+                                                              Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                  ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")) &&
+                                                              IsBlank(ddManagerApprover_1.Selected),
+                                                              Notify("Please select a Manager Approver", NotificationType.Error),
+                                                              With(
+                                                                  {
+                                                                      wNewRequest: Patch(
+                                                                          Procurement_Requests,
+                                                                          Defaults(Procurement_Requests),
+                                                                          {
+                                                                              Title: gCurrentEmployee.Title & " - " & ddCategory_1.Selected.Value & " - " & Text(Today(), "dd/mm/yyyy"),
+                                                                              RequesterID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                                              RequesterEmail: User().Email,
+                                                                              ProjectID: ddProject_1.Selected.ProjectID,
+                                                                              Department: ddDepartment_1.Selected.Value,
+                                                                              ProcurementDescription: txtDescription_1.Value,
+                                                                              BudgetReference: txtBudgetRef_1.Value,
+                                                                              DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
+                                                                              PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
+                                                                              Category: {Value: ddCategory_1.Selected.Value},
+                                                                              PurchaseAccordance: {Value: ddPurchaseAccordance_2.Selected.Value},
+                                                                              CostCenter: {Value: ddCostCenter_1.Selected.Value},
+                                                                              InvoiceRegion: {Value: Switch(
+                                                                                  ddCostCenter_1.Selected.Value,
+                                                                                  "Office Melbourne (Head Quarter)", "AU",
+                                                                                  "Port Melbourne Warehouse", "AU",
+                                                                                  "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU",
+                                                                                  "Max Biocare Research Park - Mar-Nuka Bay", "AU",
+                                                                                  "Malay Warehouse", "MY",
+                                                                                  "Singapore Warehouse", "SG"
+                                                                              )},
+                                                                              Currency: Switch(
+                                                                                  ddCostCenter_1.Selected.Value,
+                                                                                  "Office Melbourne (Head Quarter)", "AUD",
+                                                                                  "Port Melbourne Warehouse", "AUD",
+                                                                                  "Max Biocare Research Park - Natural Inspirations@Yinnar", "AUD",
+                                                                                  "Max Biocare Research Park - Mar-Nuka Bay", "AUD",
+                                                                                  "Malay Warehouse", "MYR",
+                                                                                  "Singapore Warehouse", "SGD"
+                                                                              ),
+                                                                              EstimatedCost: Value(txtEstimatedCost_1.Value),
+                                                                              RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
+                                                                              ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
+                                                                              InvoiceType: If(
+                                                                                  rdoProcurementType_1.Selected.Value = "Invoice Supplied",
+                                                                                  {Value: rdoInvoiceType_1.Selected.Value},
+                                                                                  Blank()
+                                                                              ),
+                                                                              ManagerApproverID: If(
+                                                                                  Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                                      ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                                      (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")),
+                                                                                  {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
+                                                                                  Blank()
+                                                                              ),
+                                                                              SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                                                  ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
+                                                                              Status: {Value: If(
+                                                                                  ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
+                                                                                  ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
+                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
+                                                                                  "Pending Executive",
+                                                                                  "Pending Manager"
+                                                                              )}
+                                                                          }
+                                                                      )
+                                                                  },
+                                                                  If(
+                                                                      IsBlank(wNewRequest.ID),
+                                                                      Notify("Failed to submit request. Please try again.", NotificationType.Error),
+                                                                      Set(gPendingAttachments, DataCardValue15.Attachments);
+                                                                      Set(gSelectedRequest, wNewRequest);
+                                                                      EditForm(Form1);
+                                                                      SubmitForm(Form1);
+                                                                  )
+                                                              )
                                                           )
                                                       )
                                                   )
@@ -212,7 +217,6 @@ Screens:
                                       )
                                   )
                               )
-                          )
                           )
                         Text: ="Submit Request →"
                         Width: =200
@@ -339,6 +343,7 @@ Screens:
                         LayoutGap: =4
                         LayoutMinHeight: =16
                         LayoutMinWidth: =16
+                        PaddingLeft: =1
                         RadiusBottomLeft: =0
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
@@ -369,7 +374,6 @@ Screens:
                                     Size: =11
                                     Text: ="Select Project *"
                                     Visible: =rdoHasProject.Selected.Value = "Yes"
-                                    Width: =360
                                     X: =40
                                     Y: =40
                               - lblViewProjectList:
@@ -390,9 +394,11 @@ Screens:
                                     X: =40
                                     Y: =40
                         - ddProject_1:
-                            Control: ComboBox@0.0.51
+                            Control: Classic/ComboBox@2.4.0
                             Properties:
-                              Height: =40
+                              BorderThickness: =1
+                              ChevronBackground: =RGBA(56, 96, 178, 1)
+                              DisplayFields: =["ProjectID","Title"]
                               InputTextPlaceholder: ="Choose the project this request is for"
                               Items: |-
                                 =Sort(
@@ -405,20 +411,15 @@ Screens:
                                     Title,
                                     SortOrder.Ascending
                                 )
+                              PaddingLeft: =15
+                              PaddingRight: =15
+                              SearchFields: =["ProjectID","Title"]
+                              SelectMultiple: =false
+                              Size: =11
                               Visible: =rdoHasProject.Selected.Value = "Yes"
                               Width: =Parent.Width
                               X: =40
                               Y: =40
-                            Children:
-                              - ProjectID:
-                                  Control: ComboBoxDataField@1.5.0
-                                  Variant: textualColumn
-                                  IsLocked: true
-                                  Properties:
-                                    FieldDisplayName: ="Title"
-                                    FieldName: ="ProjectID"
-                                    FieldType: ="E"
-                                    Order: =1
             - rowDeptCategory:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
