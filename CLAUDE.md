@@ -23,6 +23,7 @@ All data lives in **SharePoint Online** (`maxbiocare.sharepoint.com/sites/Powera
 - `Procurement_ApprovalLog` — manager/executive decisions (StepNumber 2 = Manager, 3 = Executive).
 - `Procurement_ExecutionLog` — procurement/goods-receipt/follow-up step records (StepNumber 1, 3, 4, 5).
 - `Procurement_InvoiceData`, `Suppliers`, `Employee List`.
+- `Project_List` — cross-app project list (owned by the sibling `project-list` app, same site). Read-only here: the `ddProject_1` picker on `RequestFormScreen`, the project-name label on `RequestDetailScreen`, and the "Project Information" panel on `ManagerReviewScreen` / `ExecutiveApprovalScreen` (`ProjectID`, `ProjectDescription`, `BudgetAmount`, `Currency`). `Procurement_InvoiceData` is read a second way by that same panel — `Filter(Procurement_InvoiceData, ProjectID = gSelectedRequest.ProjectID)`, summed by `Currency` over `TotalAmount` — to show the project's Actual Cost.
 
 Full column-level schema (types, choice values, join keys): `docs/sharepoint-schema.md`.
 
@@ -50,6 +51,7 @@ Assignment notification flow (called from `GoodsReceiptScreen` and `SupplierFoll
 - `gIsSpecialRole` — true for Manager/Executive/Procurement/Accounting/Admin (drives toolbar/filter visibility).
 - `gSelectedRequest` — the request being viewed/acted on (set before `Navigate`).
 - `gStatusFilter`, `gParsingInvoice`, `gHasInvoiceResult`, `gInvoiceResult`, `gShowRejectReason`.
+- `gProjectInfo` / `colProjectInvoices` / `gShowRateInfo` — set in `ManagerReviewScreen.OnVisible` and `ExecutiveApprovalScreen.OnVisible` (**not** in `App.OnStart`), backing the "Project Information" panel: `gProjectInfo` is the `LookUp(Project_List, ProjectID = gSelectedRequest.ProjectID)` row (blank when the request isn't tied to a project), `colProjectInvoices` the matching `Procurement_InvoiceData` rows, `gShowRateInfo` the "Currency Exchange Reference" dialog toggle (reset to `false` on every screen entry). The AUD conversion rates behind the panel's Grand Total are hardcoded in a `Switch(Upper(Currency), ...)` inside the `lblProjectGrandTotal_MR`/`_EA` labels and mirrored as plain text in the dialog — change both together, and keep them in sync with the same table in `project-list`'s `ViewProjectScreen` and in the sibling `procurement-raw-materials` app.
 
 If `gCurrentEmployee.ID` is blank, the user sees an "account not found" message and no UI — the app is membership-gated by the `Employee List`.
 
