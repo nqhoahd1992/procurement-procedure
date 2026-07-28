@@ -951,7 +951,9 @@ Screens:
                                                       gSelectedRequest,
                                                       {
                                                           Status: {Value: If(
-                                                              rdoApproved.Selected.Value = "Approved (within budget)",
+                                                              rdoApproved.Selected.Value = "Approved (within budget)" &&
+                                                              gSelectedRequest.Currency = "AUD" &&
+                                                              gSelectedRequest.EstimatedCost <= 10000,
                                                               "Pending Procurement",
                                                               "Pending Executive"
                                                           )}

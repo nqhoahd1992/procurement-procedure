@@ -1041,8 +1041,14 @@ Screens:
                                                           Status: {Value: If(
                                                               rdoExecutiveDecision.Selected.Value = "Reject",
                                                               "Rejected",
-                                                              "Pending Procurement"
+                                                              If(
+                                                                  gSelectedRequest.Currency <> "AUD" || gSelectedRequest.EstimatedCost > 10000,
+                                                                  "Pending Executive",
+                                                                  "Pending Procurement"
+                                                              )
                                                           )},
+                                                          isExecutivePayment: Not(rdoExecutiveDecision.Selected.Value = "Reject") &&
+                                                              (gSelectedRequest.Currency <> "AUD" || gSelectedRequest.EstimatedCost > 10000),
                                                           ConditionsText: If(
                                                               rdoExecutiveDecision.Selected.Value = "Approve with conditions",
                                                               txtApprovalConditions.Value,

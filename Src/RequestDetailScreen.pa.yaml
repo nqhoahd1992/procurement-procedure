@@ -84,7 +84,12 @@ Screens:
                   Height: =32
                   LayoutMinWidth: =220
                   Size: =10
-                  Text: =gSelectedRequest.Status.Value
+                  Text: |-
+                    =If(
+                        gSelectedRequest.Status.Value = "Pending Executive" && gSelectedRequest.isExecutivePayment,
+                        "Pending Payment From Executive",
+                        gSelectedRequest.Status.Value
+                    )
                   Width: =220
       - conScrollable:
           Control: GroupContainer@1.5.0
@@ -1943,7 +1948,17 @@ Screens:
                         Text: ="Review Request →"
                         Visible: |-
                           =(gSelectedRequest.Status.Value = "Pending Manager" && (gCurrentUser.Role.Value = "Admin" || (gCurrentUser.Role.Value = "Manager" && gSelectedRequest.ManagerApproverID.Id = gCurrentEmployee.ID))) ||
-                          (gSelectedRequest.Status.Value = "Pending Executive" && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
+                          (gSelectedRequest.Status.Value = "Pending Executive" && Not(gSelectedRequest.isExecutivePayment) && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin"))
+                        Width: =200
+                        X: =40
+                        Y: =40
+                  - btnActionExecutivePayment:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: =Navigate(ExecutivePaymentScreen)
+                        Text: ="Process Payment →"
+                        Visible: =gSelectedRequest.Status.Value = "Pending Executive" && gSelectedRequest.isExecutivePayment && (gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin")
                         Width: =200
                         X: =40
                         Y: =40

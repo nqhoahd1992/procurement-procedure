@@ -473,7 +473,11 @@ Screens:
                                         "Supplier Follow-up (Step 1)",
                                         "Supplier Follow-up (Step 2)"
                                     ),
-                                    ThisItem.Status.Value
+                                    If(
+                                        ThisItem.Status.Value = "Pending Executive" && ThisItem.isExecutivePayment,
+                                        "Pending Payment From Executive",
+                                        ThisItem.Status.Value
+                                    )
                                 )
                               Width: =220
                   - rowMetaLine:

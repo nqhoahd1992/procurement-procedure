@@ -78,6 +78,7 @@ Screens:
                           Reset(txtDescription_1);
                           Reset(ddCategory_1);
                           Reset(ddCostCenter_1);
+                          Reset(ddCurrency_1);
                           Reset(ddPurchaseAccordance_2);
                           Reset(txtEstimatedCost_1);
                           Reset(ddDeliveryLocation_1);
@@ -111,6 +112,7 @@ Screens:
                                       IsBlank(ddCategory_1.Selected) ||
                                       IsBlank(ddDeliveryLocation_1.Selected) ||
                                       IsBlank(dpDeliveryDate_1.SelectedDate) ||
+                                      IsBlank(ddCurrency_1.Selected) ||
                                       IsBlank(rdoProcurementType_1.Selected),
                                       Notify("Please fill in all required fields", NotificationType.Error),
                                       If(
@@ -163,15 +165,7 @@ Screens:
                                                                                   "Malay Warehouse", "MY",
                                                                                   "Singapore Warehouse", "SG"
                                                                               )},
-                                                                              Currency: Switch(
-                                                                                  ddCostCenter_1.Selected.Value,
-                                                                                  "Office Melbourne (Head Quarter)", "AUD",
-                                                                                  "Port Melbourne Warehouse", "AUD",
-                                                                                  "Max Biocare Research Park - Natural Inspirations@Yinnar", "AUD",
-                                                                                  "Max Biocare Research Park - Mar-Nuka Bay", "AUD",
-                                                                                  "Malay Warehouse", "MYR",
-                                                                                  "Singapore Warehouse", "SGD"
-                                                                              ),
+                                                                              Currency: ddCurrency_1.Selected.Value,
                                                                               EstimatedCost: Value(txtEstimatedCost_1.Value),
                                                                               RequiredDeliveryDate: dpDeliveryDate_1.SelectedDate,
                                                                               ProcurementType: {Value: rdoProcurementType_1.Selected.Value},
@@ -610,6 +604,7 @@ Screens:
                           Reset(txtDescription_1);
                           Reset(ddCategory_1);
                           Reset(ddCostCenter_1);
+                          Reset(ddCurrency_1);
                           Reset(ddPurchaseAccordance_2);
                           Reset(txtEstimatedCost_1);
                           Reset(ddDeliveryLocation_1);
@@ -780,6 +775,7 @@ Screens:
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
                               Items: =Choices(Procurement_Requests.CostCenter)
+                              OnChange: =Reset(ddCurrency_1)
                               Width: =Parent.Width
                               X: =40
                               Y: =40
@@ -904,26 +900,29 @@ Screens:
                                     LayoutMinWidth: =120
                                     Placeholder: ="Please enter an amount"
                                     Width: =Parent.Width
-                              - lblCurrencyValue_1:
-                                  Control: Label@2.5.1
+                              - ddCurrency_1:
+                                  Control: ComboBox@0.0.51
                                   Properties:
-                                    Align: =Align.Center
-                                    Fill: =RGBA(214, 221, 224, 1)
-                                    FontWeight: =FontWeight.Semibold
+                                    DefaultSelectedItems: |-
+                                      =If(
+                                          IsBlank(ddCostCenter_1.Selected),
+                                          Blank(),
+                                          Table({Value: Switch(
+                                              ddCostCenter_1.Selected.Value,
+                                              "Office Melbourne (Head Quarter)", "AUD",
+                                              "Port Melbourne Warehouse", "AUD",
+                                              "Max Biocare Research Park - Natural Inspirations@Yinnar", "AUD",
+                                              "Max Biocare Research Park - Mar-Nuka Bay", "AUD",
+                                              "Malay Warehouse", "MYR",
+                                              "Singapore Warehouse", "SGD"
+                                          )})
+                                      )
+                                    Height: =40
+                                    InputTextPlaceholder: ="Currency"
+                                    Items: =["MYR", "SGD", "AUD", "VND", "CNY", "USD"]
                                     LayoutMinHeight: =16
                                     LayoutMinWidth: =16
-                                    Size: =10
-                                    Text: |-
-                                      =Switch(
-                                          ddCostCenter_1.Selected.Value,
-                                          "Office Melbourne (Head Quarter)", "AUD",
-                                          "Port Melbourne Warehouse", "AUD",
-                                          "Max Biocare Research Park - Natural Inspirations@Yinnar", "AUD",
-                                          "Max Biocare Research Park - Mar-Nuka Bay", "AUD",
-                                          "Malay Warehouse", "MYR",
-                                          "Singapore Warehouse", "SGD"
-                                      )
-                                    Width: =100
+                                    Width: =110
                   - colBudgetRef:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
