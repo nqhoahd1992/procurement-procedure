@@ -1290,8 +1290,7 @@ Screens:
                                                             txtDescriptionValue_ISS.Value,
                                                             gSelectedRequest.InvoiceRegion.Value,
                                                             txtABNValue_ISS.Value,
-                                                            "Procurement App",
-                                                            gSelectedRequest.ProjectID
+                                                            "Procurement App"
                                                         )
                                                     );
                                                     If(
