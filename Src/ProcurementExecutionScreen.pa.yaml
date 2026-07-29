@@ -1191,7 +1191,7 @@ Screens:
                         Height: =24
                         PaddingLeft: =0
                         Size: =11
-                        Text: ="Official Invoice Verification (Invoice submitted by requester) *"
+                        Text: ="Invoice Verification (Invoice submitted by requester) *"
                         Width: =Parent.Width - 40
                   - lblRequesterInvoiceURL_PE:
                       Control: Label@2.5.1
