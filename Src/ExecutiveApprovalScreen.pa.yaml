@@ -668,7 +668,7 @@ Screens:
                               "Reason: Urgent purchase",
                           If(gSelectedRequest.PurchaseAccordance.Value = "Unplanned",
                               "Reason: Unplanned purchase",
-                          If(gSelectedRequest.EstimatedCost > 5000 && gSelectedRequest.Currency = "AUD",
+                          If(gSelectedRequest.EstimatedCost > 5000 * Switch(Upper(gSelectedRequest.Currency), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1),
                               "Reason: Estimated cost exceeds threshold (AUD 5,000)",
                           "")))
                         Width: =Parent.Width
@@ -1042,12 +1042,14 @@ Screens:
                                                               rdoExecutiveDecision.Selected.Value = "Reject",
                                                               "Rejected",
                                                               If(
-                                                                  gSelectedRequest.Currency <> "AUD" || gSelectedRequest.EstimatedCost > 10000,
+                                                                  gSelectedRequest.ProcurementType.Value = "Invoice Supplied" &&
+                                                                      (gSelectedRequest.Currency <> "AUD" || gSelectedRequest.EstimatedCost > 10000),
                                                                   "Pending Executive",
                                                                   "Pending Procurement"
                                                               )
                                                           )},
                                                           isExecutivePayment: Not(rdoExecutiveDecision.Selected.Value = "Reject") &&
+                                                              gSelectedRequest.ProcurementType.Value = "Invoice Supplied" &&
                                                               (gSelectedRequest.Currency <> "AUD" || gSelectedRequest.EstimatedCost > 10000),
                                                           ConditionsText: If(
                                                               rdoExecutiveDecision.Selected.Value = "Approve with conditions",
@@ -1060,7 +1062,21 @@ Screens:
                                                       IsBlank(wReq.ID),
                                                       Notify("Failed to update status. Please try again.", NotificationType.Error),
                                                       Notify("Decision submitted successfully", NotificationType.Success);
-                                                      Navigate(HomeScreen)
+                                                      If(
+                                                          wReq.isExecutivePayment,
+                                                          Procurement_Notify_Receipt_Assignee.Run(
+                                                              gCurrentEmployee.Email,
+                                                              gCurrentEmployee.Title,
+                                                              wReq.Title,
+                                                              wReq.ID,
+                                                              "ExecutivePayment",
+                                                              Text(wReq.RequiredDeliveryDate, "dd/mm/yyyy"),
+                                                              wReq.Category.Value,
+                                                              "Max Biocare Procurement"
+                                                          );
+                                                          Navigate(ExecutivePaymentScreen),
+                                                          Navigate(HomeScreen)
+                                                      )
                                                   )
                                               )
                                           )

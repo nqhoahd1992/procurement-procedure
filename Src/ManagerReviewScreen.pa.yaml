@@ -952,6 +952,7 @@ Screens:
                                                       {
                                                           Status: {Value: If(
                                                               rdoApproved.Selected.Value = "Approved (within budget)" &&
+                                                              gSelectedRequest.ProcurementType.Value = "Invoice Supplied" &&
                                                               gSelectedRequest.Currency = "AUD" &&
                                                               gSelectedRequest.EstimatedCost <= 10000,
                                                               "Pending Procurement",

@@ -135,7 +135,7 @@ Screens:
                                                           If(
                                                               Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                   ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")) &&
+                                                                  (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1))) &&
                                                               IsBlank(ddManagerApprover_1.Selected),
                                                               Notify("Please select a Manager Approver", NotificationType.Error),
                                                               With(
@@ -177,17 +177,17 @@ Screens:
                                                                               ManagerApproverID: If(
                                                                                   Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                                       ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                      (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")),
+                                                                                      (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1))),
                                                                                   {Id: ddManagerApprover_1.Selected.EmployeeID.Id, Value: ddManagerApprover_1.Selected.EmployeeID.Value},
                                                                                   Blank()
                                                                               ),
                                                                               SkippedManagerReview: ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                                                   ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
+                                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1)),
                                                                               Status: {Value: If(
                                                                                   ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                                                                                   ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"),
+                                                                                  (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1)),
                                                                                   "Pending Executive",
                                                                                   "Pending Manager"
                                                                               )}
@@ -1056,7 +1056,7 @@ Screens:
                   Visible: |-
                     =Not(ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                         ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                        (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU"))
+                        (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1)))
                   Width: =Parent.Width
                 Children:
                   - lblManagerApproverLabel_1:
@@ -1101,7 +1101,7 @@ Screens:
                   Visible: |-
                     =ddPurchaseAccordance_2.Selected.Value = "Urgent" ||
                     ddPurchaseAccordance_2.Selected.Value = "Unplanned" ||
-                    (Value(txtEstimatedCost_1.Value) > 5000 && Switch(ddCostCenter_1.Selected.Value, "Office Melbourne (Head Quarter)", "AU", "Port Melbourne Warehouse", "AU", "Max Biocare Research Park - Natural Inspirations@Yinnar", "AU", "Max Biocare Research Park - Mar-Nuka Bay", "AU", "Malay Warehouse", "MY", "Singapore Warehouse", "SG") = "AU")
+                    (Value(txtEstimatedCost_1.Value) > 5000 * Switch(Upper(ddCurrency_1.Selected.Value), "AUD", 1, "USD", 0.7, "RM", 3, "MYR", 3, "SGD", 0.9, "VND", 18000, "RMB", 4.7, "CNY", 4.7, 1))
                   Width: =Parent.Width
                 Children:
                   - lblEscalationNotice_1:

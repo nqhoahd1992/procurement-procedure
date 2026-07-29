@@ -417,6 +417,7 @@ Screens:
                         Height: =26
                         LayoutAlignItems: =LayoutAlignItems.Center
                         LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
                         LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                         RadiusBottomLeft: =0
                         RadiusBottomRight: =0
@@ -427,11 +428,12 @@ Screens:
                         - lblRequestTitle:
                             Control: Label@2.5.1
                             Properties:
+                              FillPortions: =1
                               FontWeight: =FontWeight.Semibold
                               Height: =24
                               OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                               Text: =ThisItem.Title
-                              Width: =Parent.Width - 230
+                              Width: =500
                               Wrap: =false
                         - lblRequestStatus:
                             Control: Label@2.5.1
@@ -479,7 +481,7 @@ Screens:
                                         ThisItem.Status.Value
                                     )
                                 )
-                              Width: =220
+                              Width: =260
                   - rowMetaLine:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout

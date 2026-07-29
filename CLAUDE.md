@@ -33,11 +33,13 @@ Invoice flows (called from `ProcurementExecutionScreen` and `InvoiceSubmissionSc
 - `Parse_Invoice.Run(invoiceUrl, requestId)` — AI invoice extraction.
 - `Submit_Invoice.Run(...)` — 18 positional args; writes parsed invoice data. Param 14 is the invoice **Description** field value, param 17 is the source app name (`"Procurement App"`), param 18 is `gSelectedRequest.ProjectID` — see `docs/sharepoint-schema.md` for the full param table.
 
-Assignment notification flow (called from `GoodsReceiptScreen` and `SupplierFollowUpScreen`):
-- `Procurement_Notify_Receipt_Assignee.Run(assigneeEmail, assigneeName, requestTitle, requestId, notificationType, deliveryDate, category)`
+Assignment / status notification flow (called from `GoodsReceiptScreen`, `SupplierFollowUpScreen`, `ExecutiveApprovalScreen`, `ExecutivePaymentScreen`):
+- `Procurement_Notify_Receipt_Assignee.Run(assigneeEmail, assigneeName, requestTitle, requestId, notificationType, deliveryDate, category, appName)`
   - `notificationType = "GoodsReceipt"` — notify new assignee they must perform Goods Receipt & Acceptance.
   - `notificationType = "SupplierFollowUp"` — notify new assignee they must perform Supplier Follow-up Round 2.
   - `notificationType = "Unassigned"` — notify previous assignee they no longer need to act (email only, no Adaptive Card).
+  - `notificationType = "ExecutivePayment"` — notify the approving Executive (`gCurrentEmployee`) they must process payment via `ExecutivePaymentScreen`; called from `btnSubmitExec`'s decision-submit handler when `isExecutivePayment = true`.
+  - `notificationType = "ProcurementExecution"` — notify the Procurement team a request is ready at `Pending Procurement`; called from `ExecutivePaymentScreen`'s `formExecutivePayment.OnSuccess`. `assigneeEmail`/`assigneeName` are passed as generic placeholder values (`"procurement@maxbiocare.com"` / `"Procurement Team"`) — fan-out to all Procurement-role users is handled inside the flow, not per-request.
   - Called on `btnSaveAssignment_GR` / `btnSaveAssignment_SFU` (assign new person) and `btnIWillReceive_GR` / `btnIWillReceive_SFU` (requester takes back the task).
   - Flow sends Outlook email + Teams Adaptive Card for assignment types; email only for Unassigned.
   - Connection: `app.admin@maxbiocare.com` pinned in "Run only users" — not invoker-provided.
@@ -51,7 +53,7 @@ Assignment notification flow (called from `GoodsReceiptScreen` and `SupplierFoll
 - `gIsSpecialRole` — true for Manager/Executive/Procurement/Accounting/Admin (drives toolbar/filter visibility).
 - `gSelectedRequest` — the request being viewed/acted on (set before `Navigate`).
 - `gStatusFilter`, `gParsingInvoice`, `gHasInvoiceResult`, `gInvoiceResult`, `gShowRejectReason`.
-- `gProjectInfo` / `colProjectInvoices` / `gShowRateInfo` — set in `ManagerReviewScreen.OnVisible` and `ExecutiveApprovalScreen.OnVisible` (**not** in `App.OnStart`), backing the "Project Information" panel: `gProjectInfo` is the `LookUp(Project_List, ProjectID = gSelectedRequest.ProjectID)` row (blank when the request isn't tied to a project), `colProjectInvoices` the matching `Procurement_InvoiceData` rows, `gShowRateInfo` the "Currency Exchange Reference" dialog toggle (reset to `false` on every screen entry). The AUD conversion rates behind the panel's Grand Total are hardcoded in a `Switch(Upper(Currency), ...)` inside the `lblProjectGrandTotal_MR`/`_EA` labels and mirrored as plain text in the dialog — change both together, and keep them in sync with the same table in `project-list`'s `ViewProjectScreen` and in the sibling `procurement-raw-materials` app.
+- `gProjectInfo` / `colProjectInvoices` / `gShowRateInfo` — set in `ManagerReviewScreen.OnVisible` and `ExecutiveApprovalScreen.OnVisible` (**not** in `App.OnStart`), backing the "Project Information" panel: `gProjectInfo` is the `LookUp(Project_List, ProjectID = gSelectedRequest.ProjectID)` row (blank when the request isn't tied to a project), `colProjectInvoices` the matching `Procurement_InvoiceData` rows, `gShowRateInfo` the "Currency Exchange Reference" dialog toggle (reset to `false` on every screen entry). The AUD conversion rates behind the panel's Grand Total are hardcoded in a `Switch(Upper(Currency), ...)` inside the `lblProjectGrandTotal_MR`/`_EA` labels and mirrored as plain text in the dialog — change both together, and keep them in sync with the same table in `project-list`'s `ViewProjectScreen` and in the sibling `procurement-raw-materials` app. The **same rate table** is now also duplicated in `RequestFormScreen`'s 5,000-AUD-equivalent escalation check (6 occurrences) and `ExecutiveApprovalScreen`'s manager-skipped-reason label — when rates change, update all of these together too.
 
 If `gCurrentEmployee.ID` is blank, the user sees an "account not found" message and no UI — the app is membership-gated by the `Employee List`.
 
@@ -62,7 +64,8 @@ Requests move through a `Status` choice field. Each screen patches `Procurement_
 ```
 RequestFormScreen (Requester submits)
    │  Auto-skip to Executive if: PurchaseAccordance = "Urgent"/"Unplanned",
-   │  OR (EstimatedCost > 5000 AND Currency = "AUD")  → sets SkippedManagerReview
+   │  OR EstimatedCost > 5,000-AUD-equivalent (any currency, converted via the same
+   │  hardcoded FX `Switch(Upper(Currency), ...)` table used elsewhere)  → sets SkippedManagerReview
    ▼
 Pending Manager ──(ManagerReviewScreen)──┐
    │ "Approved (within budget)" AND Currency = "AUD" AND EstimatedCost <= 10000 → Pending Procurement
@@ -71,9 +74,10 @@ Pending Manager ──(ManagerReviewScreen)──┐
 Pending Executive ──(ExecutiveApprovalScreen)──┐
    │ Reject → Rejected
    │ Approve / Approve with conditions (ConditionsText), then:
-   │     Currency <> "AUD" OR EstimatedCost > 10000 → stays "Pending Executive" + isExecutivePayment = true
-   │                                                   (shown as "Pending Payment From Executive" in UI only —
-   │                                                   real Status string is unchanged) → ExecutivePaymentScreen
+   │     ProcurementType = "Invoice Supplied" AND (Currency <> "AUD" OR EstimatedCost > 10000)
+   │       → stays "Pending Executive" + isExecutivePayment = true
+   │         (shown as "Pending Payment From Executive" in UI only —
+   │         real Status string is unchanged) → notify Executive → ExecutivePaymentScreen
    │     otherwise                                  → Pending Procurement
    ▼
 Pending Procurement ──(ProcurementExecutionScreen)──┐
@@ -94,9 +98,11 @@ Pending Supplier Follow-up ──(SupplierFollowUpScreen, 2 steps)──┐
 Completed
 ```
 
-**Executive-payment sub-flow** (`isExecutivePayment` Yes/No field on `Procurement_Requests`): when Executive approves a request that is over-threshold (`Currency <> "AUD" || EstimatedCost > 10000` — non-AUD currency always qualifies, no FX conversion; AUD only qualifies above 10,000), the request does **not** advance to "Pending Procurement" — it stays `Status = "Pending Executive"` with `isExecutivePayment = true`, and `RequestDetailScreen`/`HomeScreen` display it as **"Pending Payment From Executive"** purely as a computed label (same pattern as the "Supplier Follow-up (Step 1/2)" sub-status — the real `Status` value never changes). The Executive then uses `ExecutivePaymentScreen` (reached via `RequestDetailScreen`'s "Process Payment →" button, shown only when `isExecutivePayment = true`) to upload a remittance advice document; submitting patches `RemittanceURL` and moves `Status` to `"Pending Procurement"` (keeping `isExecutivePayment = true` for history). `ManagerReviewScreen`'s "Approved (within budget)" fast-track also re-checks this same threshold — a within-budget approval on an over-threshold request still routes to `Pending Executive` instead of skipping straight to `Pending Procurement`, so the payment step can't be bypassed.
+**Executive-payment sub-flow** (`isExecutivePayment` Yes/No field on `Procurement_Requests`): when Executive approves a request that is **both** `ProcurementType = "Invoice Supplied"` **and** over-threshold (`Currency <> "AUD" || EstimatedCost > 10000` — non-AUD currency always qualifies, no FX conversion; AUD only qualifies above 10,000), the request does **not** advance to "Pending Procurement" — it stays `Status = "Pending Executive"` with `isExecutivePayment = true`, and `RequestDetailScreen`/`HomeScreen` display it as **"Pending Payment From Executive"** purely as a computed label (same pattern as the "Supplier Follow-up (Step 1/2)" sub-status — the real `Status` value never changes). Requests with `ProcurementType = "To be sourced by Procurement"` never enter this sub-flow regardless of amount/currency — they always proceed straight to `Pending Procurement`, since Procurement still has to source the item before any payment is relevant. On submitting the decision, `ExecutiveApprovalScreen` also calls `Procurement_Notify_Receipt_Assignee.Run(..., "ExecutivePayment", ...)` to email the approving Executive before navigating to `ExecutivePaymentScreen`. The Executive then uses `ExecutivePaymentScreen` (also reachable via `RequestDetailScreen`'s "Process Payment →" button, shown only when `isExecutivePayment = true`) to upload a remittance advice document; submitting patches `RemittanceURL` and moves `Status` to `"Pending Procurement"` (keeping `isExecutivePayment = true` for history), then calls `Procurement_Notify_Receipt_Assignee.Run(..., "ProcurementExecution", ...)` to notify the Procurement team. `ManagerReviewScreen`'s "Approved (within budget)" fast-track also re-checks the AUD/10,000 threshold (but not `ProcurementType`) — a within-budget approval on an over-threshold request still routes to `Pending Executive` instead of skipping straight to `Pending Procurement`, so the payment step can't be bypassed for requests that do end up qualifying at the Executive step.
 
-`RemittanceURL` is shared between two independent producers: `ExecutivePaymentScreen` (this sub-flow) and `ProcurementExecutionScreen`'s own "Remittance Advice Document" upload (Path C / `locIsViaRequester`, when Procurement proceeds with a requester-supplied invoice). When `isExecutivePayment = true`, `ProcurementExecutionScreen` hides its own remittance upload requirement entirely (Executive's upload already satisfies it) and reuses the existing `RemittanceURL` instead of asking Procurement to attach a second document — see `rowFormRemittance_PE` / `rowExecutiveRemittanceInfo_PE` and the `wURL` branch in `formRemittance.OnSuccess`.
+The `formExecutivePayment.OnSuccess` patch on `ExecutivePaymentScreen` must re-fetch the record with `LookUp(Procurement_Requests, ID = gSelectedRequest.ID)` rather than reusing `gSelectedRequest` as the Patch base — `SubmitForm(formExecutivePayment)` already wrote the `Attachments` field earlier in the same handler chain, which bumps the item's SharePoint version, so patching against the pre-submit `gSelectedRequest` throws "Conflicts exist with changes on the server, please reload".
+
+`RemittanceURL` is shared between two independent producers: `ExecutivePaymentScreen` (this sub-flow) and `ProcurementExecutionScreen`'s own "Remittance Advice Document" upload (Path C / `locIsViaRequester`, when Procurement proceeds with a requester-supplied invoice). When `isExecutivePayment = true`, `ProcurementExecutionScreen` hides its own remittance upload requirement entirely (Executive's upload already satisfies it) and reuses the existing `RemittanceURL` instead of asking Procurement to attach a second document — see `rowFormRemittance_PE` / `rowExecutiveRemittanceInfo_PE` and the `wURL` branch in `formRemittance.OnSuccess`. `RequestDetailScreen` shows both `RequesterInvoiceURL` (`rowInvoiceLink`) and `RemittanceURL` (`rowRemittanceLink`) as clickable links whenever each field is non-blank — visibility does **not** depend on `InvoiceMode` (which is only set later, in `ProcurementExecutionScreen`, so gating on it would hide the Requester's invoice from Manager/Executive during review).
 
 Routing relies on these status strings being exact and consistent across `HomeScreen` (filters + gallery `Items` per-role filter), each action screen, and the `Switch`/`If` color maps. **When changing status names or the flow, update every screen that references the string** — there is no shared constant.
 
