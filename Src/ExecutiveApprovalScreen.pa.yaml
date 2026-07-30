@@ -1055,7 +1055,8 @@ Screens:
                                                               rdoExecutiveDecision.Selected.Value = "Approve with conditions",
                                                               txtApprovalConditions.Value,
                                                               ""
-                                                          )
+                                                          ),
+                                                          ExecutiveApproverID: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title}
                                                       }
                                                   )},
                                                   If(
@@ -1064,7 +1065,7 @@ Screens:
                                                       Notify("Decision submitted successfully", NotificationType.Success);
                                                       If(
                                                           wReq.isExecutivePayment,
-                                                          Procurement_Notify_Receipt_Assignee.Run(
+                                                          ProcurementNotify.Run(
                                                               gCurrentEmployee.Email,
                                                               gCurrentEmployee.Title,
                                                               wReq.Title,
