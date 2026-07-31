@@ -1017,6 +1017,7 @@ Screens:
                                           InvoiceSubmitted: wInvoiceCorrect,
                                           RemittanceURL: wURL,
                                           OfficialInvoiceLink: wOfficialInvoiceLink,
+                                          RequesterInvoiceURL: If(wInvoiceCorrect, gSelectedRequest.RequesterInvoiceURL, ""),
                                           AccountingHandlerID: If(Not(wInvoiceCorrect), Blank(), {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value}),
                                           ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                           ProcurementExecutedAt: Now()
