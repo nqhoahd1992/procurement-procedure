@@ -37,5 +37,7 @@ App:
       Set(gGRDelegationMode, "I will receive");
       Set(gSFU1DelegationMode, "I will receive");
       Set(gSharePointAttachmentBase, "https://maxbiocare.sharepoint.com/sites/Powerapps/Lists/Procurement_Requests/Attachments/");
+      ClearCollect(colRequirementFiles, {FileName: "", FileURL: ""});
+      Clear(colRequirementFiles);
       Set(gAppReady, true)
     Theme: =PowerAppsTheme

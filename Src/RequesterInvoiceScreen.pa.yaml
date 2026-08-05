@@ -72,6 +72,7 @@ Screens:
                   LayoutGap: =16
                   LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                   LayoutMinHeight: =24
+                  PaddingRight: =1
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0

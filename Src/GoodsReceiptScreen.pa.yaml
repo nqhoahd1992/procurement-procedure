@@ -57,6 +57,7 @@ Screens:
                   LayoutGap: =16
                   LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                   LayoutMinHeight: =24
+                  PaddingRight: =1
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
@@ -298,7 +299,7 @@ Screens:
                               OnSelect: |-
                                 =If(
                                     Not(IsBlank(gSelectedRequest.GRAssignedToID)),
-                                    Procurement_Notify_Receipt_Assignee.Run(
+                                    ProcurementNotify.Run(
                                     LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).Email,
                                     gSelectedRequest.GRAssignedToID.Value,
                                     gSelectedRequest.Title,
@@ -882,7 +883,7 @@ Screens:
                               If(
                                   Not(IsBlank(gSelectedRequest.GRAssignedToID)) &&
                                   gSelectedRequest.GRAssignedToID.Id <> ddAssignReceiver_GR.Selected.ID,
-                                  Procurement_Notify_Receipt_Assignee.Run(
+                                  ProcurementNotify.Run(
                                       LookUp('Employee List', ID = gSelectedRequest.GRAssignedToID.Id).Email,
                                       gSelectedRequest.GRAssignedToID.Value,
                                       gSelectedRequest.Title,
@@ -899,7 +900,7 @@ Screens:
                                       IsBlank(wPatched.ID),
                                       Notify("Failed to save assignment. Please try again.", NotificationType.Error),
                                       Set(gSelectedRequest, wPatched);
-                                      Procurement_Notify_Receipt_Assignee.Run(
+                                      ProcurementNotify.Run(
                                           ddAssignReceiver_GR.Selected.Email,
                                           ddAssignReceiver_GR.Selected.Title,
                                           gSelectedRequest.Title,

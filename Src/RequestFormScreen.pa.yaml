@@ -2,7 +2,12 @@ Screens:
   RequestFormScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
-      OnVisible: =NewForm(Form1)
+      OnVisible: |-
+        =NewForm(Form1);
+        NewForm(formRequestFiles);
+        Set(gPendingAttachments, Blank());
+        Set(gPendingRequestFiles, Blank());
+        Set(gPendingInvoiceName, "")
     Children:
       - rectHeader_2:
           Control: Rectangle@2.3.0
@@ -89,7 +94,10 @@ Screens:
                           Reset(rdoProcurementType_1);
                           Reset(rdoInvoiceType_1);
                           Set(gPendingAttachments, Blank());
+                          Set(gPendingRequestFiles, Blank());
+                          Set(gPendingInvoiceName, "");
                           NewForm(Form1);
+                          NewForm(formRequestFiles);
                           Navigate(HomeScreen)
                         Text: ="Cancel"
                         Width: =160
@@ -151,6 +159,7 @@ Screens:
                                                                               Department: ddDepartment_1.Selected.Value,
                                                                               ProcurementDescription: txtDescription_1.Value,
                                                                               BudgetReference: txtBudgetRef_1.Value,
+                                                                              RequirementFiles: Concat(attRequestFiles.Attachments, Name, "|"),
                                                                               DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
                                                                               PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
                                                                               Category: {Value: ddCategory_1.Selected.Value},
@@ -198,9 +207,22 @@ Screens:
                                                                       IsBlank(wNewRequest.ID),
                                                                       Notify("Failed to submit request. Please try again.", NotificationType.Error),
                                                                       Set(gPendingAttachments, DataCardValue15.Attachments);
+                                                                      Set(gPendingInvoiceName,
+                                                                          If(
+                                                                              CountRows(DataCardValue15.Attachments) = 0,
+                                                                              "",
+                                                                              Last(DataCardValue15.Attachments).Name
+                                                                          )
+                                                                      );
                                                                       Set(gSelectedRequest, wNewRequest);
-                                                                      EditForm(Form1);
-                                                                      SubmitForm(Form1);
+                                                                      If(
+                                                                          CountRows(attRequestFiles.Attachments) = 0,
+                                                                          EditForm(Form1);
+                                                                          SubmitForm(Form1),
+                                                                          Set(gPendingRequestFiles, attRequestFiles.Attachments);
+                                                                          EditForm(formRequestFiles);
+                                                                          SubmitForm(formRequestFiles)
+                                                                      );
                                                                   )
                                                               )
                                                           )
@@ -592,12 +614,15 @@ Screens:
                         OnSuccess: |-
                           =If(
                               Form1.LastSubmit.ProcurementType.Value = "Invoice Supplied" &&
-                              Not(IsBlank(First(Form1.LastSubmit.Attachments).AbsoluteUri)),
+                              Not(IsBlank(gPendingInvoiceName)),
                               Patch(Procurement_Requests,
                                   {ID: Form1.LastSubmit.ID},
-                                  {RequesterInvoiceURL: First(Form1.LastSubmit.Attachments).AbsoluteUri}
+                                  {RequesterInvoiceURL: gSharePointAttachmentBase & Text(Form1.LastSubmit.ID) & "/" & EncodeUrl(gPendingInvoiceName)}
                               )
                           );
+                          Set(gPendingAttachments, Blank());
+                          Set(gPendingRequestFiles, Blank());
+                          Set(gPendingInvoiceName, "");
                           Reset(rdoHasProject);
                           Reset(ddProject_1);
                           Reset(ddDepartment_1);
@@ -1038,6 +1063,77 @@ Screens:
                               LayoutMinHeight: =80
                               Mode: ='TextInputCanvas.Mode'.Multiline
                               Width: =Parent.Width
+            - rowRequestFiles:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =190
+                  PaddingBottom: =12
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - lblRequestFilesLabel:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="Requirement Files"
+                        Width: =Parent.Width - 40
+                  - lblRequestFilesHint:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =20
+                        Size: =10
+                        Text: ="Optional — attach specifications, quotations or any other document that supports this request."
+                        Width: =Parent.Width - 40
+                  - formRequestFiles:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Height: =120
+                        Item: =gSelectedRequest
+                        LayoutMinWidth: =100
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Request submitted, but the requirement files could not be uploaded. Please open the request and attach them again.", NotificationType.Warning); EditForm(Form1); SubmitForm(Form1)
+                        OnSuccess: =EditForm(Form1); SubmitForm(Form1)
+                        Width: =Parent.Width - 40
+                      Children:
+                        - dcRequestFiles:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =ThisItem.Attachments
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attRequestFiles.Attachments
+                              Width: =Parent.Width
+                              X: =0
+                              Y: =0
+                            Children:
+                              - attRequestFiles:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =If(IsBlank(Parent.Default), gPendingRequestFiles, Parent.Default)
+                                    MaxAttachments: =10
+                                    Width: =Parent.Width
             - rowManagerApprover:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
