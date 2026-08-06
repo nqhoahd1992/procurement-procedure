@@ -1069,6 +1069,7 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   FillPortions: =0
+                  Height: =180
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   LayoutMinHeight: =190
@@ -1085,7 +1086,7 @@ Screens:
                   - lblRequestFilesLabel:
                       Control: Label@2.5.1
                       Properties:
-                        FontWeight: =FontWeight.Bold
+                        FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
                         Text: ="Requirement Files"

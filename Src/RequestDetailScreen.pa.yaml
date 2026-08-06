@@ -130,6 +130,7 @@ Screens:
                         If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 70, 0) +
                         If(Not(IsBlank(gSelectedRequest.ConditionsText)), 88, 0) +
                         If(Not(IsBlank(gSelectedRequest.AccountingHandlerID)), 68, 0) +
+                        If(Not(IsBlank(gSelectedRequest.UsageExpiryDate)), 60, 0) +
                         If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
                         If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
                         If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0) +
@@ -717,6 +718,48 @@ Screens:
                               Size: =11
                               Text: =gSelectedRequest.ProcurementDescription
                               Width: =Parent.Width
+                  - rowLimitedUse_RD:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(252, 235, 235, 1)
+                        FillPortions: =0
+                        Height: =60
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        LayoutMinHeight: =60
+                        PaddingBottom: =6
+                        PaddingLeft: =10
+                        PaddingRight: =10
+                        PaddingTop: =6
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =Not(IsBlank(gSelectedRequest.UsageExpiryDate))
+                        Width: =Parent.Width
+                      Children:
+                        - lblLimitedUseLabel_RD:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(163, 45, 45, 1)
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Limited-Use Goods — Do Not Store"
+                              Width: =Parent.Width
+                        - lblLimitedUseValue_RD:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(163, 45, 45, 1)
+                              FontWeight: =FontWeight.Semibold
+                              Height: =24
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: ="⚠ Usable until " & Text(gSelectedRequest.UsageExpiryDate, "dd/mm/yyyy") & " — these goods must not be put into storage after this date"
+                              Width: =Parent.Width
+                              Wrap: =false
                   - rowRequirementFiles_RD:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout

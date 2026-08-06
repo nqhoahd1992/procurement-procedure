@@ -59,6 +59,7 @@ When `rdoHasProject = "Yes"` and a project is selected, `Department` (`ddDepartm
 | `ConditionsText` | Text (multiline) | set on "Approve with conditions" |
 | `RequestID` | Lookup (→ID) | present in schema; not used by the app flow |
 | `PurchaseRequestLink` | Text (URL) | |
+| `UsageExpiryDate` | Date | **Limited-use goods flag** — the last date the goods are usable (e.g. event materials). Set by Procurement on `ProcurementExecutionScreen` (`rdoLimitedUse_PE` = Yes → `dpLimitedUseDate_PE`); blank = normal goods, no restriction. There is deliberately **no separate Yes/No column**: non-blank *is* the flag. Read-only afterwards — shown as a "Do Not Store" badge on `HomeScreen` and a red panel on `RequestDetailScreen` so warehouse staff know the goods must not be put into storage past this date |
 | `GRAssignedToID` | Lookup→Employee List | delegate for Step 3 Goods Receipt; blank = Requester performs it |
 | `SFU1AssignedToID` | Lookup→Employee List | delegate for Step 4 Supplier Follow-up (Requester); blank = Requester performs it |
 | `GoodsReceiptBy` | Text | |

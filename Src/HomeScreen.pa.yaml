@@ -432,8 +432,23 @@ Screens:
                               FontWeight: =FontWeight.Semibold
                               Height: =24
                               OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
-                              Text: =ThisItem.Title
+                              Text: |-
+                                ="ID: " & ThisItem.ID & " - " & ThisItem.Title
                               Width: =500
+                              Wrap: =false
+                        - lblLimitedUseBadge:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Center
+                              Color: =RGBA(163, 45, 45, 1)
+                              Fill: =RGBA(252, 235, 235, 1)
+                              FontWeight: =FontWeight.Semibold
+                              Height: =26
+                              OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
+                              Size: =11
+                              Text: ="⚠ Do Not Store · Usable until " & Text(ThisItem.UsageExpiryDate, "dd/mm/yyyy")
+                              Visible: =Not(IsBlank(ThisItem.UsageExpiryDate))
+                              Width: =260
                               Wrap: =false
                         - lblRequestStatus:
                             Control: Label@2.5.1
@@ -502,12 +517,13 @@ Screens:
                             Control: Label@2.5.1
                             Properties:
                               Color: =RGBA(136, 135, 128, 1)
+                              FillPortions: =1
                               Height: =20
                               OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                               Size: =11
                               Text: |-
-                                ="ID: " & ThisItem.ID & " | " & ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | Estimated Cost: " & ThisItem.Currency & " " & Text(ThisItem.EstimatedCost, "[#,###]")) & If(IsBlank(ThisItem.ProjectID), "", " | ProjectID: " & ThisItem.ProjectID)
-                              Width: =Parent.Width - 430
+                                =ThisItem.Category.Value & " | Delivery Date: " & Text(ThisItem.RequiredDeliveryDate, "dd/mm/yyyy") & If(IsBlank(ThisItem.EstimatedCost) || ThisItem.EstimatedCost = 0, "", " | Estimated Cost: " & ThisItem.Currency & " " & Text(ThisItem.EstimatedCost, "[#,###]")) & If(IsBlank(ThisItem.ProjectID), "", " | ProjectID: " & ThisItem.ProjectID)
+                              Width: =Parent.Width - 610
                               Wrap: =false
                         - lblRequesterName:
                             Control: Label@2.5.1
@@ -518,18 +534,18 @@ Screens:
                               OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
                               Size: =11
                               Text: |-
-                                =ThisItem.RequesterID.Value &
+                                ="Requester: " & ThisItem.RequesterID.Value &
                                 If(
-                                    ThisItem.Status.Value = "Goods Receipt & Acceptance" && Not(IsBlank(ThisItem.GRAssignedToID)),
+                                    ThisItem.Status.Value = "Goods Receipt & Acceptance" && Not(IsBlank(ThisItem.GRAssignedToID.Value)),
                                     " | Receiver: " & ThisItem.GRAssignedToID.Value,
                                     If(
-                                        ThisItem.Status.Value = "Pending Supplier Follow-up" && Not(IsBlank(ThisItem.SFU1AssignedToID)) && IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(ThisItem.ID) && StepNumber = 4)),
+                                        ThisItem.Status.Value = "Pending Supplier Follow-up" && Not(IsBlank(ThisItem.SFU1AssignedToID.Value)) && IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(ThisItem.ID) && StepNumber = 4)),
                                         " | Receiver: " & ThisItem.SFU1AssignedToID.Value,
                                         ""
                                     )
                                 )
-                              Visible: =Not(ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted)
-                              Width: =420
+                              Width: =600
+                              Wrap: =false
                   - lblRequestDesc:
                       Control: Label@2.5.1
                       Properties:
