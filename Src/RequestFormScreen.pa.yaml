@@ -429,7 +429,7 @@ Screens:
                                 )
                               PaddingLeft: =15
                               PaddingRight: =15
-                              SearchFields: =["ProjectID","Title"]
+                              SearchFields: =["Title","Title"]
                               SelectMultiple: =false
                               Size: =11
                               Visible: =rdoHasProject.Selected.Value = "Yes"
