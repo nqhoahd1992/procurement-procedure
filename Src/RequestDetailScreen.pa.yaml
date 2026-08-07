@@ -486,7 +486,7 @@ Screens:
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
-                                    Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                                    Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
                                     Width: =Parent.Width - 20
                         - colBudgetReference:
                             Control: GroupContainer@1.5.0
@@ -518,7 +518,12 @@ Screens:
                                     FontWeight: =FontWeight.Semibold
                                     Height: =24
                                     Size: =11
-                                    Text: =Coalesce(gSelectedRequest.BudgetReference, "—")
+                                    Text: |-
+                                      =If(
+                                          IsBlank(gSelectedRequest.BudgetReference),
+                                          "—",
+                                          Text(gSelectedRequest.BudgetReference, "#,###.00") & " " & gSelectedRequest.Currency
+                                      )
                                     Width: =Parent.Width - 20
                         - colManagerApprover:
                             Control: GroupContainer@1.5.0

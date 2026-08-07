@@ -185,7 +185,7 @@ Screens:
                               FontWeight: =FontWeight.Semibold
                               Height: =24
                               Size: =11
-                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
                               Width: =240
                   - colCostCenter:
                       Control: GroupContainer@1.5.0
@@ -665,6 +665,14 @@ Screens:
                         Size: =12
                         Text: ="Review Checklist *"
                         Width: =300
+                  - lblChecklistWarning:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(163, 45, 45, 1)
+                        Height: =24
+                        Size: =10
+                        Text: ="Please complete all checklist items before submitting"
+                        Width: =500
                   - rowChk1:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
@@ -788,15 +796,6 @@ Screens:
                               Size: =11
                               Text: ="Timing and urgency are appropriate"
                               Width: =560
-                  - lblChecklistWarning:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(163, 45, 45, 1)
-                        Height: =24
-                        Size: =10
-                        Text: ="Please complete all checklist items before submitting"
-                        Visible: =Not(chkBizJustification.Checked) || Not(chkCostReasonable.Checked) || Not(chkWithinBudget.Checked) || Not(chkTimingAppropriate.Checked)
-                        Width: =500
             - rowRemarks:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout

@@ -565,7 +565,20 @@ Screens:
                               FontWeight: =FontWeight.Semibold
                               Height: =28
                               Icon: ="Info"
-                              OnSelect: =Set(gQuickViewRequest, ThisItem); Set(gShowQuickView, true)
+                              OnSelect: |-
+                                =Set(
+                                    gQuickViewRequest,
+                                    {
+                                        ID: ThisItem.ID,
+                                        Title: ThisItem.Title,
+                                        Category: Coalesce(ThisItem.Category.Value, ""),
+                                        ProcurementType: Coalesce(ThisItem.ProcurementType.Value, ""),
+                                        ProcurementDescription: Coalesce(ThisItem.ProcurementDescription, ""),
+                                        RequesterInvoiceURL: Coalesce(ThisItem.RequesterInvoiceURL, ""),
+                                        OfficialInvoiceLink: Coalesce(ThisItem.OfficialInvoiceLink, "")
+                                    }
+                                );
+                                Set(gShowQuickView, true)
                               PaddingBottom: =5
                               PaddingLeft: =12
                               PaddingRight: =12
@@ -790,7 +803,7 @@ Screens:
                               Height: =28
                               PaddingLeft: =0
                               Size: =11
-                              Text: =If(IsBlank(gQuickViewRequest.Category.Value), "—", gQuickViewRequest.Category.Value)
+                              Text: =If(IsBlank(gQuickViewRequest.Category), "—", gQuickViewRequest.Category)
                               Width: =320
                               Wrap: =false
                   - colQVProcurementType_HS:
@@ -822,7 +835,7 @@ Screens:
                               Height: =28
                               PaddingLeft: =0
                               Size: =11
-                              Text: =If(IsBlank(gQuickViewRequest.ProcurementType.Value), "—", gQuickViewRequest.ProcurementType.Value)
+                              Text: =If(IsBlank(gQuickViewRequest.ProcurementType), "—", gQuickViewRequest.ProcurementType)
                               Width: =320
                               Wrap: =false
             - rowQVDescription_HS:
@@ -872,7 +885,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =gQuickViewRequest.ProcurementType.Value = "Invoice Supplied"
+                  Visible: =gQuickViewRequest.ProcurementType = "Invoice Supplied"
                   Width: =Parent.Width - 40
                 Children:
                   - lblQVRequesterInvoiceLabel_HS:
@@ -954,7 +967,10 @@ Screens:
                   - btnQuickViewOpenDetail_HS:
                       Control: Button@0.0.45
                       Properties:
-                        OnSelect: =Set(gShowQuickView, false); Set(gSelectedRequest, gQuickViewRequest); Navigate(RequestDetailScreen)
+                        OnSelect: |-
+                          =Set(gShowQuickView, false);
+                          Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gQuickViewRequest.ID));
+                          Navigate(RequestDetailScreen)
                         Text: ="Open Full Detail"
                         Width: =160
                   - btnCloseQuickView_HS:

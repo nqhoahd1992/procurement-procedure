@@ -45,7 +45,7 @@ Screens:
           Properties:
             DropShadow: =DropShadow.None
             Fill: =RGBA(245, 245, 250, 1)
-            Height: =180
+            Height: =228
             LayoutDirection: =LayoutDirection.Vertical
             LayoutGap: =4
             PaddingBottom: =12
@@ -211,7 +211,7 @@ Screens:
                               Height: =20
                               PaddingLeft: =0
                               Size: =11
-                              Text: =gSelectedRequest.Currency & " " & Text(gSelectedRequest.EstimatedCost, "#,###")
+                              Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
                               Width: =240
             - rowInfoLine3_EPS:
                 Control: GroupContainer@1.5.0
@@ -248,19 +248,180 @@ Screens:
                               Height: =18
                               PaddingLeft: =0
                               Size: =9
-                              Text: ="Invoice Link (Requester)"
+                              Text: ="Approval Conditions"
                               Width: =600
                         - lblInfoConditionsValue_EPS:
                             Control: Label@2.5.1
                             Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.ConditionsText), "—", gSelectedRequest.ConditionsText)
+                              Width: =600
+            - rowInfoLine4_EPS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =24
+                  LayoutMinHeight: =44
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - colProcurementType_EPS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =300
+                      Children:
+                        - lblInfoProcTypeLabel_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Procurement Type"
+                              Width: =300
+                        - lblInfoProcTypeValue_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: |-
+                                =gSelectedRequest.ProcurementType.Value &
+                                    If(
+                                        IsBlank(gSelectedRequest.InvoiceType.Value),
+                                        "",
+                                        " · " & gSelectedRequest.InvoiceType.Value
+                                    )
+                              Width: =300
+                              Wrap: =false
+                  - colInvoiceDoc_EPS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =gSelectedRequest.ProcurementType.Value = "Invoice Supplied"
+                        Width: =300
+                      Children:
+                        - lblInfoInvoiceLabel_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Invoice (Requester)"
+                              Width: =300
+                        - lblInfoInvoiceValue_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), RGBA(136, 135, 128, 1), RGBA(56, 96, 178, 1))
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              OnSelect: =If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), Launch(gSelectedRequest.RequesterInvoiceURL, {}, LaunchTarget.New))
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "Not uploaded", "Open invoice ↗")
+                              Tooltip: =gSelectedRequest.RequesterInvoiceURL
+                              Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
+                              Width: =300
+                              Wrap: =false
+                  - colPurchaseRequestDoc_EPS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement"
+                        Width: =300
+                      Children:
+                        - lblInfoPurchaseReqLabel_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Purchase Request Link"
+                              Width: =300
+                        - lblInfoPurchaseReqValue_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =If(IsBlank(gSelectedRequest.PurchaseRequestLink), RGBA(136, 135, 128, 1), RGBA(56, 96, 178, 1))
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              OnSelect: =If(Not(IsBlank(gSelectedRequest.PurchaseRequestLink)), Launch(gSelectedRequest.PurchaseRequestLink, {}, LaunchTarget.New))
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gSelectedRequest.PurchaseRequestLink), "Not provided", "Open purchase request ↗")
+                              Tooltip: =gSelectedRequest.PurchaseRequestLink
+                              Underline: =Not(IsBlank(gSelectedRequest.PurchaseRequestLink))
+                              Width: =300
+                              Wrap: =false
+                  - colOfficialInvoiceDoc_EPS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Visible: =Not(IsBlank(gSelectedRequest.OfficialInvoiceLink))
+                        Width: =300
+                      Children:
+                        - lblInfoOfficialInvoiceLabel_EPS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Official Invoice (Procurement)"
+                              Width: =300
+                        - lblInfoOfficialInvoiceValue_EPS:
+                            Control: Label@2.5.1
+                            Properties:
                               Color: =RGBA(56, 96, 178, 1)
                               FontWeight: =FontWeight.Semibold
-                              Height: =28
-                              OnSelect: =If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), Launch(gSelectedRequest.RequesterInvoiceURL, {}, LaunchTarget.New))
+                              Height: =20
+                              OnSelect: =If(Not(IsBlank(gSelectedRequest.OfficialInvoiceLink)), Launch(gSelectedRequest.OfficialInvoiceLink, {}, LaunchTarget.New))
+                              PaddingLeft: =0
                               Size: =11
-                              Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", gSelectedRequest.RequesterInvoiceURL)
-                              Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
-                              Width: =Parent.Width
+                              Text: ="Open official invoice ↗"
+                              Tooltip: =gSelectedRequest.OfficialInvoiceLink
+                              Underline: =true
+                              Width: =300
                               Wrap: =false
       - conScrollable_EPS:
           Control: GroupContainer@1.5.0
@@ -275,7 +436,7 @@ Screens:
             RadiusTopLeft: =0
             RadiusTopRight: =0
             Width: =Parent.Width
-            Y: =240
+            Y: =288
           Children:
             - rowUploadSection_EPS:
                 Control: GroupContainer@1.5.0

@@ -38,7 +38,17 @@ App:
       Set(gSFU1DelegationMode, "I will receive");
       Set(gSharePointAttachmentBase, "https://maxbiocare.sharepoint.com/sites/Powerapps/Lists/Procurement_Requests/Attachments/");
       Set(gShowQuickView, false);
-      Set(gQuickViewRequest, Blank());
+      Set(gQuickViewRequest,
+          {
+              ID: 0,
+              Title: "",
+              Category: "",
+              ProcurementType: "",
+              ProcurementDescription: "",
+              RequesterInvoiceURL: "",
+              OfficialInvoiceLink: ""
+          }
+      );
       Set(gShowReceiptPhotos, false);
       Set(gPhotoRoundLabel, "");
       Set(gShowLogDetail, false);

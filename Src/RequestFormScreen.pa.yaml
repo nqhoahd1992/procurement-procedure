@@ -130,8 +130,16 @@ Screens:
                                               IsBlank(ddCostCenter_1.Selected),
                                               Notify("Please select a Cost Center", NotificationType.Error),
                                               If(
-                                                  IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
-                                                  Notify("Estimated Cost is required and must be a number", NotificationType.Error),
+                                                  IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)) ||
+                                                  (Not(IsBlank(txtBudgetRef_1.Value)) && Not(IsNumeric(txtBudgetRef_1.Value))),
+                                                  Notify(
+                                                      If(
+                                                          IsBlank(txtEstimatedCost_1.Value) || Not(IsNumeric(txtEstimatedCost_1.Value)),
+                                                          "Estimated Cost is required and must be a number",
+                                                          "Budget Reference must be a number"
+                                                      ),
+                                                      NotificationType.Error
+                                                  ),
                                                   If(
                                                       rdoProcurementType_1.Selected.Value = "Invoice Supplied" &&
                                                       IsBlank(rdoInvoiceType_1.Selected),
@@ -158,7 +166,7 @@ Screens:
                                                                               ProjectID: ddProject_1.Selected.ProjectID,
                                                                               Department: ddDepartment_1.Selected.Value,
                                                                               ProcurementDescription: txtDescription_1.Value,
-                                                                              BudgetReference: txtBudgetRef_1.Value,
+                                                                              BudgetReference: If(IsBlank(txtBudgetRef_1.Value), Blank(), Value(txtBudgetRef_1.Value)),
                                                                               RequirementFiles: Concat(attRequestFiles.Attachments, Name, "|"),
                                                                               DeliveryLocation: {Value: ddDeliveryLocation_1.Selected.Value},
                                                                               PreferredSupplier: ddPreferredSupplier_1.Selected.Title,
@@ -974,6 +982,7 @@ Screens:
                             Control: TextInput@0.0.54
                             Properties:
                               Height: =40
+                              Placeholder: ="Please enter an amount"
                               Width: =Parent.Width
                   - colSupplier:
                       Control: GroupContainer@1.5.0
