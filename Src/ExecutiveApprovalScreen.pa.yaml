@@ -344,7 +344,6 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(238, 236, 250, 1)
-                  FillPortions: =0
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =8
                   LayoutMinHeight: =280
@@ -373,7 +372,6 @@ Screens:
                       Variant: AutoLayout
                       Properties:
                         DropShadow: =DropShadow.None
-                        FillPortions: =0
                         LayoutDirection: =LayoutDirection.Horizontal
                         LayoutMinHeight: =60
                         LayoutWrap: =true
