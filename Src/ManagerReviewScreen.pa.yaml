@@ -440,7 +440,7 @@ Screens:
                                       =If(
                                           IsBlank(gProjectInfo.BudgetAmount),
                                           "—",
-                                          Text(gProjectInfo.BudgetAmount, "[#,###.00]") & " " & gProjectInfo.Currency
+                                          Text(gProjectInfo.BudgetAmount, "#,###.00") & " " & gProjectInfo.Currency
                                       )
                                     Width: =260
                         - colProjectActual_MR:
@@ -473,13 +473,13 @@ Screens:
                                     Text: |-
                                       =If(
                                           CountRows(colProjectInvoices) = 0,
-                                          Text(0, "[#,###.00]") & " " & gProjectInfo.Currency,
+                                          Text(0, "#,###.00") & " " & gProjectInfo.Currency,
                                           Concat(
                                               AddColumns(
                                                   GroupBy(colProjectInvoices, Currency, GroupedInvoices),
                                                   TotalSum, Sum(GroupedInvoices, TotalAmount)
                                               ),
-                                              Text(TotalSum, "[#,###.00]") & " " & Currency,
+                                              Text(TotalSum, "#,###.00") & " " & Currency,
                                               "  |  "
                                           )
                                       )
@@ -521,7 +521,7 @@ Screens:
                                   ),
                                   AUDAmount
                               ),
-                              "[#,###.00]"
+                              "#,###.00"
                           ) & " AUD"
                         Width: =Parent.Width - 40
                   - lblProjectRateLink_MR:
