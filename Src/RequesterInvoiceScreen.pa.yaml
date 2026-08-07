@@ -3,7 +3,8 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Set(gHasInvoiceResult, false);
+        =ResetForm(formRequesterInvoice);
+        Set(gHasInvoiceResult, false);
         Set(gInvoiceResult, Blank());
         Set(gPendingNewAttName, "");
         Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID))
@@ -88,7 +89,8 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.Title
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_RIS:
                       Control: Label@2.5.1

@@ -860,6 +860,7 @@ Screens:
                         - dpDeliveryDate_1:
                             Control: DatePicker@0.0.46
                             Properties:
+                              Format: ="dd/mm/yyyy"
                               Height: =40
                               Placeholder: ="Choose a date"
                               Width: =Parent.Width

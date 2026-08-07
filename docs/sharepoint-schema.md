@@ -28,7 +28,7 @@ When `rdoHasProject = "Yes"` and a project is selected, `Department` (`ddDepartm
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | Auto-built: `<employee> - <Category> - <dd/mm/yyyy>` |
+| `Title` (Title) | Text | Auto-built: `<employee> - <Category> - <dd/mm/yyyy>` |
 | `Status` ⚠ | Choice | **Drives the workflow** — value list below |
 | `RequesterEmail` ⚠ | Text | `User().Email`; "my requests" filter key |
 | `ProjectID` | Text | Exists on the live list (confirmed 2026-07-27) — the related `project-list` project's business key (`Project_List.ProjectID`, e.g. `PROJ-AU-QA-2026-017`), set from `ddProject_1` when `rdoHasProject = "Yes"`; blank when the request isn't tied to a project. Also the join column the future `Project_SyncActualCost` flow was already waiting on (see `project-list/CLAUDE.md` §Next) |
@@ -54,7 +54,7 @@ When `rdoHasProject = "Yes"` and a project is selected, `Department` (`ddDepartm
 | `RemittanceURL` | Text (URL) | Proof-of-payment attachment link. Two independent producers: `ExecutivePaymentScreen` (when `isExecutivePayment = true`) and `ProcurementExecutionScreen`'s own Path C "Remittance Advice Document" upload (`locIsViaRequester`). `ProcurementExecutionScreen` skips its own upload requirement and reuses this field's existing value when `isExecutivePayment = true` — see `CLAUDE.md` |
 | `ProcurementExecutedBy` | Lookup→Employee List | |
 | `ProcurementExecutedAt` | DateTime | |
-| `AccountingHandlerID` | Lookup→Employee List | chosen by Procurement |
+| `AccountingHandlerID` | Lookup→Employee List | **who completed the accounting step**, not who it was assigned to — written only by `AccountingScreen`'s submit as `gCurrentEmployee`, so it stays blank until the request is `Completed` |
 | `AccountingCompletedAt` | DateTime | |
 | `ConditionsText` | Text (multiline) | set on "Approve with conditions" |
 | `RequestID` | Lookup (→ID) | present in schema; not used by the app flow |
@@ -62,22 +62,12 @@ When `rdoHasProject = "Yes"` and a project is selected, `Department` (`ddDepartm
 | `UsageExpiryDate` | Date | **Limited-use goods flag** — the last date the goods are usable (e.g. event materials). Set by Procurement on `ProcurementExecutionScreen` (`rdoLimitedUse_PE` = Yes → `dpLimitedUseDate_PE`); blank = normal goods, no restriction. There is deliberately **no separate Yes/No column**: non-blank *is* the flag. Read-only afterwards — shown as a "Do Not Store" badge on `HomeScreen` and a red panel on `RequestDetailScreen` so warehouse staff know the goods must not be put into storage past this date |
 | `GRAssignedToID` | Lookup→Employee List | delegate for Step 3 Goods Receipt; blank = Requester performs it |
 | `SFU1AssignedToID` | Lookup→Employee List | delegate for Step 4 Supplier Follow-up (Requester); blank = Requester performs it |
-| `GoodsReceiptBy` | Text | |
-| `GoodsReceiptDate` | DateTime | |
-| `GoodsReceiptStatus` | Choice | |
-| `GoodsAcceptanceDecision` | Choice | `Accepted`, `Rejected`, `Requires Supplier Follow-up` |
-| `GoodsReceiptRemarks` | Text (multiline) | |
-| `GoodsReceiptAt` | DateTime | |
-| `FollowUpReceiptBy` | Text | |
-| `FollowUpReceiptDate` | DateTime | |
-| `FollowUpReceiptStatus` | Choice | same choices as `GoodsReceiptStatus` |
-| `FollowUpAcceptanceDecision` | Choice | `Accepted`, `Accepted with Adjustment` |
+| `ReceiptRoundCount` ✳ | Number | **new** — receipt rounds submitted so far; the round being entered next is `+1`. Read as `Coalesce(…, 0)` everywhere so a request that hasn't reached Goods Receipt reads `0` rather than blank. In practice only ever `0`, `1` or `2` — deliveries are capped at two rounds by the round-2 dropdown, not by this column |
+| `LatestReceiptDecision` ✳ | Text | **new** — the most recent round's acceptance decision. **Plain Text, not Choice**, so both the round-1 and round-N option sets fit in one column |
 | `CreditNote` | Text | required when follow-up decision = adjustment |
 | `Fulfillment` | Choice | `Fulfilled`, `Fulfilled with Adjustment` |
-| `FollowUpRemarks` | Text (multiline) | |
-| `FollowUpReceiptAt` | DateTime | |
-| `SupplierFollowUpNotes` | Text (multiline) | |
-| `FollowUpCompletedAt` | DateTime | |
+
+**Deleted with the unlimited-rounds change** (no legacy read path is left in the app — it will not compile if any of these is still referenced, and will not run correctly until the two columns above exist): `GoodsReceiptBy`, `GoodsReceiptDate`, `GoodsReceiptStatus`, `GoodsAcceptanceDecision`, `GoodsReceiptRemarks`, `GoodsReceiptAt`, `FollowUpReceiptBy`, `FollowUpReceiptDate`, `FollowUpReceiptStatus`, `FollowUpAcceptanceDecision`, `FollowUpRemarks`, `FollowUpReceiptAt`, `SupplierFollowUpNotes`, `FollowUpCompletedAt`. Two fixed column sets could only ever hold two rounds; per-round data now lives in `'Procurement Receipt Rounds'`. The four receipt Choice columns are gone too — their dropdowns hold the options as **inline literal tables** in Power Fx now (`["Fully Received", …]`), so changing an option is a code edit, and renaming one also means updating every `= "..."` comparison in the receiving loop.
 | `InvoiceRegion` ⚠ | Choice | Country code (`AU`/`MY`/`SG`) used to file the invoice into the correct storage folder. **Not directly user-selected** — auto-derived on submit from `ddCostCenter_1.Selected.Value` via a `Switch` lookup table in `RequestFormScreen.pa.yaml` (warehouse/office → country) |
 | `Attachments` | Attachments | invoice/supporting files; written via `Form1`+`SubmitForm` (Patch can't write attachments) |
 
@@ -95,7 +85,7 @@ Required ⚠: `Role`, `IsActive`, `EmployeeID`.
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | |
+| `Title` (Title) | Text | |
 | `Role` ⚠ | Choice | `Requester`, `Manager`, `Executive`, `Procurement`, `Accounting`, `Admin` |
 | `IsActive` ⚠ | Yes/No | default true; manager picker filters `Role.Value="Manager" && IsActive` |
 | `EmployeeID` ⚠ | Lookup→Employee List | `{Id,Value}` (→Title) |
@@ -111,7 +101,7 @@ Required ⚠: `RequestID`, `StepNumber`.
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | `Step <n> - <decision> - <request title>` |
+| `Title` (Title) | Text | `Step <n> - <decision> - <request title>` |
 | `RequestID` ⚠ | Lookup (→Title) | `{Id,Value}` |
 | `StepNumber` ⚠ | Number | **`2` = Manager, `3` = Executive** (documented in the column itself) |
 | `ApproverID` | Lookup→Employee List | |
@@ -129,20 +119,45 @@ Required ⚠: none.
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | `Step <n> - <name> - <request title>` |
+| `Title` (Title) | Text | `Step <n> - <name> - <request title>` |
 | `RequestID` | Lookup (→ID) | `{Id,Value}` |
 | `RequestIDText` | Text | join key |
-| `StepNumber` | Number | `1` Procurement Execution · `2` Accounting Handover · `3` Goods Receipt · `4` Supplier Follow-up (Requester) · `5` Supplier Follow-up (Procurement) |
+| `StepNumber` | Number | `1` Procurement Execution · `2` Accounting Handover · `3` Goods Receipt **round 1** · `4` Goods Receipt **round N ≥ 2** · `5` Supplier Follow-up (Procurement close-out) · `6` Invoice Submission |
 | `StepName` | Choice | matches the step |
 | `ExecutedBy` | Lookup→Employee List | |
 | `ExecutedAt` | DateTime | |
-| `HandoverToID` | Lookup→Employee List | step 1 — accounting handler |
-| `HandoverToIDText` | Text | step 1 |
+| `HandoverToID` | Lookup→Employee List | **orphaned** — held the Accounting staffer picked ahead of time on `ProcurementExecutionScreen` / `InvoiceSubmissionScreen`; both pickers were removed (see "Accounting is a shared queue" in `CLAUDE.md`), so nothing writes or reads this. Safe to delete |
+| `HandoverToIDText` | Text | **orphaned**, same reason |
 | `SupplierSummary` | Text (multiline) | step 1 |
 | `PurchaseOrderLink` | Text (URL) | step 1 |
 | `Notes` | Text (multiline) | |
 
-The presence of step-4 / step-5 rows distinguishes the two stages of the supplier follow-up flow (`LookUp` by `StepNumber`).
+Steps 1/2/6 are unique per request and can still be `LookUp`ed. **Steps 3/4/5 are not** — there is one row per receipt round, so filter and sort them instead. There can be many step-4 rows; a step-5 row is written at most once, on the `Accepted with Adjustment` branch.
+
+Receipt data (who received, when, status, decision, remarks, photos) is **not** on this list — it lives on `'Procurement Receipt Rounds'` below. The log keeps only the generic step trail so the same header isn't stored twice.
+
+---
+
+## `'Procurement Receipt Rounds'` — one row per receipt round ✳ **new list**
+
+Required ⚠: `RequestIDText`, `RoundNumber`.
+
+| Column | Type | Notes |
+|---|---|---|
+| `Title` (Title) | Text | `R<n> - <request title>` |
+| `RequestID` | Lookup (→ID) | `{Id,Value}` |
+| `RequestIDText` | Text | join key — every read filters on this |
+| `RoundNumber` | Number | 1 for the Goods Receipt round, 2+ for each follow-up round |
+| `ReceivedBy` | Text | |
+| `ReceiptDate` | Date | |
+| `ReceiptStatus` | Text | `Fully Received` · `Partially Received` · `Incorrect Items` · `Damaged Items` |
+| `AcceptanceDecision` | Text | round 1: `Accepted` · `Rejected` · `Requires Supplier Follow-up`; round 2: `Accepted` · `Accepted with Adjustment` only — round 2 has no option that opens a round 3, which is what caps deliveries at two |
+| `Remarks` | Text (multiline) | |
+| `Attachments` (system) | Attachments | **the round's receipt photos live here.** `frmGRLog_GR` / `frmSFU1Log_SFU` bind to *this* list, which is why each submit `Patch`es the round row **first** and only then submits the form against it |
+
+**One row per round, not per material** — this app has no line-item list, so a round is a single record. That is also why the round header lives here and **not** on `Procurement_ExecutionLog`: in the sibling `procurement-raw-materials` app the two lists carry different grains (log = one row per round header, rounds list = one row per *line item × round*), so nothing is duplicated. Without line items that split has no second grain to justify it, so this list owns everything about receiving — header, remarks and photos — and the execution log keeps only its generic step trail (`ExecutedBy`, `ExecutedAt`, `Notes`). **Don't add `RoundNumber`/`ReceivedBy`/`ReceiptDate`/`ReceiptStatus`/`AcceptanceDecision` to the log** — that was an earlier draft of this change and it made every submit write the same header twice.
+
+The Procurement close-out (Credit Note) is **not** a receipt round and writes no row here — it is log step 5 only, and shows up in `RequestDetailScreen`'s Execution History rather than its Goods Receipt table.
 
 ---
 
@@ -152,7 +167,7 @@ Required ⚠: none. **Not written by app `Patch`** — populated by the `Submit_
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | |
+| `Title` (Title) | Text | |
 | `RequestID` | Lookup (→Title) | |
 | `RequestIDText` | Text | join key |
 | `InvoiceNumber` | Text | |
@@ -176,7 +191,7 @@ Required ⚠: none. **Internal names `email` and `department` are lowercase** (d
 
 | Column (internal) | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | employee display name |
+| `Title` (Title) | Text | employee display name |
 | `email` | Text | matched against `User().Email` in `App.OnStart` |
 | `department` | Choice | |
 | `JobTitle` | Text | |
@@ -188,11 +203,11 @@ Required ⚠: none. **Internal names `email` and `department` are lowercase** (d
 
 ## `Suppliers`
 
-Required ⚠: none. Bound to the "Preferred Supplier" picker via `Sort(Suppliers, 'Tiêu đề')`.
+Required ⚠: none. Bound to the "Preferred Supplier" picker via `Sort(Suppliers, 'Title')`.
 
 | Column | Type | Notes |
 |---|---|---|
-| `Tiêu đề` (Title) | Text | supplier name |
+| `Title` (Title) | Text | supplier name |
 | `Code` | Text | |
 | `AccountName` | Text | |
 | `TaxId` | Text | |

@@ -37,6 +37,16 @@ App:
       Set(gGRDelegationMode, "I will receive");
       Set(gSFU1DelegationMode, "I will receive");
       Set(gSharePointAttachmentBase, "https://maxbiocare.sharepoint.com/sites/Powerapps/Lists/Procurement_Requests/Attachments/");
+      Set(gShowQuickView, false);
+      Set(gQuickViewRequest, Blank());
+      Set(gShowReceiptPhotos, false);
+      Set(gPhotoRoundLabel, "");
+      Set(gShowLogDetail, false);
+      Set(gLogDetailTitle, "");
+      ClearCollect(colLogDetail, {FieldLabel: "", FieldValue: ""});
+      Clear(colLogDetail);
+      ClearCollect(colReceiptPhotos, First('Procurement Receipt Rounds').Attachments);
+      Clear(colReceiptPhotos);
       ClearCollect(colRequirementFiles, {FileName: "", FileURL: ""});
       Clear(colRequirementFiles);
       Set(gAppReady, true)

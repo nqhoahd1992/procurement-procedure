@@ -6,6 +6,16 @@ Screens:
         =Set(gGRLogEntry, Blank());
         Set(gGRPendingAttachments, Blank());
         NewForm(frmGRLog_GR);
+        Reset(chkGR1);
+        Reset(chkGR2);
+        Reset(chkGR3);
+        Reset(chkGR4);
+        Reset(chkGR5);
+        Reset(dpReceiptDate_GR);
+        Reset(ddReceiptStatus_GR);
+        Reset(ddAcceptanceDecision_GR);
+        Reset(txtRemarks_GR);
+        Reset(ddAssignReceiver_GR);
         Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
         Set(gGRDelegationMode, If(IsBlank(gSelectedRequest.GRAssignedToID) || gSelectedRequest.GRAssignedToID.Id = 0 || gSelectedRequest.GRAssignedToID.Id = gCurrentEmployee.ID, "I will receive", "Assign to someone else"))
     Children:
@@ -73,7 +83,8 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.Title
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_GR:
                       Control: Label@2.5.1
@@ -621,6 +632,7 @@ Screens:
                         - dpReceiptDate_GR:
                             Control: DatePicker@0.0.46
                             Properties:
+                              Format: ="dd/mm/yyyy"
                               Height: =40
                               Placeholder: ="Choose a date"
                               Width: =Parent.Width
@@ -652,7 +664,7 @@ Screens:
                             Properties:
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
-                              Items: =Choices(Procurement_Requests.GoodsReceiptStatus)
+                              Items: =["Fully Received", "Partially Received", "Incorrect Items", "Damaged Items"]
                               Width: =Parent.Width
                   - rowAcceptanceDecision_GR:
                       Control: GroupContainer@1.5.0
@@ -682,7 +694,7 @@ Screens:
                             Properties:
                               Height: =40
                               InputTextPlaceholder: ="Choose an option"
-                              Items: =Choices(Procurement_Requests.GoodsAcceptanceDecision)
+                              Items: =["Accepted", "Rejected", "Requires Supplier Follow-up"]
                               Width: =Parent.Width
             - rowRemarks_GR:
                 Control: GroupContainer@1.5.0
@@ -753,7 +765,7 @@ Screens:
                       Layout: Vertical
                       Properties:
                         BorderStyle: =BorderStyle.None
-                        DataSource: =Procurement_ExecutionLog
+                        DataSource: ='Procurement Receipt Rounds'
                         Height: =140
                         Item: =gGRLogEntry
                         LayoutMinHeight: =200
@@ -955,40 +967,56 @@ Screens:
                                                               "Rejected",                    "Rejected",
                                                               "Requires Supplier Follow-up", "Pending Supplier Follow-up"
                                                           )},
-                                                          GoodsReceiptBy: gCurrentEmployee.Title,
-                                                          GoodsReceiptDate: dpReceiptDate_GR.SelectedDate,
-                                                          GoodsReceiptStatus: {Value: ddReceiptStatus_GR.Selected.Value},
-                                                          GoodsAcceptanceDecision: {Value: ddAcceptanceDecision_GR.Selected.Value},
-                                                          GoodsReceiptRemarks: txtRemarks_GR.Value,
-                                                          GoodsReceiptAt: Now()
+                                                          ReceiptRoundCount: 1,
+                                                          LatestReceiptDecision: ddAcceptanceDecision_GR.Selected.Value,
+                                                          GRAssignedToID: Blank()
                                                       }
                                                   )
                                               },
                                               If(
                                                   IsBlank(wPatched.ID),
                                                   Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                                  If(
+                                                      ddAcceptanceDecision_GR.Selected.Value = "Accepted",
+                                                      Patch(Procurement_Requests, {ID: gSelectedRequest.ID}, {Fulfillment: {Value: "Fulfilled"}})
+                                                  );
                                                   With(
-                                                      {wLog: Patch(
-                                                          Procurement_ExecutionLog,
-                                                          Defaults(Procurement_ExecutionLog),
+                                                      {wRound: Patch(
+                                                          'Procurement Receipt Rounds',
+                                                          Defaults('Procurement Receipt Rounds'),
                                                           {
-                                                              Title: "Step 3 - Goods Receipt - " & gSelectedRequest.Title,
+                                                              Title: "R1 - " & gSelectedRequest.Title,
                                                               RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
                                                               RequestIDText: Text(gSelectedRequest.ID),
-                                                              StepNumber: 3,
-                                                              StepName: {Value: "Goods Receipt & Acceptance"},
-                                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                              ExecutedAt: Now(),
-                                                              Notes: txtRemarks_GR.Value
+                                                              RoundNumber: 1,
+                                                              ReceivedBy: gCurrentEmployee.Title,
+                                                              ReceiptDate: dpReceiptDate_GR.SelectedDate,
+                                                              ReceiptStatus: ddReceiptStatus_GR.Selected.Value,
+                                                              AcceptanceDecision: ddAcceptanceDecision_GR.Selected.Value,
+                                                              Remarks: txtRemarks_GR.Value
                                                           }
                                                       )},
                                                       If(
-                                                          IsBlank(wLog.ID),
-                                                          Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                                          IsBlank(wRound.ID),
+                                                          Notify("Failed to save the receipt round. Please try again.", NotificationType.Error),
                                                           Set(gGRPendingAttachments, attGRPhotos.Attachments);
-                                                          Set(gGRLogEntry, wLog);
+                                                          Set(gGRLogEntry, wRound);
                                                           EditForm(frmGRLog_GR);
                                                           SubmitForm(frmGRLog_GR);
+                                                          Patch(
+                                                              Procurement_ExecutionLog,
+                                                              Defaults(Procurement_ExecutionLog),
+                                                              {
+                                                                  Title: "Step 3 - Goods Receipt Round 1 - " & gSelectedRequest.Title,
+                                                                  RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                                                  RequestIDText: Text(gSelectedRequest.ID),
+                                                                  StepNumber: 3,
+                                                                  StepName: {Value: "Goods Receipt & Acceptance"},
+                                                                  ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                                                  ExecutedAt: Now(),
+                                                                  Notes: txtRemarks_GR.Value
+                                                              }
+                                                          );
                                                           Switch(
                                                               ddAcceptanceDecision_GR.Selected.Value,
                                                               "Accepted",                    Notify("Goods receipt submitted. Request is now " & If(!wLatest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success),

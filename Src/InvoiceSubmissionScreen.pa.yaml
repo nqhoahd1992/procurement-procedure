@@ -3,7 +3,18 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Set(locSFUStep2Pending,
+        =ResetForm(formOfficialInvoice_ISS);
+        Reset(txtInvDateValue_ISS);
+        Reset(txtSupplierNameValue_ISS);
+        Reset(txtBilledToValue_ISS);
+        Reset(txtInvNumValue_ISS);
+        Reset(txtABNValue_ISS);
+        Reset(txtAttentionValue_ISS);
+        Reset(txtDescriptionValue_ISS);
+        Reset(txtTotalAmountValue_ISS);
+        Reset(txtTaxAmountValue_ISS);
+        Reset(txtCurrencyValue_ISS);
+        Set(locSFUStep2Pending,
             Not(IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 4))) &&
             IsBlank(LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 5))
         );
@@ -95,7 +106,8 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.Title
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_ISS:
                       Control: Label@2.5.1
@@ -1129,51 +1141,6 @@ Screens:
                                     "—"
                                 )
                               Width: =Parent.Width - 24
-            - rowAccountingHandler_ISS:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  LayoutDirection: =LayoutDirection.Vertical
-                  LayoutGap: =4
-                  LayoutMinHeight: =120
-                  PaddingBottom: =8
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =20
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Width: =Parent.Width
-                Children:
-                  - lblAccountingHandlerLabel_ISS:
-                      Control: Label@2.5.1
-                      Properties:
-                        FontWeight: =FontWeight.Semibold
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Assign to Accounting Staff *"
-                        Width: =Parent.Width - 40
-                  - ddAccountingHandler_ISS:
-                      Control: ComboBox@0.0.51
-                      Properties:
-                        Height: =40
-                        InputTextPlaceholder: ="Choose an option"
-                        Items: =Filter(Procurement_User, Role.Value = "Accounting")
-                        Width: =Parent.Width - 40
-                      Children:
-                        - EmployeeID_AH_ISS:
-                            Control: ComboBoxDataField@1.5.0
-                            Variant: textualColumn
-                            IsLocked: true
-                            Properties:
-                              FieldDisplayName: ="EmployeeID"
-                              FieldName: ="EmployeeID"
-                              FieldType: ="E"
-                              Order: =1
       - conActionBar_ISS:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -1210,10 +1177,7 @@ Screens:
                   DisplayMode: =If(gSelectedRequest.InvoiceMode.Value = "ViaRequester" && (IsBlank(gSelectedRequest.RequesterInvoiceURL) || locInvoiceVerified <> true), DisplayMode.Disabled, DisplayMode.Edit)
                   Height: =36
                   OnSelect: |-
-                    =If(
-                        IsBlank(ddAccountingHandler_ISS.Selected),
-                        Notify("Please assign an Accounting Staff member before submitting.", NotificationType.Error),
-                        Set(locInvoiceURL_ISS,
+                    =Set(locInvoiceURL_ISS,
                             If(
                                 gSelectedRequest.InvoiceMode.Value = "ViaRequester",
                                 gSelectedRequest.RequesterInvoiceURL,
@@ -1246,8 +1210,7 @@ Screens:
                                                     {Value: If(locSFUStep2Pending, "Pending Supplier Follow-up", "Pending Accounting")},
                                                     gSelectedRequest.Status
                                                 ),
-                                                OfficialInvoiceLink: locInvoiceURL_ISS,
-                                                AccountingHandlerID: {Id: ddAccountingHandler_ISS.Selected.EmployeeID.Id, Value: ddAccountingHandler_ISS.Selected.EmployeeID.Value}
+                                                OfficialInvoiceLink: locInvoiceURL_ISS
                                             }
                                         )},
                                         If(
@@ -1264,9 +1227,7 @@ Screens:
                                                         StepNumber: 6,
                                                         StepName: {Value: "Invoice Submission"},
                                                         ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
-                                                        ExecutedAt: Now(),
-                                                        HandoverToID: {Id: ddAccountingHandler_ISS.Selected.EmployeeID.Id, Value: ddAccountingHandler_ISS.Selected.EmployeeID.Value},
-                                                        HandoverToIDText: ddAccountingHandler_ISS.Selected.EmployeeID.Value
+                                                        ExecutedAt: Now()
                                                     }
                                                 )},
                                                 If(
@@ -1307,7 +1268,6 @@ Screens:
                                     )
                                 )
                             )
-                    )
                     )
                   Text: ="Submit Invoice →"
                   Width: =180

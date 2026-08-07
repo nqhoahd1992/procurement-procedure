@@ -1,0 +1,809 @@
+Screens:
+  ProcurementFollowUpScreen:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gSelectedRequest.ID));
+        Reset(txtFollowUpNotes_PFU);
+        ResetForm(formCreditNote_PFU);
+        Set(gRoundsDone, Coalesce(gSelectedRequest.ReceiptRoundCount, 0));
+        Set(gLatestDecision, gSelectedRequest.LatestReceiptDecision);
+        Set(gPFUPending, gSelectedRequest.Status.Value = "Pending Supplier Follow-up" && gLatestDecision = "Accepted with Adjustment");
+        ClearCollect(colReceiptRounds, Filter('Procurement Receipt Rounds', RequestIDText = Text(gSelectedRequest.ID)));
+        ClearCollect(
+            colRoundHistory,
+            ForAll(
+                Sort(
+                    Filter('Procurement Receipt Rounds', RequestIDText = Text(gSelectedRequest.ID)),
+                    RoundNumber,
+                    SortOrder.Ascending
+                ) As rr,
+                {
+                    ID: rr.ID,
+                    StepNumber: 3,
+                    StepLabel: "Goods receipt",
+                    RoundNumber: rr.RoundNumber,
+                    ActorName: rr.ReceivedBy,
+                    ActionDate: rr.ReceiptDate,
+                    ReceiptStatus: rr.ReceiptStatus,
+                    AcceptanceDecision: rr.AcceptanceDecision,
+                    Notes: rr.Remarks
+                }
+            )
+        );
+        Set(locCreditNoteURL_PFU, "");
+        Set(gPendingCreditNoteName_PFU, "");
+        Set(gShowReceiptPhotos, false)
+    Children:
+      - rectHeader_PFU:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            Width: =Parent.Width
+      - lblScreenTitle_PFU:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =60
+            Size: =14
+            Text: ="Max Biocare Procurement - Supplier Follow-up (Round " & gRoundsDone & ")"
+            Width: =700
+            X: =20
+      - lblUserInfo_PFU:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =60
+            Size: =12
+            Text: |-
+              =If(
+                  IsBlank(gCurrentUser.Role.Value),
+                  gCurrentEmployee.Title,
+                  gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+              )
+            Width: =280
+            X: =Parent.Width - 300
+      - lblNotAuthorized_PFU:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(163, 45, 45, 1)
+            Fill: =RGBA(252, 235, 235, 1)
+            Height: =Parent.Height - 60
+            Size: =12
+            Text: ="You do not have access to this page."
+            Visible: =gCurrentUser.Role.Value <> "Procurement" && gCurrentUser.Role.Value <> "Admin"
+            Width: =Parent.Width
+            Y: =60
+      - rowInfoBlock_PFU:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(245, 245, 250, 1)
+            Height: =120
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =4
+            PaddingBottom: =12
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =12
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
+            Width: =Parent.Width
+            Y: =60
+          Children:
+            - rowInfoLine1_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =34
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =16
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  LayoutMinHeight: =24
+                  PaddingRight: =1
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - lblInfoTitle_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        FillPortions: =1
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =14
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
+                        Width: =600
+                  - lblStatusBadge_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(246, 88, 16, 1)
+                        BorderThickness: =1
+                        Color: =RGBA(246, 88, 16, 1)
+                        Fill: =RGBA(255, 243, 224, 1)
+                        FontWeight: =FontWeight.Semibold
+                        Height: =32
+                        PaddingLeft: =8
+                        PaddingRight: =8
+                        Size: =10
+                        Text: =gSelectedRequest.Status.Value
+                        Width: =220
+            - rowInfoLine2_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =24
+                  LayoutMinHeight: =44
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - colRequester_PFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =240
+                      Children:
+                        - lblInfoRequesterLabel_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Requester"
+                              Width: =240
+                        - lblInfoRequesterValue_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =gSelectedRequest.RequesterID.Value
+                              Width: =240
+                  - colRound_PFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =200
+                      Children:
+                        - lblInfoRoundLabel_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Following up on Round"
+                              Width: =200
+                        - lblInfoRoundValue_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =Text(gRoundsDone)
+                              Width: =200
+                  - colDecision_PFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =320
+                      Children:
+                        - lblInfoDecisionLabel_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =18
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Receiver's Acceptance Decision"
+                              Width: =320
+                        - lblInfoDecisionValue_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =If(gLatestDecision = "Requires Supplier Follow-up", RGBA(133, 79, 11, 1), RGBA(15, 110, 86, 1))
+                              FontWeight: =FontWeight.Semibold
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(gLatestDecision), "—", gLatestDecision)
+                              Width: =320
+      - conScrollable_PFU:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =Parent.Height - 240
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutOverflowY: =LayoutOverflow.Scroll
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
+            Width: =Parent.Width
+            Y: =180
+          Children:
+            - rowNotPending_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(225, 245, 238, 1)
+                  FillPortions: =0
+                  Height: =70
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =70
+                  PaddingBottom: =16
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =Not(gPFUPending)
+                  Width: =Parent.Width
+                Children:
+                  - lblNotPending_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(15, 110, 86, 1)
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =11
+                        Text: ="✅ There is no supplier follow-up pending for this request."
+                        Width: =Parent.Width - 40
+            - rowHistoryHeader_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =40 + CountRows(colRoundHistory) * 84 + 16
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =CountRows(colRoundHistory) > 0
+                  Width: =Parent.Width
+                Children:
+                  - lblHistoryHeader_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        Size: =12
+                        Text: ="Receipt & Follow-up History"
+                        Width: =Parent.Width
+                  - galRoundHistory_PFU:
+                      Control: Gallery@2.15.0
+                      Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                      Properties:
+                        FillPortions: =0
+                        Height: =CountRows(colRoundHistory) * 88 + 8
+                        Items: =colRoundHistory
+                        ShowScrollbar: =false
+                        TemplateSize: =88
+                        Width: =Parent.Width
+                      Children:
+                        - rowHistItem_PFU:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              Fill: =If(Mod(ThisItem.RoundNumber, 2) = 0, RGBA(248, 247, 243, 1), RGBA(255, 255, 255, 1))
+                              Height: =88
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              PaddingBottom: =8
+                              PaddingLeft: =8
+                              PaddingRight: =8
+                              PaddingTop: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - lblHistTop_PFU:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Height: =24
+                                    Size: =10
+                                    Text: |-
+                                      ="R" & ThisItem.RoundNumber & " · " & ThisItem.StepLabel &
+                                      " · " & If(IsBlank(ThisItem.ActorName), "—", ThisItem.ActorName) &
+                                      " · " & If(IsBlank(ThisItem.ActionDate), "—", Text(ThisItem.ActionDate, "dd/mm/yyyy")) &
+                                      If(IsBlank(ThisItem.AcceptanceDecision), "", " · " & ThisItem.AcceptanceDecision)
+                                    Width: =Parent.Width
+                                    Wrap: =false
+                              - lblHistNotes_PFU:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =24
+                                    Size: =9
+                                    Text: |-
+                                      =If(IsBlank(ThisItem.Notes), "", "Notes: " & ThisItem.Notes)
+                                    Width: =Parent.Width
+                                    Wrap: =false
+                              - rowHistAttachments_PFU:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    Height: =24
+                                    LayoutAlignItems: =LayoutAlignItems.Center
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutGap: =8
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =Parent.Width
+                                  Children:
+                                    - btnViewRoundPhotos_PFU:
+                                        Control: ModernButton@1.0.0
+                                        Properties:
+                                          Align: =Align.Center
+                                          BasePaletteColor: =RGBA(83, 74, 183, 1)
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          OnSelect: |-
+                                            =ClearCollect(colReceiptPhotos, LookUp('Procurement Receipt Rounds', ID = ThisItem.ID).Attachments);
+                                            Set(gPhotoRoundLabel, "Round " & ThisItem.RoundNumber & " · " & ThisItem.StepLabel);
+                                            Set(gShowReceiptPhotos, true)
+                                          PaddingBottom: =2
+                                          PaddingLeft: =10
+                                          PaddingRight: =10
+                                          PaddingTop: =2
+                                          RadiusBottomLeft: =4
+                                          RadiusBottomRight: =4
+                                          RadiusTopLeft: =4
+                                          RadiusTopRight: =4
+                                          Size: =9
+                                          Text: ="View attachments"
+                                          VerticalAlign: =VerticalAlign.Middle
+                                          Width: =140
+            - rowFollowUpNotes_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =160
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =gPFUPending
+                  Width: =Parent.Width
+                Children:
+                  - lblFollowUpNotesHeader_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        Size: =12
+                        Text: ="Supplier Follow-up — closing Round " & gRoundsDone
+                        Width: =Parent.Width - 40
+                  - lblFollowUpNotesHint_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        Height: =20
+                        Size: =10
+                        Text: ="Round " & gRoundsDone & " was accepted with adjustment. Record the outcome and attach the Credit Note — submitting completes the receiving process for this request."
+                        Width: =Parent.Width - 40
+                  - lblFollowUpNotesLabel_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Semibold
+                        Height: =24
+                        Size: =11
+                        Text: ="Remarks *"
+                        Width: =Parent.Width - 40
+                  - txtFollowUpNotes_PFU:
+                      Control: TextInput@0.0.54
+                      Properties:
+                        Height: =80
+                        Mode: ='TextInputCanvas.Mode'.Multiline
+                        Placeholder: ="Describe the outcome of follow-up with supplier..."
+                        Width: =Parent.Width - 40
+            - rowCreditNote_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =180
+                  PaddingBottom: =8
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =4
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =gPFUPending
+                  Width: =Parent.Width
+                Children:
+                  - lblCreditNoteHeader_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="Upload Credit Note *"
+                        Width: =Parent.Width - 40
+                  - lblCreditNoteHint_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(136, 135, 128, 1)
+                        Height: =20
+                        Size: =10
+                        Text: ="The last receipt round was accepted with adjustment — attach the supplier's credit note file."
+                        Width: =Parent.Width - 40
+                  - formCreditNote_PFU:
+                      Control: Form@2.4.4
+                      Variant: Classic
+                      Layout: Vertical
+                      Properties:
+                        DataSource: =Procurement_Requests
+                        Height: =120
+                        Item: =gSelectedRequest
+                        LayoutMinWidth: =100
+                        NumberOfColumns: =1
+                        OnFailure: =Notify("Upload failed. Please try again.", NotificationType.Error)
+                        OnSuccess: |-
+                          =Set(locCreditNoteURL_PFU,
+                              gSharePointAttachmentBase & Text(gSelectedRequest.ID) & "/" & EncodeUrl(gPendingCreditNoteName_PFU)
+                          );
+                          With(
+                              {wPatched: Patch(
+                                  Procurement_Requests,
+                                  gSelectedRequest,
+                                  {
+                                      Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
+                                      CreditNote: locCreditNoteURL_PFU,
+                                      Fulfillment: {Value: "Fulfilled with Adjustment"}
+                                  }
+                              )},
+                              If(
+                                  IsBlank(wPatched.ID),
+                                  Notify("Failed to submit. Please try again.", NotificationType.Error),
+                                  With(
+                                      {wLog: Patch(
+                                          Procurement_ExecutionLog,
+                                          Defaults(Procurement_ExecutionLog),
+                                          {
+                                              Title: "Step 5 - Supplier Follow-up Round " & gRoundsDone & " - " & gSelectedRequest.Title,
+                                              RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
+                                              RequestIDText: Text(gSelectedRequest.ID),
+                                              StepNumber: 5,
+                                              StepName: {Value: "Supplier Follow-up — Procurement"},
+                                              ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
+                                              ExecutedAt: Now(),
+                                              Notes: txtFollowUpNotes_PFU.Value
+                                          }
+                                      )},
+                                      If(
+                                          IsBlank(wLog.ID),
+                                          Notify("Failed to save execution log. Please try again.", NotificationType.Error),
+                                          Refresh(Procurement_Requests);
+                                          Notify("Follow-up completed. Request is now " & If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success);
+                                          Navigate(HomeScreen)
+                                      )
+                                  )
+                              )
+                          )
+                        Width: =Parent.Width - 40
+                      Children:
+                        - dcCreditNote_PFU:
+                            Control: TypedDataCard@1.0.7
+                            Variant: ClassicAttachmentsEdit
+                            Properties:
+                              DataField: ="{Attachments}"
+                              Default: =Blank()
+                              DisplayMode: =DisplayMode.Edit
+                              DisplayName: =""
+                              Height: =100
+                              Required: =false
+                              Update: =attCreditNote_PFU.Attachments
+                              Width: =Parent.Width
+                              X: =0
+                              Y: =0
+                            Children:
+                              - attCreditNote_PFU:
+                                  Control: Attachments@2.3.0
+                                  Properties:
+                                    Height: =100
+                                    Items: =Parent.Default
+                                    MaxAttachments: =10
+                                    Width: =Parent.Width
+      - conActionBar_PFU:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutGap: =12
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingBottom: =8
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =8
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"
+            Width: =Parent.Width
+            Y: =Parent.Height - 60
+          Children:
+            - btnBack_PFU:
+                Control: Button@0.0.45
+                Properties:
+                  Height: =36
+                  OnSelect: =Navigate(RequestDetailScreen)
+                  Text: ="← Back"
+                  Width: =100
+            - conActionBarBtn_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.None
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMinHeight: =16
+                  LayoutMinWidth: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                Children:
+                  - btnCancel_PFU:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: =Navigate(HomeScreen)
+                        Text: ="Cancel"
+                        Visible: =gPFUPending
+                        Width: =120
+                  - btnSubmit_PFU:
+                      Control: Button@0.0.45
+                      Properties:
+                        Height: =36
+                        OnSelect: |-
+                          =With(
+                              {wLatest: LookUp(Procurement_Requests, ID = gSelectedRequest.ID)},
+                              If(
+                                  wLatest.Status.Value <> "Pending Supplier Follow-up" || wLatest.LatestReceiptDecision <> "Accepted with Adjustment",
+                                  Notify("This supplier follow-up has already been completed by someone else. Your submission has been cancelled.", NotificationType.Warning);
+                                  Navigate(HomeScreen),
+                                  If(
+                                      IsBlank(txtFollowUpNotes_PFU.Value),
+                                      Notify("Remarks is required", NotificationType.Error),
+                                      If(
+                                          CountRows(attCreditNote_PFU.Attachments) = 0,
+                                          Notify("Credit Note file is required", NotificationType.Error),
+                                          Set(gPendingCreditNoteName_PFU, Last(attCreditNote_PFU.Attachments).Name);
+                                          SubmitForm(formCreditNote_PFU)
+                                      )
+                                  )
+                              )
+                          )
+                        Text: ="Complete Follow-up →"
+                        Visible: =gPFUPending
+                        Width: =200
+      - rectPhotoOverlay_PFU:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0.5)
+            Height: =Parent.Height
+            OnSelect: =Set(gShowReceiptPhotos, false)
+            Visible: =gShowReceiptPhotos
+            Width: =Parent.Width
+      - conPhotoDialog_PFU:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.Bold
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =420
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =8
+            PaddingBottom: =16
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =16
+            RadiusBottomLeft: =8
+            RadiusBottomRight: =8
+            RadiusTopLeft: =8
+            RadiusTopRight: =8
+            Visible: =gShowReceiptPhotos
+            Width: =620
+            X: =(Parent.Width - 620) / 2
+            Y: =(Parent.Height - 420) / 2
+          Children:
+            - rowPhotoDialogHeader_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - lblPhotoDialogTitle_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(83, 74, 183, 1)
+                        FillPortions: =1
+                        FontWeight: =FontWeight.Bold
+                        Height: =32
+                        PaddingLeft: =0
+                        Size: =12
+                        Text: ="Receipt Attachments — " & gPhotoRoundLabel
+                        Width: =440
+                        Wrap: =false
+                  - btnClosePhotoDialog_PFU:
+                      Control: Button@0.0.45
+                      Properties:
+                        OnSelect: =Set(gShowReceiptPhotos, false)
+                        Text: ="Close"
+                        Width: =100
+            - rectPhotoDialogDivider_PFU:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =1
+                  LayoutMinHeight: =1
+                  Width: =Parent.Width - 40
+            - lblPhotoDialogHint_PFU:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(136, 135, 128, 1)
+                  Height: =20
+                  PaddingLeft: =0
+                  Size: =9
+                  Text: ="Click a file name to open it in a new tab."
+                  Width: =Parent.Width - 40
+            - lblPhotoDialogEmpty_PFU:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: =RGBA(136, 135, 128, 1)
+                  Height: =60
+                  Size: =11
+                  Text: ="No files were attached to this round."
+                  Visible: =CountRows(colReceiptPhotos) = 0
+                  Width: =Parent.Width - 40
+            - galReceiptPhotos_PFU:
+                Control: Gallery@2.15.0
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  Items: =colReceiptPhotos
+                  TemplatePadding: =2
+                  TemplateSize: =44
+                  Visible: =CountRows(colReceiptPhotos) > 0
+                  Width: =Parent.Width - 40
+                Children:
+                  - rowPhotoItem_PFU:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(248, 247, 243, 1)
+                        Height: =44
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =8
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        Width: =Parent.Width
+                      Children:
+                        - lblReceiptPhotoName_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(56, 96, 178, 1)
+                              FillPortions: =1
+                              FontWeight: =FontWeight.Semibold
+                              OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =If(IsBlank(ThisItem.DisplayName), "—", ThisItem.DisplayName)
+                              Underline: =true
+                              Width: =Parent.Width - 100
+                              Wrap: =false
+                        - lblReceiptPhotoOpen_PFU:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Right
+                              Color: =RGBA(136, 135, 128, 1)
+                              OnSelect: =Launch(ThisItem.AbsoluteUri, {}, LaunchTarget.New)
+                              PaddingRight: =0
+                              Size: =10
+                              Text: ="Open ↗"
+                              Width: =80
+                              Wrap: =false

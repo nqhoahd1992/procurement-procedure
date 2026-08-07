@@ -3,7 +3,40 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Set(locIsViaRequester, Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)));
+        =Reset(rdoDecision_PE);
+        Reset(txtRejectReason_PE);
+        Reset(chk1_PE);
+        Reset(chk2_PE);
+        Reset(chk3_PE);
+        Reset(chk4_PE);
+        Reset(chk5_PE);
+        Reset(chk6_PE);
+        Reset(txtSupplierSummary_PE);
+        Reset(txtPurchaseOrder_PE);
+        Reset(rdoLimitedUse_PE);
+        Reset(dpLimitedUseDate_PE);
+        Reset(rdoInvoiceChoice_PE);
+        Reset(rdoInvoiceCorrect_PE);
+        Reset(txtInvDateValue_PE);
+        Reset(txtSupplierNameValue_PE);
+        Reset(txtBilledToValue_PE);
+        Reset(txtInvNumValue_PE);
+        Reset(txtABNValue_PE);
+        Reset(txtAttentionValue_PE);
+        Reset(txtDescriptionValue_PE);
+        Reset(txtTotalAmountValue_PE);
+        Reset(txtTaxAmountValue_PE);
+        Reset(txtCurrencyValue_PE);
+        ResetForm(formConfirmation);
+        ResetForm(formRemittance);
+        ResetForm(formOfficialInvoice_PE);
+        Set(gHasInvoiceResult, false);
+        Set(gInvoiceResult, Blank());
+        Set(gParsingInvoice, false);
+        Set(gPendingInvName_PE, "");
+        Set(gPendingNewAttName, "");
+        Set(gPendingPath, "");
+        Set(locIsViaRequester, Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)));
         Set(locOfficialInvoiceURL_PE, "")
     Children:
       - rectHeader_PE:
@@ -86,7 +119,8 @@ Screens:
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =14
-                        Text: =gSelectedRequest.Title
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_PE:
                       Control: Label@2.5.1
@@ -832,6 +866,7 @@ Screens:
                             Control: DatePicker@0.0.46
                             Properties:
                               AlignInContainer: =AlignInContainer.Center
+                              Format: ="dd/mm/yyyy"
                               Height: =40
                               Placeholder: ="Choose a date"
                               Visible: =rdoLimitedUse_PE.Selected.Value = "Yes"
@@ -902,7 +937,6 @@ Screens:
                                           OrderConfirmationURL: wURL,
                                           OfficialInvoiceLink: wOfficialInvoiceLink,
                                           UsageExpiryDate: If(rdoLimitedUse_PE.Selected.Value = "Yes", dpLimitedUseDate_PE.SelectedDate, Blank()),
-                                          AccountingHandlerID: If(gPendingPath = "B", Blank(), {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value}),
                                           ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                           ProcurementExecutedAt: Now()
                                       }
@@ -921,8 +955,6 @@ Screens:
                                               StepName: {Value: "Procurement Execution"},
                                               ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                               ExecutedAt: Now(),
-                                              HandoverToID: If(gPendingPath = "B", Blank(), {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value}),
-                                              HandoverToIDText: If(gPendingPath = "B", "", ddAccountingHandler_PE.Selected.EmployeeID.Value),
                                               SupplierSummary: txtSupplierSummary_PE.Value,
                                               PurchaseOrderLink: txtPurchaseOrder_PE.Value
                                           }
@@ -1109,7 +1141,6 @@ Screens:
                                           OfficialInvoiceLink: wOfficialInvoiceLink,
                                           RequesterInvoiceURL: If(wInvoiceCorrect, gSelectedRequest.RequesterInvoiceURL, ""),
                                           UsageExpiryDate: If(rdoLimitedUse_PE.Selected.Value = "Yes", dpLimitedUseDate_PE.SelectedDate, Blank()),
-                                          AccountingHandlerID: If(Not(wInvoiceCorrect), Blank(), {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value}),
                                           ProcurementExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                           ProcurementExecutedAt: Now()
                                       }
@@ -1128,8 +1159,6 @@ Screens:
                                               StepName: {Value: "Procurement Execution"},
                                               ExecutedBy: {Id: gCurrentEmployee.ID, Value: gCurrentEmployee.Title},
                                               ExecutedAt: Now(),
-                                              HandoverToID: If(Not(wInvoiceCorrect), Blank(), {Id: ddAccountingHandler_PE.Selected.EmployeeID.Id, Value: ddAccountingHandler_PE.Selected.EmployeeID.Value}),
-                                              HandoverToIDText: If(Not(wInvoiceCorrect), "", ddAccountingHandler_PE.Selected.EmployeeID.Value),
                                               SupplierSummary: txtSupplierSummary_PE.Value,
                                               PurchaseOrderLink: txtPurchaseOrder_PE.Value
                                           }
@@ -1917,57 +1946,6 @@ Screens:
                         Size: =9
                         Text: ="Please double-check the above information before submitting!"
                         Width: =Parent.Width - 50
-            - rowAccountingHandler_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  LayoutDirection: =LayoutDirection.Vertical
-                  LayoutGap: =4
-                  LayoutMinHeight: =120
-                  PaddingBottom: =8
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =20
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: |-
-                    =rdoDecision_PE.Selected.Value = "Proceed" &&
-                    Not(
-                        (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Defer Invoice") ||
-                        (locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "No")
-                    )
-                  Width: =Parent.Width
-                Children:
-                  - lblAccountingHandlerLabel_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        FontWeight: =FontWeight.Semibold
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Assign to Accounting Staff *"
-                        Width: =Parent.Width - 40
-                  - ddAccountingHandler_PE:
-                      Control: ComboBox@0.0.51
-                      Properties:
-                        Height: =40
-                        InputTextPlaceholder: ="Choose an option"
-                        Items: =Filter(Procurement_User, Role.Value = "Accounting")
-                        Width: =Parent.Width - 40
-                      Children:
-                        - EmployeeID_AH:
-                            Control: ComboBoxDataField@1.5.0
-                            Variant: textualColumn
-                            IsLocked: true
-                            Properties:
-                              FieldDisplayName: ="EmployeeID"
-                              FieldName: ="EmployeeID"
-                              FieldType: ="E"
-                              Order: =1
       - conActionBar_PE:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -2072,14 +2050,7 @@ Screens:
                               ),
                               // --- PROCEED ---
                               If(
-                                  IsBlank(txtSupplierSummary_PE.Value) ||
-                                  (
-                                      Not(
-                                          (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Defer Invoice") ||
-                                          (locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "No")
-                                      ) &&
-                                      IsBlank(ddAccountingHandler_PE.Selected)
-                                  ),
+                                  IsBlank(txtSupplierSummary_PE.Value),
                                   Notify("Please fill in all required fields", NotificationType.Error),
                                   If(
                                       rdoLimitedUse_PE.Selected.Value = "Yes" && IsBlank(dpLimitedUseDate_PE.SelectedDate),

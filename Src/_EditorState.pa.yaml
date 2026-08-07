@@ -20,3 +20,4 @@ EditorState:
     - InvoiceSubmissionScreen
     - RequesterInvoiceScreen
     - SupplierFollowUpScreen
+    - ProcurementFollowUpScreen

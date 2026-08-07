@@ -2,6 +2,13 @@ Screens:
   AccountingScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =Reset(chk1_AC);
+        Reset(chk2_AC);
+        Reset(chk3_AC);
+        Reset(chk4_AC);
+        Reset(chk5_AC);
+        Reset(txtNotes_AC)
     Children:
       - rectHeader_AC:
           Control: Rectangle@2.3.0
@@ -65,7 +72,8 @@ Screens:
                         Height: =24
                         PaddingLeft: =0
                         Size: =14
-                        Text: =gSelectedRequest.Title
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =600
                   - lblStatusBadge_AC:
                       Control: Label@2.5.1
