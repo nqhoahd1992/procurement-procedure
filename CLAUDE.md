@@ -115,7 +115,8 @@ Pending Supplier Follow-up ── THE RECEIVING LOOP, capped at 2 rounds ──�
    │  │                                   → hands over to Procurement ↓
    │  └─
    │
-   │  ┌─ ProcurementFollowUpScreen — Procurement/Admin, ExecutionLog Step 5, RoundNumber = N
+   │  ┌─ ProcurementFollowUpScreen — the PROCUREMENT CLOSE-OUT (see below; not a round)
+   │  │     Procurement/Admin, ExecutionLog Step 5
    │  │     Runs at most ONCE per request, and only on the "Accepted with Adjustment" branch.
    │  │     shown when Status = "Pending Supplier Follow-up" && LatestReceiptDecision = "Accepted with Adjustment"
    │  │     BLOCKED until the Official Invoice data exists (InvoiceSubmitted +
@@ -177,6 +178,8 @@ Don't reintroduce a picker without also making it load-bearing: gate `Accounting
 |---|---|---|
 | `Requires Supplier Follow-up` | receipt round `ReceiptRoundCount + 1` is open | `SupplierFollowUpScreen` (Requester / `SFU1AssignedToID`) |
 | `Accepted with Adjustment` | Credit Note pending | `ProcurementFollowUpScreen` (Procurement/Admin) |
+
+**Call the Step-5 screen the "Procurement close-out", never a round.** *Round* in this app means one **goods receipt**: it increments `ReceiptRoundCount`, writes a `'Procurement Receipt Rounds'` row with a receiver, receipt date, receipt status, decision and photos. `ProcurementFollowUpScreen` does none of that — it writes only `CreditNote`, `Fulfillment` and `Status` plus a Step-5 log row carrying `ExecutedBy`/`ExecutedAt`/`Notes`. It is a **document step**: Procurement collects the supplier's Credit Note and closes the receiving process for the last round, which is why its log row reuses that round's number instead of taking a new one. Two different kinds of work share the single `Pending Supplier Follow-up` status — receiving (the receiver's rounds) and close-out (Procurement's paperwork) — and `LatestReceiptDecision` is what routes between them. The UI says so too: screen title "Procurement Close-out (Round N)", section header "Procurement Close-out — closing Round N", `HomeScreen`'s pill "Procurement Close-out (Credit Note)", and `RequestDetailScreen`'s Step-5 label "Procurement Close-out". The SharePoint choice value `StepName = "Supplier Follow-up — Procurement"` keeps its old text — renaming it means editing the list's choice column, so it stays until that is done deliberately.
 
 **Always gate on the pair `(Status, LatestReceiptDecision)`, never on the decision alone** — `gSFURoundOpen` and `gPFUPending` both do. `LatestReceiptDecision` is *historical*: it records what the latest round decided and is never cleared, so after Procurement uploads the Credit Note it still reads `Accepted with Adjustment` forever. What actually consumes the pending state is `Status` moving on. The receipt-round side is self-clearing for a different reason — the decision is **overwritten** every submit, so `Requires Supplier Follow-up` always describes the newest round.
 

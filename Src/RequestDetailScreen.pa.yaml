@@ -2139,7 +2139,7 @@ Screens:
                                                           2, "Accounting Handover",
                                                           3, "Goods Receipt & Acceptance",
                                                           4, "Supplier Follow-up 1",
-                                                          5, "Supplier Follow-up 2",
+                                                          5, "Procurement Close-out",
                                                           6, "Invoice Submission",
                                                           "—"
                                                         )
@@ -2183,7 +2183,7 @@ Screens:
                                                                 2, "Accounting Handover",
                                                                 3, "Goods Receipt & Acceptance",
                                                                 4, "Supplier Follow-up 1",
-                                                                5, "Supplier Follow-up 2",
+                                                                5, "Procurement Close-out",
                                                                 6, "Invoice Submission",
                                                                 ""
                                                             )},

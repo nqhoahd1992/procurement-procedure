@@ -486,7 +486,7 @@ Screens:
                                     ThisItem.Status.Value = "Pending Supplier Follow-up",
                                     If(
                                         ThisItem.LatestReceiptDecision = "Accepted with Adjustment",
-                                        "Supplier Follow-up (Credit Note)",
+                                        "Procurement Close-out (Credit Note)",
                                         "Goods Receipt (Round " & (Coalesce(ThisItem.ReceiptRoundCount, 0) + 1) & ")"
                                     ),
                                     If(
