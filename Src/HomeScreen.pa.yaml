@@ -2,7 +2,7 @@ Screens:
   HomeScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
-      OnVisible: =Set(gStatusFilter, Blank()); Set(gShowQuickView, false)
+      OnVisible: =Set(gStatusFilter, Blank()); Set(gShowQuickView, false); Set(gInvoiceFromPFU, false)
     Children:
       - lblNoRole:
           Control: Label@2.5.1
@@ -448,7 +448,7 @@ Screens:
                               Size: =11
                               Text: ="⚠ Do Not Store · Usable until " & Text(ThisItem.UsageExpiryDate, "dd/mm/yyyy")
                               Visible: =Not(IsBlank(ThisItem.UsageExpiryDate))
-                              Width: =260
+                              Width: =300
                               Wrap: =false
                         - lblRequestStatus:
                             Control: Label@2.5.1

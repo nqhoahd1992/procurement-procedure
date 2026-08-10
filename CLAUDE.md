@@ -118,8 +118,12 @@ Pending Supplier Follow-up ── THE RECEIVING LOOP, capped at 2 rounds ──�
    │  ┌─ ProcurementFollowUpScreen — Procurement/Admin, ExecutionLog Step 5, RoundNumber = N
    │  │     Runs at most ONCE per request, and only on the "Accepted with Adjustment" branch.
    │  │     shown when Status = "Pending Supplier Follow-up" && LatestReceiptDecision = "Accepted with Adjustment"
+   │  │     BLOCKED until the Official Invoice data exists (InvoiceSubmitted +
+   │  │     OfficialInvoiceLink) — Procurement must submit it first via
+   │  │     InvoiceSubmissionScreen, see below.
    │  │     Requires Remarks + a Credit Note attachment. Writes CreditNote,
-   │  │     Fulfillment = "Fulfilled with Adjustment", and ends the receiving process.
+   │  │     Fulfillment = "Fulfilled with Adjustment", Status = "Pending Accounting",
+   │  │     and ends the receiving process.
    │  └─
    ▼
 Completed
@@ -137,7 +141,7 @@ Where they differ:
 
 | | `InvoiceSubmissionScreen` | `ProcurementExecutionScreen` |
 |---|---|---|
-| Entered from | `HomeScreen` only (3 call sites); `btnBack_ISS` → `HomeScreen` | `RequestDetailScreen` only; `btnBack_PE` → `RequestDetailScreen` |
+| Entered from | `HomeScreen` (3 call sites) and `ProcurementFollowUpScreen`'s invoice gate; `btnBack_ISS` → back to whichever, via `gInvoiceFromPFU` | `RequestDetailScreen` only; `btnBack_PE` → `RequestDetailScreen` |
 | Field rows | 4 × 60 = `336` base | 4 × 60 = `336` base, plus Invoice Region (feeds `Submit_Invoice`) |
 | Conditional terms | `32` deferred-note, requirement files, `56` remittance | requirement files, `56` requester-invoice link, `56` remittance |
 | Requester invoice | already shown by `rowRequesterInvoicePreview_ISS` | `rowReqInvoiceLink_PE` — the only place it appears |
@@ -177,6 +181,10 @@ Don't reintroduce a picker without also making it load-bearing: gate `Accounting
 **Always gate on the pair `(Status, LatestReceiptDecision)`, never on the decision alone** — `gSFURoundOpen` and `gPFUPending` both do. `LatestReceiptDecision` is *historical*: it records what the latest round decided and is never cleared, so after Procurement uploads the Credit Note it still reads `Accepted with Adjustment` forever. What actually consumes the pending state is `Status` moving on. The receipt-round side is self-clearing for a different reason — the decision is **overwritten** every submit, so `Requires Supplier Follow-up` always describes the newest round.
 
 Both submit buttons re-read the request and abort if it moved under them (`btnSubmitStep1_SFU` checks `ReceiptRoundCount`, `btnSubmit_PFU` checks `Status`/`LatestReceiptDecision`), so two people acting at once can't create a duplicate round or a duplicate close-out.
+
+**The Credit Note step is gated on the Official Invoice.** A Credit Note is an *adjustment to an invoice*, so the invoice has to exist before one can be recorded against it — that, not screen order, is why Procurement must submit the Official Invoice **before** the Credit Note. Note the ordering isn't automatic: a `Deferred` invoice is deliberately submitted *after* goods receipt, and it is goods receipt that decides whether a follow-up round happens at all, so arriving at this screen with no invoice on file is a normal state, not a broken one. Before this gate existed, the close-out simply routed such requests onward to `Pending Invoice`. `OnVisible` computes `gPFUInvoiceMissing = gPFUPending && (Not(InvoiceSubmitted) || IsBlank(OfficialInvoiceLink))` — the constraint is that the invoice **data** exists, and the two columns are written together everywhere (`ProcurementExecutionScreen` paths A/C, `InvoiceSubmissionScreen`) but only the link proves it, so both are checked. While it's true the screen swaps the Remarks + Credit Note form and `btnSubmit_PFU` for the amber `rowInvoiceRequired_PFU` block, whose "Submit Invoice →" button does `Set(gInvoiceFromPFU, true); Navigate(InvoiceSubmissionScreen)`. `btnSubmit_PFU` re-checks the same pair on `wLatest` alongside the `(Status, LatestReceiptDecision)` guard, since both can go stale while the screen is open. Because the invoice is guaranteed by then, the close-out patches `Status = "Pending Accounting"` unconditionally — the old `If(!InvoiceSubmitted, "Pending Invoice", …)` branch is unreachable here (`GoodsReceiptScreen` and `SupplierFollowUpScreen` still have it; their "Accepted" path has no such gate).
+
+`gInvoiceFromPFU` is the return ticket for that detour: `InvoiceSubmissionScreen`'s `btnBack_ISS` and all three submit-path navigations do `If(gInvoiceFromPFU, Refresh(Procurement_Requests); Navigate(ProcurementFollowUpScreen), Navigate(HomeScreen))` — the `Refresh` is what makes `ProcurementFollowUpScreen.OnVisible`'s `LookUp` see `InvoiceSubmitted = true` and unlock the form. It is reset to `false` in `App.OnStart`, in `HomeScreen.OnVisible` (which covers all three of that screen's entries into `InvoiceSubmissionScreen`) and in `ProcurementFollowUpScreen.OnVisible`. This is the one place `InvoiceSubmissionScreen` is entered from somewhere other than `HomeScreen`, and the one divergence from the sibling `procurement-raw-materials` app's copy of that screen.
 
 Each round writes two rows, with a strict division of labour: the **`'Procurement Receipt Rounds'` row owns everything about receiving** — receiver, date, status, decision, remarks and the **receipt photos** (the attachment form binds to that list) — while the `Procurement_ExecutionLog` row keeps only the generic step trail (`ExecutedBy`, `ExecutedAt`, `Notes`). The round row is therefore `Patch`ed **first**, so the attachment form has a record to submit against.
 

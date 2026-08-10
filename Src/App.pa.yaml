@@ -36,6 +36,8 @@ App:
       Set(gSFU1PendingAttachments, Blank());
       Set(gGRDelegationMode, "I will receive");
       Set(gSFU1DelegationMode, "I will receive");
+      Set(gInvoiceFromPFU, false);
+      Set(gPFUInvoiceMissing, false);
       Set(gSharePointAttachmentBase, "https://maxbiocare.sharepoint.com/sites/Powerapps/Lists/Procurement_Requests/Attachments/");
       Set(gShowQuickView, false);
       Set(gQuickViewRequest,

@@ -9,6 +9,11 @@ Screens:
         Set(gRoundsDone, Coalesce(gSelectedRequest.ReceiptRoundCount, 0));
         Set(gLatestDecision, gSelectedRequest.LatestReceiptDecision);
         Set(gPFUPending, gSelectedRequest.Status.Value = "Pending Supplier Follow-up" && gLatestDecision = "Accepted with Adjustment");
+        Set(gPFUInvoiceMissing,
+            gPFUPending &&
+            (Not(gSelectedRequest.InvoiceSubmitted) || IsBlank(gSelectedRequest.OfficialInvoiceLink))
+        );
+        Set(gInvoiceFromPFU, false);
         ClearCollect(colReceiptRounds, Filter('Procurement Receipt Rounds', RequestIDText = Text(gSelectedRequest.ID)));
         ClearCollect(
             colRoundHistory,
@@ -421,6 +426,53 @@ Screens:
                                           Text: ="View attachments"
                                           VerticalAlign: =VerticalAlign.Middle
                                           Width: =140
+            - rowInvoiceRequired_PFU:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Fill: =RGBA(250, 238, 218, 1)
+                  FillPortions: =0
+                  Height: =152
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: =152
+                  PaddingBottom: =16
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Visible: =gPFUInvoiceMissing
+                  Width: =Parent.Width
+                Children:
+                  - lblInvoiceRequiredHeader_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        FontWeight: =FontWeight.Bold
+                        Height: =24
+                        Size: =12
+                        Text: ="⚠ Official Invoice must be submitted first"
+                        Width: =Parent.Width - 40
+                  - lblInvoiceRequiredHint_PFU:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(133, 79, 11, 1)
+                        Height: =44
+                        Size: =10
+                        Text: ="This request has no Official Invoice data yet. A Credit Note adjusts an existing invoice, so the invoice must be on file before it can be recorded. Submit the invoice first, then return here to upload the Credit Note."
+                        Width: =Parent.Width - 40
+                  - btnGoToInvoice_PFU:
+                      Control: Button@0.0.45
+                      Properties:
+                        BasePaletteColor: =RGBA(83, 74, 183, 1)
+                        Height: =36
+                        OnSelect: =Set(gInvoiceFromPFU, true); Navigate(InvoiceSubmissionScreen)
+                        Text: ="Submit Invoice →"
+                        Width: =200
             - rowFollowUpNotes_PFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -437,7 +489,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =gPFUPending
+                  Visible: =gPFUPending && Not(gPFUInvoiceMissing)
                   Width: =Parent.Width
                 Children:
                   - lblFollowUpNotesHeader_PFU:
@@ -488,7 +540,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =gPFUPending
+                  Visible: =gPFUPending && Not(gPFUInvoiceMissing)
                   Width: =Parent.Width
                 Children:
                   - lblCreditNoteHeader_PFU:
@@ -527,7 +579,7 @@ Screens:
                                   Procurement_Requests,
                                   gSelectedRequest,
                                   {
-                                      Status: {Value: If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice", "Pending Accounting")},
+                                      Status: {Value: "Pending Accounting"},
                                       CreditNote: locCreditNoteURL_PFU,
                                       Fulfillment: {Value: "Fulfilled with Adjustment"}
                                   }
@@ -554,7 +606,7 @@ Screens:
                                           IsBlank(wLog.ID),
                                           Notify("Failed to save execution log. Please try again.", NotificationType.Error),
                                           Refresh(Procurement_Requests);
-                                          Notify("Follow-up completed. Request is now " & If(!gSelectedRequest.InvoiceSubmitted, "Pending Invoice.", "Pending Accounting."), NotificationType.Success);
+                                          Notify("Follow-up completed. Request is now Pending Accounting.", NotificationType.Success);
                                           Navigate(HomeScreen)
                                       )
                                   )
@@ -652,19 +704,24 @@ Screens:
                                   Notify("This supplier follow-up has already been completed by someone else. Your submission has been cancelled.", NotificationType.Warning);
                                   Navigate(HomeScreen),
                                   If(
-                                      IsBlank(txtFollowUpNotes_PFU.Value),
-                                      Notify("Remarks is required", NotificationType.Error),
+                                      Not(wLatest.InvoiceSubmitted) || IsBlank(wLatest.OfficialInvoiceLink),
+                                      Notify("The Official Invoice must be submitted before the Credit Note can be uploaded.", NotificationType.Error);
+                                      Set(gPFUInvoiceMissing, true),
                                       If(
-                                          CountRows(attCreditNote_PFU.Attachments) = 0,
-                                          Notify("Credit Note file is required", NotificationType.Error),
-                                          Set(gPendingCreditNoteName_PFU, Last(attCreditNote_PFU.Attachments).Name);
-                                          SubmitForm(formCreditNote_PFU)
+                                          IsBlank(txtFollowUpNotes_PFU.Value),
+                                          Notify("Remarks is required", NotificationType.Error),
+                                          If(
+                                              CountRows(attCreditNote_PFU.Attachments) = 0,
+                                              Notify("Credit Note file is required", NotificationType.Error),
+                                              Set(gPendingCreditNoteName_PFU, Last(attCreditNote_PFU.Attachments).Name);
+                                              SubmitForm(formCreditNote_PFU)
+                                          )
                                       )
                                   )
                               )
                           )
                         Text: ="Complete Follow-up →"
-                        Visible: =gPFUPending
+                        Visible: =gPFUPending && Not(gPFUInvoiceMissing)
                         Width: =200
       - rectPhotoOverlay_PFU:
           Control: Rectangle@2.3.0

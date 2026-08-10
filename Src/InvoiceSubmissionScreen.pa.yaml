@@ -1731,7 +1731,7 @@ Screens:
                 Control: Button@0.0.45
                 Properties:
                   Height: =36
-                  OnSelect: =Navigate(HomeScreen)
+                  OnSelect: =If(gInvoiceFromPFU, Navigate(ProcurementFollowUpScreen), Navigate(HomeScreen))
                   Text: ="← Back"
                   Width: =100
             - btnSubmit_ISS:
@@ -1797,7 +1797,7 @@ Screens:
                                                 If(
                                                     IsBlank(wLog.ID),
                                                     Notify("Saved but log write failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
-                                                    Navigate(HomeScreen),
+                                                    If(gInvoiceFromPFU, Refresh(Procurement_Requests); Navigate(ProcurementFollowUpScreen), Navigate(HomeScreen)),
                                                     Set(gSubmitInvoiceResult,
                                                         Submit_Invoice.Run(
                                                             locInvoiceURL_ISS,
@@ -1822,9 +1822,18 @@ Screens:
                                                     If(
                                                         IsError(gSubmitInvoiceResult),
                                                         Notify("Saved but invoice processing failed. Please contact IT with reference: " & gSelectedRequest.Title, NotificationType.Warning);
-                                                        Navigate(HomeScreen),
-                                                        Notify(If(gSelectedRequest.Status.Value = "Pending Invoice", "Invoice submitted successfully. Request is now " & If(locSFUStep2Pending, "Pending Supplier Follow-up.", "Pending Accounting."), "Invoice submitted successfully. Goods Receipt is still in progress."), NotificationType.Success);
-                                                        Navigate(HomeScreen)
+                                                        If(gInvoiceFromPFU, Refresh(Procurement_Requests); Navigate(ProcurementFollowUpScreen), Navigate(HomeScreen)),
+                                                        Notify(
+                                                            If(
+                                                                gSelectedRequest.Status.Value = "Pending Invoice",
+                                                                "Invoice submitted successfully. Request is now " & If(locSFUStep2Pending, "Pending Supplier Follow-up.", "Pending Accounting."),
+                                                                gInvoiceFromPFU,
+                                                                "Invoice submitted successfully. You can now upload the Credit Note.",
+                                                                "Invoice submitted successfully. Goods Receipt is still in progress."
+                                                            ),
+                                                            NotificationType.Success
+                                                        );
+                                                        If(gInvoiceFromPFU, Refresh(Procurement_Requests); Navigate(ProcurementFollowUpScreen), Navigate(HomeScreen))
                                                     )
                                                 )
                                             )
