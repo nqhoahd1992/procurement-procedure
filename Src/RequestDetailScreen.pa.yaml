@@ -2194,7 +2194,15 @@ Screens:
                                                             {FieldLabel: "Notes", FieldValue: Coalesce(ThisItem.Notes, "")}
                                                         );
                                                         RemoveIf(colLogDetail, IsBlank(FieldValue));
-                                                        Set(gLogDetailTitle, "Execution Step " & ThisItem.StepNumber);
+                                                        Set(gLogDetailTitle, Switch(ThisItem.StepNumber,
+                                                            1, "Procurement Execution",
+                                                            2, "Accounting Handover",
+                                                            3, "Goods Receipt & Acceptance",
+                                                            4, "Supplier Follow-up 1",
+                                                            5, "Procurement Close-out",
+                                                            6, "Invoice Submission",
+                                                            "Execution Step " & ThisItem.StepNumber
+                                                        ));
                                                         Set(gShowLogDetail, true)
                                                       PaddingBottom: =2
                                                       PaddingLeft: =8

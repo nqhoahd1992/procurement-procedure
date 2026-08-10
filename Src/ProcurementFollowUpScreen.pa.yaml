@@ -592,7 +592,7 @@ Screens:
                                           Procurement_ExecutionLog,
                                           Defaults(Procurement_ExecutionLog),
                                           {
-                                              Title: "Step 5 - Supplier Follow-up Round " & gRoundsDone & " - " & gSelectedRequest.Title,
+                                              Title: "Step 5 - Procurement Close-out (Round " & gRoundsDone & ") - " & gSelectedRequest.Title,
                                               RequestID: {Id: gSelectedRequest.ID, Value: gSelectedRequest.Title},
                                               RequestIDText: Text(gSelectedRequest.ID),
                                               StepNumber: 5,
