@@ -60,11 +60,11 @@ Screens:
                   Color: =RGBA(255, 255, 255, 1)
                   FontWeight: =FontWeight.Bold
                   Height: =60
+                  PaddingLeft: =0
                   Size: =14
                   Text: |-
                     ="Invoice Submission - ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                   Width: =654
-                  PaddingLeft: =0
             - lblUserInfo_ISS:
                 Control: Label@2.5.1
                 Properties:
@@ -72,6 +72,7 @@ Screens:
                   Color: =RGBA(255, 255, 255, 1)
                   FontWeight: =FontWeight.Semibold
                   Height: =60
+                  PaddingRight: =0
                   Size: =12
                   Text: |-
                     =If(
@@ -80,7 +81,6 @@ Screens:
                         gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
                     )
                   Width: =280
-                  PaddingRight: =0
       - conScrollable_ISS:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
@@ -350,6 +350,40 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
+                              - colReqDeliveryLocation_ISS:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =340
+                                    X: =40
+                                    Y: =40
+                                  Children:
+                                    - lblReqDeliveryLocationLabel_ISS:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Delivery Location"
+                                          Width: =340
+                                    - lblReqDeliveryLocationValue_ISS:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.DeliveryLocation.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
                         - rowReqInfoB_ISS:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -576,7 +610,7 @@ Screens:
                                           Height: =24
                                           PaddingLeft: =0
                                           Size: =11
-                                          Text: =If(IsBlank(gSelectedRequest.BudgetReference), "—", Text(gSelectedRequest.BudgetReference, "#,###.00"))
+                                          Text: =If(IsBlank(gSelectedRequest.BudgetReference), "—", Text(gSelectedRequest.BudgetReference, "#,###.00")) & " " & gSelectedRequest.Currency
                                           Width: =Parent.Width - 20
                                           Wrap: =false
                               - colReqDeliveryDate_ISS:
@@ -611,7 +645,7 @@ Screens:
                                           Text: =If(IsBlank(gSelectedRequest.RequiredDeliveryDate), "—", Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"))
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqDeliveryLocation_ISS:
+                              - colReqManager_ISS:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -622,25 +656,32 @@ Screens:
                                     RadiusBottomRight: =0
                                     RadiusTopLeft: =0
                                     RadiusTopRight: =0
-                                    Width: =340
+                                    Width: =360
+                                    X: =40
+                                    Y: =40
                                   Children:
-                                    - lblReqDeliveryLocationLabel_ISS:
+                                    - lblReqManagerLabel_ISS:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
                                           Height: =20
                                           PaddingLeft: =0
                                           Size: =9
-                                          Text: ="Delivery Location"
-                                          Width: =340
-                                    - lblReqDeliveryLocationValue_ISS:
+                                          Text: ="Manager Approver"
+                                          Width: =360
+                                    - lblReqManagerValue_ISS:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
                                           Height: =24
                                           PaddingLeft: =0
                                           Size: =11
-                                          Text: =Coalesce(gSelectedRequest.DeliveryLocation.Value, "—")
+                                          Text: |-
+                                            =If(
+                                                gSelectedRequest.SkippedManagerReview,
+                                                "Skipped - escalated straight to Executive",
+                                                Coalesce(gSelectedRequest.ManagerApproverID.Value, "—")
+                                            )
                                           Width: =Parent.Width - 20
                                           Wrap: =false
                         - rowReqInfoD_ISS:
@@ -691,75 +732,6 @@ Screens:
                                           Text: =If(IsBlank(gSelectedRequest.PreferredSupplier), "—", gSelectedRequest.PreferredSupplier)
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqManager_ISS:
-                                  Control: GroupContainer@1.5.0
-                                  Variant: AutoLayout
-                                  Properties:
-                                    DropShadow: =DropShadow.None
-                                    LayoutDirection: =LayoutDirection.Vertical
-                                    LayoutGap: =2
-                                    RadiusBottomLeft: =0
-                                    RadiusBottomRight: =0
-                                    RadiusTopLeft: =0
-                                    RadiusTopRight: =0
-                                    Width: =360
-                                  Children:
-                                    - lblReqManagerLabel_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          Color: =RGBA(136, 135, 128, 1)
-                                          Height: =20
-                                          PaddingLeft: =0
-                                          Size: =9
-                                          Text: ="Manager Approver"
-                                          Width: =360
-                                    - lblReqManagerValue_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          FontWeight: =FontWeight.Semibold
-                                          Height: =24
-                                          PaddingLeft: =0
-                                          Size: =11
-                                          Text: |-
-                                            =If(
-                                                gSelectedRequest.SkippedManagerReview,
-                                                "Skipped - escalated straight to Executive",
-                                                Coalesce(gSelectedRequest.ManagerApproverID.Value, "—")
-                                            )
-                                          Width: =Parent.Width - 20
-                                          Wrap: =false
-                              - colReqSubmittedOn_ISS:
-                                  Control: GroupContainer@1.5.0
-                                  Variant: AutoLayout
-                                  Properties:
-                                    DropShadow: =DropShadow.None
-                                    LayoutDirection: =LayoutDirection.Vertical
-                                    LayoutGap: =2
-                                    RadiusBottomLeft: =0
-                                    RadiusBottomRight: =0
-                                    RadiusTopLeft: =0
-                                    RadiusTopRight: =0
-                                    Width: =240
-                                  Children:
-                                    - lblReqSubmittedOnLabel_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          Color: =RGBA(136, 135, 128, 1)
-                                          Height: =20
-                                          PaddingLeft: =0
-                                          Size: =9
-                                          Text: ="Submitted On"
-                                          Width: =240
-                                    - lblReqSubmittedOnValue_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          FontWeight: =FontWeight.Semibold
-                                          Height: =24
-                                          PaddingLeft: =0
-                                          Size: =11
-                                          Text: =Text(gSelectedRequest.Created, "dd/mm/yyyy hh:mm")
-                                          Width: =Parent.Width - 20
-                                          Wrap: =false
                         - rowReqDescription_ISS:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -790,6 +762,7 @@ Screens:
                                   Control: Label@2.5.1
                                   Properties:
                                     FillPortions: =1
+                                    FontWeight: =FontWeight.Semibold
                                     Height: =68
                                     PaddingLeft: =0
                                     Size: =11

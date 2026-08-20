@@ -84,6 +84,7 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(245, 245, 250, 1)
+                  FillPortions: =0
                   Height: =120
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
