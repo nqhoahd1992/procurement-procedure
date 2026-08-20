@@ -540,8 +540,8 @@ Screens:
                             Variant: AutoLayout
                             Properties:
                               DropShadow: =DropShadow.None
-                              FillPortions: =1
                               Height: =1
+                              LayoutDirection: =LayoutDirection.Horizontal
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -607,7 +607,7 @@ Screens:
           Properties:
             DropShadow: =DropShadow.Bold
             Fill: =RGBA(255, 255, 255, 1)
-            Height: =660
+            Height: =500
             LayoutDirection: =LayoutDirection.Vertical
             LayoutGap: =8
             PaddingBottom: =16
@@ -882,6 +882,8 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =120
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =2
                   LayoutMinHeight: =140
@@ -904,12 +906,12 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         FillPortions: =1
+                        FontWeight: =FontWeight.Semibold
                         Overflow: =Overflow.Scroll
                         PaddingLeft: =0
                         PaddingRight: =0
                         Size: =11
                         Text: =If(IsBlank(gQuickViewRequest.ProcurementDescription), "—", gQuickViewRequest.ProcurementDescription)
-                        VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width
             - rowQVRequesterInvoice_HS:
                 Control: GroupContainer@1.5.0
@@ -1278,8 +1280,7 @@ Screens:
                               Color: =RGBA(136, 135, 128, 1)
                               Height: =28
                               Size: =10
-                              Text: |-
-                                ="(" & CountRows(Filter(colHomeRoleFiltered, Status.Value = ThisItem.Value)) & ")"
+                              Text: ="(" & CountRows(Filter(colHomeRoleFiltered, Status.Value = ThisItem.Value)) & ")"
                               Width: =40
             - rowStatusFilterFooter_HS:
                 Control: GroupContainer@1.5.0
