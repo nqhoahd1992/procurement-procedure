@@ -857,7 +857,7 @@ Screens:
                 Control: Button@0.0.45
                 Properties:
                   Height: =36
-                  OnSelect: =Navigate(RequestDetailScreen)
+                  OnSelect: =Back()
                   Text: ="← Back"
                   Width: =100
                   X: =Parent.Width - 120
