@@ -143,6 +143,7 @@ Screens:
                         LayoutDirection: =LayoutDirection.Horizontal
                         LayoutGap: =12
                         LayoutMinHeight: =32
+                        PaddingRight: =1
                         RadiusBottomLeft: =0
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
@@ -638,38 +639,6 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqInvoiceRegion_PE:
-                                  Control: GroupContainer@1.5.0
-                                  Variant: AutoLayout
-                                  Properties:
-                                    DropShadow: =DropShadow.None
-                                    LayoutDirection: =LayoutDirection.Vertical
-                                    LayoutGap: =2
-                                    RadiusBottomLeft: =0
-                                    RadiusBottomRight: =0
-                                    RadiusTopLeft: =0
-                                    RadiusTopRight: =0
-                                    Width: =160
-                                  Children:
-                                    - lblReqInvoiceRegionLabel_PE:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          Color: =RGBA(136, 135, 128, 1)
-                                          Height: =20
-                                          PaddingLeft: =0
-                                          Size: =9
-                                          Text: ="Invoice Region"
-                                          Width: =160
-                                    - lblReqInvoiceRegionValue_PE:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          FontWeight: =FontWeight.Semibold
-                                          Height: =24
-                                          PaddingLeft: =0
-                                          Size: =11
-                                          Text: =Coalesce(gSelectedRequest.InvoiceRegion.Value, "—")
-                                          Width: =Parent.Width - 20
-                                          Wrap: =false
                               - colReqDeliveryLocation_PE:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
@@ -849,6 +818,7 @@ Screens:
                                   Control: Label@2.5.1
                                   Properties:
                                     FillPortions: =1
+                                    FontWeight: =FontWeight.Semibold
                                     Height: =68
                                     PaddingLeft: =0
                                     Size: =11
@@ -1145,7 +1115,7 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   FillPortions: =0
-                  Height: =140
+                  Height: =100
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   PaddingBottom: =8
@@ -1165,14 +1135,14 @@ Screens:
                         FontWeight: =FontWeight.Semibold
                         Height: =24
                         Size: =11
-                        Text: ="Supplier Selection / Negotiation Summary *"
+                        Text: ="SO/PO/INV *"
                         Width: =Parent.Width - 40
                   - txtSupplierSummary_PE:
                       Control: TextInput@0.0.54
                       Properties:
-                        Height: =80
+                        Height: =40
                         Mode: ='TextInputCanvas.Mode'.Multiline
-                        Placeholder: ="Describe supplier selection and negotiation outcome..."
+                        Placeholder: ="Enter SO/PO/INV number..."
                         Width: =Parent.Width - 40
             - rowPurchaseOrder_PE:
                 Control: GroupContainer@1.5.0

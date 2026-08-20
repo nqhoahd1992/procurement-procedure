@@ -317,6 +317,8 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(219, 234, 254, 1)
+                  FillPortions: =0
+                  Height: =160
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   LayoutMinHeight: =200
@@ -344,39 +346,42 @@ Screens:
                       Properties:
                         Color: =RGBA(37, 99, 235, 1)
                         FontWeight: =FontWeight.Semibold
-                        Height: =50
+                        Height: =24
+                        PaddingBottom: =0
                         PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
                         Size: =11
-                        Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", gSelectedRequest.OfficialInvoiceLink)
+                        Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", "Open official invoice ↗")
                         Underline: =true
                         Width: =Parent.Width - 40
                         Wrap: =false
                   - lblSupplierSummaryRefTitle_AC:
                       Control: Label@2.5.1
                       Properties:
-                        Height: =24
                         PaddingLeft: =0
                         PaddingRight: =0
-                        PaddingTop: =4
+                        PaddingTop: =20
                         Size: =11
-                        Text: ="Supplier Selection / Negotiation Summary"
+                        Text: ="SO/PO/INV"
                         Width: =Parent.Width - 40
                   - lblSupplierSummaryRefValue_AC:
                       Control: Label@2.5.1
                       Properties:
                         Color: =RGBA(37, 99, 235, 1)
                         FontWeight: =FontWeight.Semibold
-                        Height: =60
+                        Height: =24
                         Overflow: =Overflow.Scroll
+                        PaddingBottom: =0
                         PaddingLeft: =0
                         PaddingRight: =0
+                        PaddingTop: =0
                         Size: =11
                         Text: |-
                           =With(
                               {wSummary: LookUp(Procurement_ExecutionLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 1).SupplierSummary},
                               If(IsBlank(wSummary), "—", wSummary)
                           )
-                        VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
             - rowCreditNoteRef_AC:
                 Control: GroupContainer@1.5.0
@@ -414,14 +419,16 @@ Screens:
                       Properties:
                         Color: =RGBA(15, 110, 86, 1)
                         FontWeight: =FontWeight.Semibold
+                        Height: =24
                         OnSelect: =If(Not(IsBlank(gSelectedRequest.CreditNote)), Launch(gSelectedRequest.CreditNote, {}, LaunchTarget.New))
                         Overflow: =Overflow.Scroll
+                        PaddingBottom: =0
                         PaddingLeft: =0
                         PaddingRight: =0
+                        PaddingTop: =0
                         Size: =11
-                        Text: =If(IsBlank(gSelectedRequest.CreditNote), "—", gSelectedRequest.CreditNote)
+                        Text: =If(IsBlank(gSelectedRequest.CreditNote), "—", "Open link ↗")
                         Underline: =Not(IsBlank(gSelectedRequest.CreditNote))
-                        VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
                         Wrap: =false
             - rowChecklistHeader_AC:
