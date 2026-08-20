@@ -440,7 +440,6 @@ Screens:
                                   Properties:
                                     Align: =Align.Right
                                     Color: =RGBA(56, 96, 178, 1)
-                                    FillPortions: =1
                                     FontWeight: =FontWeight.Semibold
                                     Height: =30
                                     OnSelect: =Launch("https://apps.powerapps.com/play/e/default-6292eb61-3778-47c8-b769-a982698418cc/a/4c275f4f-228e-4dbd-af2b-fc3835168257?tenantId=6292eb61-3778-47c8-b769-a982698418cc", {}, LaunchTarget.New)
@@ -449,7 +448,7 @@ Screens:
                                       ="🔗 View Project List (lookup project details)"
                                     Underline: =true
                                     Visible: =rdoHasProject.Selected.Value = "Yes"
-                                    Width: =400
+                                    Width: =300
                                     X: =40
                                     Y: =40
                         - ddProject_1:

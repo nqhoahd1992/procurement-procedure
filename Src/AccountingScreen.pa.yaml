@@ -318,7 +318,7 @@ Screens:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(219, 234, 254, 1)
                   FillPortions: =0
-                  Height: =160
+                  Height: =140
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   LayoutMinHeight: =200
@@ -388,10 +388,10 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
-                  Fill: =RGBA(225, 245, 238, 1)
+                  Fill: =RGBA(219, 234, 254, 1)
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
-                  LayoutMinHeight: =80
+                  LayoutMinHeight: =90
                   PaddingBottom: =12
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -406,8 +406,6 @@ Screens:
                   - lblCreditNoteRefTitle_AC:
                       Control: Label@2.5.1
                       Properties:
-                        Color: =RGBA(15, 110, 86, 1)
-                        FontWeight: =FontWeight.Bold
                         Height: =24
                         PaddingLeft: =0
                         PaddingRight: =0
@@ -417,20 +415,18 @@ Screens:
                   - lblCreditNoteRefValue_AC:
                       Control: Label@2.5.1
                       Properties:
-                        Color: =RGBA(15, 110, 86, 1)
+                        Color: =RGBA(37, 99, 235, 1)
                         FontWeight: =FontWeight.Semibold
-                        Height: =24
                         OnSelect: =If(Not(IsBlank(gSelectedRequest.CreditNote)), Launch(gSelectedRequest.CreditNote, {}, LaunchTarget.New))
                         Overflow: =Overflow.Scroll
-                        PaddingBottom: =0
                         PaddingLeft: =0
                         PaddingRight: =0
-                        PaddingTop: =0
                         Size: =11
-                        Text: =If(IsBlank(gSelectedRequest.CreditNote), "—", "Open link ↗")
+                        Text: =If(IsBlank(gSelectedRequest.CreditNote), "—", "Open credit note ↗")
+                        Tooltip: =gSelectedRequest.CreditNote
                         Underline: =Not(IsBlank(gSelectedRequest.CreditNote))
+                        VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
-                        Wrap: =false
             - rowChecklistHeader_AC:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
