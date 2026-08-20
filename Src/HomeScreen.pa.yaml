@@ -621,7 +621,7 @@ Screens:
             Visible: =gShowQuickView
             Width: =720
             X: =(Parent.Width - 720) / 2
-            Y: =(Parent.Height - 660) / 2
+            Y: =(Parent.Height - 500) / 2
           Children:
             - lblQuickViewTitle_HS:
                 Control: Label@2.5.1

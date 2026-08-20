@@ -503,40 +503,6 @@ Screens:
                         RadiusTopRight: =0
                         Width: =Parent.Width
                       Children:
-                        - colReqCostCenter_PE_1:
-                            Control: GroupContainer@1.5.0
-                            Variant: AutoLayout
-                            Properties:
-                              DropShadow: =DropShadow.None
-                              LayoutDirection: =LayoutDirection.Vertical
-                              LayoutGap: =2
-                              RadiusBottomLeft: =0
-                              RadiusBottomRight: =0
-                              RadiusTopLeft: =0
-                              RadiusTopRight: =0
-                              Width: =380
-                              X: =40
-                              Y: =40
-                            Children:
-                              - lblReqCostCenterLabel_PE_1:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    Color: =RGBA(136, 135, 128, 1)
-                                    Height: =20
-                                    PaddingLeft: =0
-                                    Size: =9
-                                    Text: ="Cost Center"
-                                    Width: =380
-                              - lblReqCostCenterValue_PE_1:
-                                  Control: Label@2.5.1
-                                  Properties:
-                                    FontWeight: =FontWeight.Semibold
-                                    Height: =24
-                                    PaddingLeft: =0
-                                    Size: =11
-                                    Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
-                                    Width: =Parent.Width - 20
-                                    Wrap: =false
                         - colBudgetReference:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -605,6 +571,40 @@ Screens:
                                     Size: =11
                                     Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
                                     Width: =Parent.Width - 20
+                        - colReqCostCenter_PE_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =380
+                              X: =40
+                              Y: =40
+                            Children:
+                              - lblReqCostCenterLabel_PE_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    PaddingLeft: =0
+                                    Size: =9
+                                    Text: ="Cost Center"
+                                    Width: =380
+                              - lblReqCostCenterValue_PE_1:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =24
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
+                                    Width: =Parent.Width - 20
+                                    Wrap: =false
                         - colDeliveryLoc_1:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
