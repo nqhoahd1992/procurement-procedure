@@ -3,11 +3,7 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Reset(chkBizJustification);
-        Reset(chkCostReasonable);
-        Reset(chkWithinBudget);
-        Reset(chkTimingAppropriate);
-        Reset(txtManagerRemarks);
+        =Reset(txtManagerRemarks);
         Reset(rdoApproved);
         Set(gShowRateInfo, false);
         Set(gProjectInfo,
@@ -116,7 +112,7 @@ Screens:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(241, 239, 232, 1)
                   LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutMinHeight: =80
+                  LayoutMinHeight: =60
                   LayoutWrap: =true
                   PaddingBottom: =12
                   PaddingLeft: =20
@@ -503,7 +499,6 @@ Screens:
                             Variant: AutoLayout
                             Properties:
                               DropShadow: =DropShadow.None
-                              FillPortions: =1
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =2
                               LayoutMinHeight: =50
@@ -617,164 +612,6 @@ Screens:
                         Size: =10
                         Text: ="• Involves potential risk"
                         Width: =Parent.Width
-            - rowChecklist:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  Height: =270
-                  LayoutDirection: =LayoutDirection.Vertical
-                  LayoutGap: =4
-                  LayoutMinHeight: =260
-                  PaddingBottom: =16
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =16
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Width: =Parent.Width
-                Children:
-                  - lblChecklistLabel:
-                      Control: Label@2.5.1
-                      Properties:
-                        FontWeight: =FontWeight.Semibold
-                        Height: =28
-                        Size: =12
-                        Text: ="Review Checklist *"
-                        Width: =300
-                  - lblChecklistWarning:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(163, 45, 45, 1)
-                        Height: =24
-                        Size: =10
-                        Text: ="Please complete all checklist items before submitting"
-                        Width: =500
-                  - rowChk1:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        FillPortions: =0
-                        Height: =40
-                        LayoutDirection: =LayoutDirection.Horizontal
-                        LayoutGap: =8
-                        LayoutMinHeight: =40
-                        PaddingTop: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =Parent.Width
-                      Children:
-                        - chkBizJustification:
-                            Control: CheckBox@0.0.30
-                            Properties:
-                              Label: =
-                              Width: =32
-                        - lblChk1:
-                            Control: Label@2.5.1
-                            Properties:
-                              Height: =32
-                              PaddingLeft: =0
-                              PaddingRight: =0
-                              Size: =11
-                              Text: ="Business justification is valid and necessary"
-                              Width: =560
-                  - rowChk2:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        FillPortions: =0
-                        Height: =40
-                        LayoutDirection: =LayoutDirection.Horizontal
-                        LayoutGap: =8
-                        LayoutMinHeight: =30
-                        PaddingTop: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =Parent.Width
-                      Children:
-                        - chkCostReasonable:
-                            Control: CheckBox@0.0.30
-                            Properties:
-                              Label: =
-                              Width: =32
-                        - lblChk2:
-                            Control: Label@2.5.1
-                            Properties:
-                              Height: =32
-                              PaddingLeft: =0
-                              Size: =11
-                              Text: ="Cost is reasonable and aligned with department objectives"
-                              Width: =560
-                  - rowChk3:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        FillPortions: =0
-                        Height: =40
-                        LayoutDirection: =LayoutDirection.Horizontal
-                        LayoutGap: =8
-                        LayoutMinHeight: =40
-                        PaddingTop: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =Parent.Width
-                      Children:
-                        - chkWithinBudget:
-                            Control: CheckBox@0.0.30
-                            Properties:
-                              Label: =
-                              Width: =32
-                        - lblChk3:
-                            Control: Label@2.5.1
-                            Properties:
-                              Height: =32
-                              PaddingLeft: =0
-                              PaddingRight: =0
-                              Size: =11
-                              Text: ="Within approved departmental budget"
-                              Width: =560
-                  - rowChk4:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        FillPortions: =0
-                        Height: =40
-                        LayoutDirection: =LayoutDirection.Horizontal
-                        LayoutGap: =8
-                        LayoutMinHeight: =40
-                        PaddingTop: =4
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =Parent.Width
-                      Children:
-                        - chkTimingAppropriate:
-                            Control: CheckBox@0.0.30
-                            Properties:
-                              Label: =
-                              Width: =32
-                        - lblChk4:
-                            Control: Label@2.5.1
-                            Properties:
-                              Height: =32
-                              PaddingLeft: =0
-                              PaddingRight: =0
-                              Size: =11
-                              Text: ="Timing and urgency are appropriate"
-                              Width: =560
             - rowRemarks:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -905,7 +742,7 @@ Screens:
                         Height: =36
                         OnSelect: |-
                           =If(
-                              Not(chkBizJustification.Checked) || Not(chkCostReasonable.Checked) || Not(chkWithinBudget.Checked) || Not(chkTimingAppropriate.Checked),
+                              false, // checklist removed
                               Notify("Please complete all checklist items", NotificationType.Error),
                               If(
                                   IsBlank(txtManagerRemarks.Value),
