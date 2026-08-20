@@ -209,12 +209,12 @@ Routing relies on these status strings being exact and consistent across `HomeSc
 ## Role-based visibility (HomeScreen)
 
 The gallery `Items` filters `Procurement_Requests` differently per `gUserRole`:
-- **Manager** → requests where `ManagerApproverID.Id = gCurrentEmployee.ID`.
+- **Manager** → requests where `ManagerApproverNum = gCurrentEmployee.ID`.
 - **Procurement / Accounting** → requests in their relevant statuses onward.
 - **Executive / Admin** → all requests.
-- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`). Non-special-role employees who are assigned as a goods receipt / supplier follow-up receiver also see those requests via `GRAssignedToID.Id = gCurrentEmployee.ID || SFU1AssignedToID.Id = gCurrentEmployee.ID`.
+- **Requester (default)** → own requests (`RequesterEmail = gCurrentEmployee.Email`). Non-special-role employees who are assigned as a goods receipt / supplier follow-up receiver also see those requests via `GRAssignedToNum = gCurrentEmployee.ID || SFU1AssignedToNum = gCurrentEmployee.ID`.
 
-Filter buttons and "+ New Request" are shown/hidden by role. Keep the per-role `Items` filter and the filter-button `Visible` rules in sync.
+This same per-role `Switch` is duplicated twice more on `HomeScreen`: once in `OnVisible` (`ClearCollect(colHomeRoleFiltered, ...)`, used only by the status-filter dialog's per-status counts) and once inline in `galRequests.Items` itself. **All three copies filter on the plain-Number mirror columns (`ManagerApproverNum`/`GRAssignedToNum`/`SFU1AssignedToNum`), never on the Lookup columns' `.Id`** — comparing a Lookup/Person column's `.Id` directly in a `Filter` against the live SharePoint table is not delegable and Studio flags it ("might not work correctly on large data sets"); the plain Number columns exist purely to make this comparison delegable (see `docs/sharepoint-schema.md`). Everywhere else in the app that reads `ManagerApproverID.Id`/`GRAssignedToID.Id`/`SFU1AssignedToID.Id` off an already-fetched single record (`ThisItem` in a Gallery, `gSelectedRequest`, `gQuickViewRequest`) is unaffected and correctly keeps using the Lookup column directly — delegation only matters for formulas that query the remote table, not for reading a field off a record already in memory. Keep all three `Switch` copies and the filter-button `Visible` rules in sync when the role-visibility rules change.
 
 ## Conventions
 
