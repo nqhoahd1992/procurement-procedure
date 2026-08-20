@@ -150,7 +150,7 @@ Where they differ:
 | Conditional terms | `32` deferred-note, requirement files, `56` remittance | requirement files, `56` requester-invoice link, `56` remittance |
 | Requester invoice | already shown by `rowRequesterInvoicePreview_ISS` | `rowReqInvoiceLink_PE` — the only place it appears |
 
-On `ProcurementExecutionScreen` the information was technically reachable (Back does return to the detail screen), but going there mid-form loses the decision radio, six checklist boxes and the supplier summary — `OnVisible` resets all of them. That is the cost the block removes, not a dead end.
+On `ProcurementExecutionScreen` the information was technically reachable (`btnBack_PE` returns wherever the user came from via `Back()`), but going there mid-form loses the decision radio and the supplier summary — `OnVisible` resets both. That is the cost the block removes, not a dead end. (The screen used to also have a 6-item "Procurement Execution Checklist" gating submission; it was removed — the checkboxes, their `OnVisible` resets, and the `Not(chk*.Checked)` submit guards on all four submit paths, which now just always pass that check.)
 
 ### `InvoiceSubmissionScreen` specifics
 

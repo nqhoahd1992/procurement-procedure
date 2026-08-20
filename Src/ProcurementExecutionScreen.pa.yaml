@@ -5,12 +5,6 @@ Screens:
       OnVisible: |-
         =Reset(rdoDecision_PE);
         Reset(txtRejectReason_PE);
-        Reset(chk1_PE);
-        Reset(chk2_PE);
-        Reset(chk3_PE);
-        Reset(chk4_PE);
-        Reset(chk5_PE);
-        Reset(chk6_PE);
         Reset(txtSupplierSummary_PE);
         Reset(txtPurchaseOrder_PE);
         Reset(rdoLimitedUse_PE);
@@ -1145,256 +1139,6 @@ Screens:
                         Text: =LookUp(Procurement_ApprovalLog, RequestIDText = Text(gSelectedRequest.ID) && StepNumber = 3).ApprovalConditions
                         VerticalAlign: =VerticalAlign.Top
                         Width: =Parent.Width - 40
-            - rowChecklistHeader_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  LayoutDirection: =LayoutDirection.Vertical
-                  LayoutMinHeight: =70
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =10
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
-                  Width: =Parent.Width
-                Children:
-                  - lblChecklistHeader_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        FontWeight: =FontWeight.Semibold
-                        Height: =24
-                        Size: =12
-                        Text: ="Procurement Execution Checklist *"
-                        Width: =Parent.Width - 40
-                  - lblChecklistNote_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(133, 79, 11, 1)
-                        Height: =20
-                        Size: =10
-                        Text: ="All items must be checked before submitting"
-                        Width: =Parent.Width - 40
-            - rowCheck1_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
-                  Width: =Parent.Width
-                Children:
-                  - chk1_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Label: =
-                        Width: =32
-                  - lblChk1_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Supplier sourcing completed"
-                        Width: =Parent.Width - 60
-            - rowCheck2_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
-                  Width: =Parent.Width
-                Children:
-                  - chk2_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        Label: =
-                        Width: =32
-                  - lblChk2_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Price comparison and/or negotiation completed (where applicable)"
-                        Width: =Parent.Width - 60
-            - rowCheck3_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
-                  Width: =Parent.Width
-                Children:
-                  - chk3_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        Label: =
-                        Width: =32
-                  - lblChk3_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Purchase Order issued (if applicable)"
-                        Width: =Parent.Width - 60
-            - rowCheck4_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: =rdoDecision_PE.Selected.Value = "Proceed"
-                  Width: =Parent.Width
-                Children:
-                  - chk4_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        Label: =
-                        Width: =32
-                  - lblChk4_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Supplier coordination and delivery tracking in place"
-                        Width: =Parent.Width - 60
-            - rowCheck5_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: |-
-                    =rdoDecision_PE.Selected.Value = "Proceed" &&
-                    ((locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "Yes") ||
-                    (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now"))
-                  Width: =Parent.Width
-                Children:
-                  - chk5_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        Label: =
-                        Width: =30
-                  - lblChk5_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Official supplier invoice collected"
-                        Width: =Parent.Width - 60
-            - rowCheck6_PE:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  FillPortions: =0
-                  Height: =40
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutGap: =8
-                  PaddingBottom: =4
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =4
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Visible: |-
-                    =rdoDecision_PE.Selected.Value = "Proceed" &&
-                    ((locIsViaRequester && rdoInvoiceCorrect_PE.Selected.Value = "Yes") ||
-                    (Not(locIsViaRequester) && rdoInvoiceChoice_PE.Selected.Value = "Submit Invoice Now"))
-                  Width: =Parent.Width
-                Children:
-                  - chk6_PE:
-                      Control: CheckBox@0.0.30
-                      Properties:
-                        Label: =
-                        Width: =32
-                  - lblChk6_PE:
-                      Control: Label@2.5.1
-                      Properties:
-                        AlignInContainer: =AlignInContainer.Center
-                        Height: =24
-                        PaddingLeft: =0
-                        PaddingRight: =0
-                        Size: =11
-                        Text: ="Invoice verified against approved procurement request and delivery status"
-                        Width: =Parent.Width - 60
             - rowSupplierSummary_PE:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
@@ -2743,7 +2487,7 @@ Screens:
                                           rdoInvoiceCorrect_PE.Selected.Value = "No",
                                           // PATH C-Deferred: invoice not correct, defer invoice submission
                                           If(
-                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked),
+                                              false, // checklist removed
                                               Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
                                                   Not(gSelectedRequest.isExecutivePayment) && CountRows(attShadow_Remittance.Attachments) = 0,
@@ -2755,7 +2499,7 @@ Screens:
                                           ),
                                           // PATH C-Direct: invoice correct, submit now
                                           If(
-                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
+                                              false, // checklist removed
                                               Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
                                                   IsBlank(gSelectedRequest.RequesterInvoiceURL),
@@ -2792,7 +2536,7 @@ Screens:
                                           rdoInvoiceChoice_PE.Selected.Value = "Defer Invoice",
                                           // --- PATH B: Deferred (invoice arrives later) ---
                                           If(
-                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked),
+                                              false, // checklist removed
                                               Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
                                                   CountRows(attShadow_Confirmation.Attachments) = 0,
@@ -2804,7 +2548,7 @@ Screens:
                                           ),
                                           // --- PATH A: Direct (invoice on hand now) ---
                                           If(
-                                              Not(chk1_PE.Checked && chk2_PE.Checked && chk3_PE.Checked && chk4_PE.Checked && chk5_PE.Checked && chk6_PE.Checked),
+                                              false, // checklist removed
                                               Notify("Please complete all checklist items", NotificationType.Error),
                                               If(
                                                   IsBlank(
