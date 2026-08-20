@@ -120,10 +120,46 @@ Screens:
                             Control: Label@2.5.1
                             Properties:
                               Align: =Align.Center
-                              BorderColor: =RGBA(133, 79, 11, 1)
+                              BorderColor: |-
+                                =Switch(gSelectedRequest.Status.Value,
+                                    "Pending Manager", RGBA(146, 84, 14, 1),
+                                    "Pending Executive", RGBA(175, 74, 20, 1),
+                                    "Pending Procurement", RGBA(122, 108, 10, 1),
+                                    "Pending Invoice", RGBA(124, 58, 173, 1),
+                                    "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
+                                    "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
+                                    "Pending Accounting", RGBA(158, 44, 108, 1),
+                                    "Completed", RGBA(15, 110, 86, 1),
+                                    "Rejected", RGBA(163, 45, 45, 1),
+                                    RGBA(68, 68, 65, 1)
+                                )
                               BorderThickness: =1
-                              Color: =RGBA(133, 79, 11, 1)
-                              Fill: =RGBA(250, 238, 218, 1)
+                              Color: |-
+                                =Switch(gSelectedRequest.Status.Value,
+                                    "Pending Manager", RGBA(146, 84, 14, 1),
+                                    "Pending Executive", RGBA(175, 74, 20, 1),
+                                    "Pending Procurement", RGBA(122, 108, 10, 1),
+                                    "Pending Invoice", RGBA(124, 58, 173, 1),
+                                    "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
+                                    "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
+                                    "Pending Accounting", RGBA(158, 44, 108, 1),
+                                    "Completed", RGBA(15, 110, 86, 1),
+                                    "Rejected", RGBA(163, 45, 45, 1),
+                                    RGBA(68, 68, 65, 1)
+                                )
+                              Fill: |-
+                                =Switch(gSelectedRequest.Status.Value,
+                                    "Pending Manager", RGBA(253, 242, 216, 1),
+                                    "Pending Executive", RGBA(253, 234, 222, 1),
+                                    "Pending Procurement", RGBA(247, 245, 210, 1),
+                                    "Pending Invoice", RGBA(240, 228, 252, 1),
+                                    "Goods Receipt & Acceptance", RGBA(223, 234, 252, 1),
+                                    "Pending Supplier Follow-up", RGBA(219, 241, 249, 1),
+                                    "Pending Accounting", RGBA(252, 230, 242, 1),
+                                    "Completed", RGBA(222, 245, 236, 1),
+                                    "Rejected", RGBA(252, 233, 233, 1),
+                                    RGBA(241, 239, 232, 1)
+                                )
                               FontWeight: =FontWeight.Semibold
                               Height: =32
                               PaddingLeft: =8
