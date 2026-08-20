@@ -139,6 +139,20 @@ Screens:
                       Control: Label@2.5.1
                       Properties:
                         Align: =Align.Center
+                        BorderColor: |-
+                          =Switch(gSelectedRequest.Status.Value,
+                            "Pending Manager", RGBA(146, 84, 14, 1),
+                            "Pending Executive", RGBA(175, 74, 20, 1),
+                            "Pending Procurement", RGBA(122, 108, 10, 1),
+                            "Pending Invoice", RGBA(124, 58, 173, 1),
+                            "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
+                            "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
+                            "Pending Accounting", RGBA(158, 44, 108, 1),
+                            "Completed", RGBA(15, 110, 86, 1),
+                            "Rejected", RGBA(163, 45, 45, 1),
+                            RGBA(68, 68, 65, 1)
+                          )
+                        BorderThickness: =1
                         Color: |-
                           =Switch(gSelectedRequest.Status.Value,
                             "Pending Manager", RGBA(146, 84, 14, 1),
@@ -167,7 +181,8 @@ Screens:
                           )
                         FontWeight: =FontWeight.Semibold
                         Height: =32
-                        LayoutMinWidth: =220
+                        PaddingLeft: =8
+                        PaddingRight: =8
                         Size: =10
                         Text: |-
                           =If(

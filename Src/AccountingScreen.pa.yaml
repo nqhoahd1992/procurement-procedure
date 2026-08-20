@@ -164,7 +164,7 @@ Screens:
                               FontWeight: =FontWeight.Semibold
                               Height: =32
                               PaddingLeft: =8
-                              PaddingRight: =10
+                              PaddingRight: =8
                               Size: =10
                               Text: =gSelectedRequest.Status.Value
                               Width: =220

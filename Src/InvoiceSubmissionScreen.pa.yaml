@@ -197,7 +197,7 @@ Screens:
                                     RGBA(241, 239, 232, 1)
                                 )
                               FontWeight: =FontWeight.Semibold
-                              Height: =28
+                              Height: =32
                               PaddingLeft: =8
                               PaddingRight: =8
                               Size: =10
