@@ -100,35 +100,6 @@ Screens:
                   RadiusTopRight: =0
                   Width: =Parent.Width
                 Children:
-                  - colRequester_2:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =240
-                      Children:
-                        - lblRequesterLabel:
-                            Control: Label@2.5.1
-                            Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Requester"
-                              Width: =240
-                        - lblRequesterValue:
-                            Control: Label@2.5.1
-                            Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =gSelectedRequest.RequesterID.Value
-                              Width: =240
                   - colCategory_2:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout

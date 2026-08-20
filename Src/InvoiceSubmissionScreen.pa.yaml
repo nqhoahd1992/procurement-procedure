@@ -137,7 +137,6 @@ Screens:
                               FontWeight: =FontWeight.Bold
                               Height: =28
                               PaddingLeft: =0
-                              Size: =13
                               Text: ="Request Details"
                               Width: =Parent.Width - 260
                               Wrap: =false
@@ -186,7 +185,6 @@ Screens:
                               If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
                               If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0)
                         LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =0
                         LayoutMinHeight: |-
                           =336 +
                               If(gSelectedRequest.Status.Value <> "Pending Invoice", 32, 0) +
@@ -226,38 +224,6 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - colReqRequester_ISS:
-                                  Control: GroupContainer@1.5.0
-                                  Variant: AutoLayout
-                                  Properties:
-                                    DropShadow: =DropShadow.None
-                                    LayoutDirection: =LayoutDirection.Vertical
-                                    LayoutGap: =2
-                                    RadiusBottomLeft: =0
-                                    RadiusBottomRight: =0
-                                    RadiusTopLeft: =0
-                                    RadiusTopRight: =0
-                                    Width: =240
-                                  Children:
-                                    - lblReqRequesterLabel_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          Color: =RGBA(136, 135, 128, 1)
-                                          Height: =20
-                                          PaddingLeft: =0
-                                          Size: =9
-                                          Text: ="Requester"
-                                          Width: =240
-                                    - lblReqRequesterValue_ISS:
-                                        Control: Label@2.5.1
-                                        Properties:
-                                          FontWeight: =FontWeight.Semibold
-                                          Height: =24
-                                          PaddingLeft: =0
-                                          Size: =11
-                                          Text: =gSelectedRequest.RequesterID.Value
-                                          Width: =Parent.Width - 20
-                                          Wrap: =false
                               - colReqDept_ISS:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout

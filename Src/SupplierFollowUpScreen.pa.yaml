@@ -632,7 +632,8 @@ Screens:
                                     "Unassigned",
                                     Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
                                     gSelectedRequest.Category.Value,
-                                    "Max Biocare Procurement"
+                                    "Max Biocare Procurement",
+                                    gSelectedRequest.ID
                                     )
                                 );
                                 Set(gSFU1DelegationMode, "I will receive");
@@ -1271,7 +1272,8 @@ Screens:
                                   "Unassigned",
                                   Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
                                   gSelectedRequest.Category.Value,
-                                  "Max Biocare Procurement"
+                                  "Max Biocare Procurement",
+                                  gSelectedRequest.ID
                               )
                             );
                             With(
@@ -1288,7 +1290,8 @@ Screens:
                                   "SupplierFollowUp",
                                   Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"),
                                   gSelectedRequest.Category.Value,
-                                  "Max Biocare Procurement"
+                                  "Max Biocare Procurement",
+                                  gSelectedRequest.ID
                                 );
                                 Notify("Assignment saved to " & ddAssignReceiver_SFU.Selected.Title, NotificationType.Success)
                               )

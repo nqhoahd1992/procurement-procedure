@@ -811,7 +811,6 @@ Screens:
                                     PaddingLeft: =0
                                     Size: =11
                                     Text: =Coalesce(gSelectedRequest.ProcurementDescription, "—")
-                                    VerticalAlign: =VerticalAlign.Top
                                     Width: =Parent.Width
                         - rowReqRequirementFiles_PE:
                             Control: GroupContainer@1.5.0
