@@ -312,9 +312,10 @@ Screens:
                 Properties:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(238, 236, 250, 1)
+                  Height: =116
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =8
-                  LayoutMinHeight: =280
+                  LayoutMinHeight: =116
                   PaddingBottom: =12
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -340,9 +341,10 @@ Screens:
                       Variant: AutoLayout
                       Properties:
                         DropShadow: =DropShadow.None
+                        Height: =60
                         LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
                         LayoutMinHeight: =60
-                        LayoutWrap: =true
                         RadiusBottomLeft: =0
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
@@ -356,6 +358,7 @@ Screens:
                               DropShadow: =DropShadow.None
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =2
+                              LayoutMinHeight: =50
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -368,16 +371,16 @@ Screens:
                                     Color: =RGBA(136, 135, 128, 1)
                                     Height: =20
                                     Size: =9
-                                    Text: ="Project ID"
+                                    Text: ="Related Project"
                                     Width: =260
                               - lblProjectIDValue_MR:
                                   Control: Label@2.5.1
                                   Properties:
                                     FontWeight: =FontWeight.Semibold
-                                    Height: =24
+                                    Height: =30
                                     Size: =11
-                                    Text: =Coalesce(gSelectedRequest.ProjectID, "—")
-                                    Width: =260
+                                    Text: =If(IsBlank(gSelectedRequest.ProjectID), "—", Coalesce(LookUp(Project_List, ProjectID = gSelectedRequest.ProjectID).Title, "—"))
+                                    Width: =Parent.Width
                         - colProjectBudget_MR:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
@@ -385,6 +388,7 @@ Screens:
                               DropShadow: =DropShadow.None
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =2
+                              LayoutMinHeight: =50
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
@@ -403,7 +407,7 @@ Screens:
                                   Control: Label@2.5.1
                                   Properties:
                                     FontWeight: =FontWeight.Semibold
-                                    Height: =24
+                                    Height: =30
                                     Size: =11
                                     Text: |-
                                       =If(
@@ -412,114 +416,92 @@ Screens:
                                           Text(gProjectInfo.BudgetAmount, "#,###.00") & " " & gProjectInfo.Currency
                                       )
                                     Width: =260
-                        - colProjectActual_MR:
+                        - colProjectGrandTotal_MR:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
                               DropShadow: =DropShadow.None
                               LayoutDirection: =LayoutDirection.Vertical
                               LayoutGap: =2
+                              LayoutMinHeight: =50
                               RadiusBottomLeft: =0
                               RadiusBottomRight: =0
                               RadiusTopLeft: =0
                               RadiusTopRight: =0
-                              Width: =280
+                              Width: =260
                             Children:
-                              - lblProjectActualLabel_MR:
+                              - lblProjectGrandTotalLabel_MR:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
                                     Height: =20
                                     Size: =9
-                                    Text: ="Actual Cost (invoiced to date)"
-                                    Width: =280
-                              - lblProjectActualValue_MR:
+                                    Text: ="Grand Total"
+                                    Width: =260
+                              - lblProjectGrandTotal_MR:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(83, 74, 183, 1)
+                                    FontWeight: =FontWeight.Bold
+                                    Height: =30
+                                    Size: =11
+                                    Text: |-
+                                      =Text(
+                                          Sum(
+                                              AddColumns(
+                                                  colProjectInvoices,
+                                                  AUDAmount,
+                                                  TotalAmount /
+                                                  Switch(
+                                                      Upper(Currency),
+                                                      "AUD", 1,
+                                                      "USD", 0.7,
+                                                      "RM", 3,
+                                                      "MYR", 3,
+                                                      "SGD", 0.9,
+                                                      "VND", 18000,
+                                                      "RMB", 4.7,
+                                                      "CNY", 4.7,
+                                                      1
+                                                  )
+                                              ),
+                                              AUDAmount
+                                          ),
+                                          "#,###.00"
+                                      ) & " AUD"
+                                    Width: =260
+                        - colProjectDesc_MR:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =1
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =50
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - lblProjectDescLabel_MR:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    Size: =9
+                                    Text: ="Project Short Description"
+                                    Width: =Parent.Width
+                              - lblProjectDescValue_MR:
                                   Control: Label@2.5.1
                                   Properties:
                                     FontWeight: =FontWeight.Semibold
-                                    Height: =24
+                                    Height: =30
+                                    Overflow: =Overflow.Scroll
                                     Size: =11
-                                    Text: |-
-                                      =If(
-                                          CountRows(colProjectInvoices) = 0,
-                                          Text(0, "#,###.00") & " " & gProjectInfo.Currency,
-                                          Concat(
-                                              AddColumns(
-                                                  GroupBy(colProjectInvoices, Currency, GroupedInvoices),
-                                                  TotalSum, Sum(GroupedInvoices, TotalAmount)
-                                              ),
-                                              Text(TotalSum, "#,###.00") & " " & Currency,
-                                              "  |  "
-                                          )
-                                      )
-                                    Width: =280
-                  - rectProjectGrandDivider_MR:
-                      Control: Rectangle@2.3.0
-                      Properties:
-                        BorderColor: =RGBA(0, 0, 0, 0)
-                        Fill: =RGBA(210, 209, 199, 1)
-                        Height: =1
-                        Width: =Parent.Width - 40
-                  - lblProjectGrandTotal_MR:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(83, 74, 183, 1)
-                        FontWeight: =FontWeight.Bold
-                        Height: =28
-                        Size: =11
-                        Text: |-
-                          ="Grand Total: " &
-                          Text(
-                              Sum(
-                                  AddColumns(
-                                      colProjectInvoices,
-                                      AUDAmount,
-                                      TotalAmount /
-                                      Switch(
-                                          Upper(Currency),
-                                          "AUD", 1,
-                                          "USD", 0.7,
-                                          "RM", 3,
-                                          "MYR", 3,
-                                          "SGD", 0.9,
-                                          "VND", 18000,
-                                          "RMB", 4.7,
-                                          "CNY", 4.7,
-                                          1
-                                      )
-                                  ),
-                                  AUDAmount
-                              ),
-                              "#,###.00"
-                          ) & " AUD"
-                        Width: =Parent.Width - 40
-                  - lblProjectRateLink_MR:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(83, 74, 183, 1)
-                        Height: =20
-                        OnSelect: =Set(gShowRateInfo, true)
-                        Size: =9
-                        Text: ="View exchange rates"
-                        Underline: =true
-                        Width: =180
-                  - lblProjectDescLabel_MR:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(136, 135, 128, 1)
-                        Height: =20
-                        Size: =9
-                        Text: ="Project Short Description"
-                        Width: =Parent.Width - 40
-                  - lblProjectDescValue_MR:
-                      Control: Label@2.5.1
-                      Properties:
-                        FontWeight: =FontWeight.Semibold
-                        Height: =60
-                        Overflow: =Overflow.Scroll
-                        Size: =11
-                        Text: =Coalesce(gProjectInfo.ProjectDescription, "—")
-                        Width: =Parent.Width - 40
+                                    Text: =Coalesce(gProjectInfo.ProjectDescription, "—")
+                                    VerticalAlign: =VerticalAlign.Top
+                                    Width: =Parent.Width
             - rowDescription_2:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
