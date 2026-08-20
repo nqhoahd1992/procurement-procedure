@@ -105,242 +105,739 @@ Screens:
                         Text: |-
                           ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
                         Width: =Parent.Width - 160
-            - rowRequestInfo_1:
+            - rowRequestInfo_PE_2:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
                 Properties:
-                  AlignInContainer: =AlignInContainer.Start
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(241, 239, 232, 1)
                   FillPortions: =0
-                  Height: =60
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutMinHeight: =140
-                  LayoutWrap: =true
-                  PaddingBottom: =12
+                  Height: |-
+                    =68 + 336 +
+                        If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutGap: =4
+                  LayoutMinHeight: |-
+                    =68 + 336 +
+                        If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0)
+                  PaddingBottom: =16
                   PaddingLeft: =20
                   PaddingRight: =20
-                  PaddingTop: =12
+                  PaddingTop: =16
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
                   Width: =Parent.Width
                 Children:
-                  - colCategory_3:
+                  - conRequestInfoFields_PE_2:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
                       Properties:
                         DropShadow: =DropShadow.None
+                        FillPortions: =0
+                        Height: |-
+                          =336 +
+                              If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
+                              If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
+                              If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0)
                         LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        LayoutMinHeight: =60
+                        LayoutMinHeight: |-
+                          =336 +
+                              If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
+                              If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
+                              If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0)
                         RadiusBottomLeft: =0
                         RadiusBottomRight: =0
                         RadiusTopLeft: =0
                         RadiusTopRight: =0
-                        Width: =200
+                        Width: =Parent.Width - 40
                       Children:
-                        - lblCategoryLabel_2:
-                            Control: Label@2.5.1
+                        - rowReqInfoA_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Category"
-                              Width: =200
-                        - lblCategoryValue_1:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutMinHeight: =60
+                              PaddingBottom: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - colReqRequester_PE_3:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =260
+                                  Children:
+                                    - lblReqRequesterLabel_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Requester"
+                                          Width: =260
+                                    - lblReqRequesterValue_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =gSelectedRequest.RequesterID.Value
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqDept_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =240
+                                  Children:
+                                    - lblReqDeptLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Department"
+                                          Width: =240
+                                    - lblReqDeptValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.Department, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqCategory_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =260
+                                  Children:
+                                    - lblReqCategoryLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Category"
+                                          Width: =260
+                                    - lblReqCategoryValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.Category.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqAccordance_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =260
+                                  Children:
+                                    - lblReqAccordanceLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Purchase Accordance"
+                                          Width: =260
+                                    - lblReqAccordanceValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.PurchaseAccordance.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                        - rowReqInfoB_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =gSelectedRequest.Category.Value
-                              Width: =200
-                  - colCost_3:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =240
-                      Children:
-                        - lblCostLabel_1:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutMinHeight: =60
+                              PaddingBottom: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - colReqProject_PE_3:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =340
+                                  Children:
+                                    - lblReqProjectLabel_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Project"
+                                          Width: =340
+                                    - lblReqProjectValue_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: |-
+                                            =If(
+                                                IsBlank(gSelectedRequest.ProjectID),
+                                                "—",
+                                                gSelectedRequest.ProjectID & " - " & Coalesce(LookUp(Project_List, ProjectID = gSelectedRequest.ProjectID).Title, "—")
+                                            )
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqProcType_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =300
+                                  Children:
+                                    - lblReqProcTypeLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Procurement Type"
+                                          Width: =300
+                                    - lblReqProcTypeValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.ProcurementType.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqInvoiceType_PE_3:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =200
+                                  Children:
+                                    - lblReqInvoiceTypeLabel_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Invoice Type"
+                                          Width: =200
+                                    - lblReqInvoiceTypeValue_PE_3:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.InvoiceType.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqDeliveryDate_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =240
+                                  Children:
+                                    - lblReqDeliveryDateLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Required Delivery Date"
+                                          Width: =240
+                                    - lblReqDeliveryDateValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.RequiredDeliveryDate), "—", Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"))
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                        - rowReqInfoC_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Estimated Cost"
-                              Width: =240
-                        - lblCostValue_1:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutMinHeight: =60
+                              PaddingBottom: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - colReqCost_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =240
+                                  Children:
+                                    - lblReqCostLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Estimated Cost"
+                                          Width: =240
+                                    - lblReqCostValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqBudgetRef_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =220
+                                  Children:
+                                    - lblReqBudgetRefLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Budget Reference"
+                                          Width: =220
+                                    - lblReqBudgetRefValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.BudgetReference), "—", Text(gSelectedRequest.BudgetReference, "#,###.00"))
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqCostCenter_PE_4:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =380
+                                  Children:
+                                    - lblReqCostCenterLabel_PE_4:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Cost Center"
+                                          Width: =380
+                                    - lblReqCostCenterValue_PE_4:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                              - colReqDeliveryLocation_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =300
+                                  Children:
+                                    - lblReqDeliveryLocationLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Delivery Location"
+                                          Width: =300
+                                    - lblReqDeliveryLocationValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =Coalesce(gSelectedRequest.DeliveryLocation.Value, "—")
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                        - rowReqInfoD_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
-                              Width: =240
-                  - colProcType_3:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =240
-                        X: =40
-                        Y: =40
-                      Children:
-                        - lblProcTypeLabel_3:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =60
+                              LayoutDirection: =LayoutDirection.Horizontal
+                              LayoutMinHeight: =60
+                              PaddingBottom: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - colReqSupplier_PE_2:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    LayoutDirection: =LayoutDirection.Vertical
+                                    LayoutGap: =2
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =420
+                                  Children:
+                                    - lblReqSupplierLabel_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          Color: =RGBA(136, 135, 128, 1)
+                                          Height: =20
+                                          PaddingLeft: =0
+                                          Size: =9
+                                          Text: ="Preferred Supplier"
+                                          Width: =420
+                                    - lblReqSupplierValue_PE_2:
+                                        Control: Label@2.5.1
+                                        Properties:
+                                          FontWeight: =FontWeight.Semibold
+                                          Height: =24
+                                          PaddingLeft: =0
+                                          Size: =11
+                                          Text: =If(IsBlank(gSelectedRequest.PreferredSupplier), "—", gSelectedRequest.PreferredSupplier)
+                                          Width: =Parent.Width - 20
+                                          Wrap: =false
+                        - rowReqDescription_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Procurement Type"
-                              Width: =240
-                        - lblProcTypeValue_3:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =96
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =96
+                              PaddingBottom: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Width: =Parent.Width
+                            Children:
+                              - lblReqDescriptionLabel_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    PaddingLeft: =0
+                                    Size: =9
+                                    Text: ="Procurement Description"
+                                    Width: =Parent.Width
+                              - lblReqDescriptionValue_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    FillPortions: =1
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =68
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: =Coalesce(gSelectedRequest.ProcurementDescription, "—")
+                                    Width: =Parent.Width
+                        - rowReqRequirementFiles_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =gSelectedRequest.ProcurementType.Value
-                              Width: =240
-            - rowRequestInfo_2:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  AlignInContainer: =AlignInContainer.Start
-                  DropShadow: =DropShadow.None
-                  Fill: =RGBA(241, 239, 232, 1)
-                  FillPortions: =0
-                  Height: =80
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutMinHeight: =140
-                  LayoutWrap: =true
-                  PaddingBottom: =12
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  PaddingTop: =12
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Width: =Parent.Width
-                  X: =40
-                  Y: =40
-                Children:
-                  - colAccordance_4:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        LayoutMinHeight: =0
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =240
-                        X: =40
-                        Y: =40
-                      Children:
-                        - lblPurchaseAccordanceLabel_2:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =28 + CountRows(colRequirementFiles) * 32 + 8
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =28
+                              PaddingBottom: =4
+                              PaddingTop: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =CountRows(colRequirementFiles) > 0
+                              Width: =Parent.Width
+                            Children:
+                              - lblReqRequirementFilesLabel_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    PaddingLeft: =0
+                                    Size: =9
+                                    Text: ="Requirement Files (Requester)"
+                                    Width: =Parent.Width
+                              - galReqRequirementFiles_PE_2:
+                                  Control: Gallery@2.15.0
+                                  Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                                  Properties:
+                                    FillPortions: =0
+                                    Height: =CountRows(colRequirementFiles) * 32
+                                    Items: =colRequirementFiles
+                                    LayoutMinHeight: =32
+                                    ShowScrollbar: =false
+                                    TemplateSize: =32
+                                    Width: =Parent.Width
+                                  Children:
+                                    - rowReqRequirementFileItem_PE_2:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          DropShadow: =DropShadow.None
+                                          Height: =32
+                                          LayoutAlignItems: =LayoutAlignItems.Center
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutGap: =8
+                                          PaddingLeft: =5
+                                          PaddingRight: =5
+                                          Width: =Parent.Width
+                                        Children:
+                                          - lblReqRequirementFileName_PE_2:
+                                              Control: Label@2.5.1
+                                              Properties:
+                                                Color: =RGBA(56, 96, 178, 1)
+                                                FillPortions: =1
+                                                FontWeight: =FontWeight.Semibold
+                                                Height: =28
+                                                OnSelect: =Launch(ThisItem.FileURL, {}, LaunchTarget.New)
+                                                PaddingLeft: =0
+                                                Size: =11
+                                                Text: =ThisItem.FileName
+                                                Underline: =true
+                                                Width: =Parent.Width - 100
+                                                Wrap: =false
+                                          - lblReqRequirementFileOpen_PE_2:
+                                              Control: Label@2.5.1
+                                              Properties:
+                                                Align: =Align.Right
+                                                Color: =RGBA(136, 135, 128, 1)
+                                                Height: =28
+                                                OnSelect: =Launch(ThisItem.FileURL, {}, LaunchTarget.New)
+                                                PaddingRight: =0
+                                                Size: =10
+                                                Text: ="Open ↗"
+                                                Width: =90
+                        - rowReqInvoiceLink_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Purchase Accordance"
-                              Width: =240
-                        - lblPurchaseAccordanceValue_1:
-                            Control: Label@2.5.1
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =56
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =56
+                              PaddingBottom: =4
+                              PaddingTop: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
+                              Width: =Parent.Width
+                            Children:
+                              - lblReqInvoiceLinkLabel_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    PaddingLeft: =0
+                                    Size: =9
+                                    Text: ="Invoice Link (Requester)"
+                                    Width: =Parent.Width
+                              - lblReqInvoiceLinkValue_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(56, 96, 178, 1)
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =28
+                                    OnSelect: =If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), Launch(gSelectedRequest.RequesterInvoiceURL, {}, LaunchTarget.New))
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", gSelectedRequest.RequesterInvoiceURL)
+                                    Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
+                                    Width: =Parent.Width
+                                    Wrap: =false
+                        - rowReqRemittance_PE_2:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =gSelectedRequest.PurchaseAccordance.Value
-                              Width: =240
-                  - colReqCostCenter_PE_2:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =380
-                        X: =40
-                        Y: =40
-                      Children:
-                        - lblReqCostCenterLabel_PE_2:
-                            Control: Label@2.5.1
-                            Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              PaddingLeft: =0
-                              Size: =9
-                              Text: ="Cost Center"
-                              Width: =380
-                        - lblReqCostCenterValue_PE_2:
-                            Control: Label@2.5.1
-                            Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              PaddingLeft: =0
-                              Size: =11
-                              Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
-                              Width: =Parent.Width - 20
-                              Wrap: =false
-                  - colDeliveryLoc_2:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        LayoutDirection: =LayoutDirection.Vertical
-                        LayoutGap: =2
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =220
-                        X: =40
-                        Y: =40
-                      Children:
-                        - lblDeliveryLocLabel_1:
-                            Control: Label@2.5.1
-                            Properties:
-                              Color: =RGBA(136, 135, 128, 1)
-                              Height: =20
-                              Size: =9
-                              Text: ="Delivery Location"
-                              Width: =220
-                        - lblDeliveryLocValue_1:
-                            Control: Label@2.5.1
-                            Properties:
-                              AlignInContainer: =AlignInContainer.Stretch
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
-                              Size: =11
-                              Text: =gSelectedRequest.DeliveryLocation.Value
-                              VerticalAlign: =VerticalAlign.Top
-                              Width: =Parent.Width - 20
-                              Wrap: =false
+                              DropShadow: =DropShadow.None
+                              FillPortions: =0
+                              Height: =56
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutGap: =2
+                              LayoutMinHeight: =56
+                              PaddingBottom: =4
+                              PaddingTop: =4
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                              Visible: =Not(IsBlank(gSelectedRequest.RemittanceURL))
+                              Width: =Parent.Width
+                            Children:
+                              - lblReqRemittanceLabel_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(136, 135, 128, 1)
+                                    Height: =20
+                                    PaddingLeft: =0
+                                    Size: =9
+                                    Text: ="Remittance Advice Document"
+                                    Width: =Parent.Width
+                              - lblReqRemittanceURL_PE_2:
+                                  Control: Label@2.5.1
+                                  Properties:
+                                    Color: =RGBA(56, 96, 178, 1)
+                                    FontWeight: =FontWeight.Semibold
+                                    Height: =28
+                                    OnSelect: =If(Not(IsBlank(gSelectedRequest.RemittanceURL)), Launch(gSelectedRequest.RemittanceURL, {}, LaunchTarget.New))
+                                    PaddingLeft: =0
+                                    Size: =11
+                                    Text: =If(IsBlank(gSelectedRequest.RemittanceURL), "—", gSelectedRequest.RemittanceURL)
+                                    Underline: =Not(IsBlank(gSelectedRequest.RemittanceURL))
+                                    Width: =Parent.Width
+                                    Wrap: =false
             - rowProjectInfo_EA:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
