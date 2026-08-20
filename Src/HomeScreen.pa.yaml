@@ -2,7 +2,7 @@ Screens:
   HomeScreen:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
-      OnVisible: =Set(gStatusFilter, Blank()); Set(gShowQuickView, false); Set(gInvoiceFromPFU, false)
+      OnVisible: =Set(gShowQuickView, false); Set(gInvoiceFromPFU, false); Set(gShowStatusFilter, false); Clear(colStatusFilterChecked); Clear(colStatusFilterDraft); ClearCollect(colStatusFilterOptions_HS, ["Pending Manager", "Pending Executive", "Pending Procurement", "Pending Invoice", "Goods Receipt & Acceptance", "Pending Supplier Follow-up", "Pending Accounting", "Completed", "Rejected"])
     Children:
       - lblNoRole:
           Control: Label@2.5.1
@@ -54,6 +54,7 @@ Screens:
           Properties:
             DropShadow: =DropShadow.None
             Height: =80
+            LayoutAlignItems: =LayoutAlignItems.Center
             LayoutDirection: =LayoutDirection.Horizontal
             LayoutGap: =10
             LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
@@ -85,247 +86,44 @@ Screens:
                         "My Requests"
                     )
                   Width: =400
-            - btnNewRequest:
-                Control: Button@0.0.45
+            - btnStatusFilterDropdown_HS:
+                Control: ModernButton@1.0.0
                 Properties:
+                  Align: =Align.Center
+                  FontWeight: =""
+                  Height: =36
+                  Icon: ="ChevronDown"
+                  OnSelect: =ClearCollect(colStatusFilterDraft, If(IsEmpty(colStatusFilterChecked), colStatusFilterOptions_HS, colStatusFilterChecked)); Set(gShowStatusFilter, true)
+                  PaddingBottom: =5
+                  PaddingLeft: =12
+                  PaddingRight: =12
+                  PaddingTop: =5
+                  RadiusBottomLeft: =4
+                  RadiusBottomRight: =4
+                  RadiusTopLeft: =4
+                  RadiusTopRight: =4
+                  Text: ="Status" & If(IsEmpty(colStatusFilterChecked), "", " (" & CountRows(colStatusFilterChecked) & ")")
+                  VerticalAlign: =VerticalAlign.Middle
+                  Width: =160
+            - btnNewRequest:
+                Control: ModernButton@1.0.0
+                Properties:
+                  Align: =Align.Center
+                  FontWeight: =""
                   Height: =36
                   Icon: ="Add"
                   OnSelect: =Navigate(RequestFormScreen)
+                  PaddingBottom: =5
+                  PaddingLeft: =12
+                  PaddingRight: =12
+                  PaddingTop: =5
+                  RadiusBottomLeft: =4
+                  RadiusBottomRight: =4
+                  RadiusTopLeft: =4
+                  RadiusTopRight: =4
                   Text: ="New Request"
+                  VerticalAlign: =VerticalAlign.Middle
                   Width: =150
-      - rowFilterBar:
-          Control: GroupContainer@1.5.0
-          Variant: AutoLayout
-          Properties:
-            DropShadow: =DropShadow.None
-            Fill: =RGBA(255, 255, 255, 1)
-            Height: =48
-            LayoutAlignItems: =LayoutAlignItems.Center
-            LayoutDirection: =LayoutDirection.Horizontal
-            LayoutOverflowX: =LayoutOverflow.Scroll
-            PaddingBottom: =12
-            PaddingLeft: =20
-            PaddingRight: =20
-            PaddingTop: =12
-            RadiusBottomLeft: =0
-            RadiusBottomRight: =0
-            RadiusTopLeft: =0
-            RadiusTopRight: =0
-            Visible: =Not(IsBlank(gCurrentEmployee.ID))
-            Width: =Parent.Width
-            Y: =140
-          Children:
-            - lblFilterAll:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(IsBlank(gStatusFilter), RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(IsBlank(gStatusFilter), RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(IsBlank(gStatusFilter), FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, Blank())
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="All"
-                  Width: =50
-            - divFilter1:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterPendingManager:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Manager", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Manager", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Manager", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Manager")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Pending Manager"
-                  Width: =140
-            - divFilter2:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterPendingExec:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Executive", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Executive", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Executive", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Executive")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Pending Executive"
-            - divFilter3:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterPendingProcurement:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Procurement", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Procurement", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Procurement", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Procurement")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Pending Procurement"
-                  Width: =170
-            - divFilter4:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterPendingAccounting:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Accounting", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Accounting", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Accounting", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Accounting")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Pending Accounting"
-                  Width: =160
-            - divFilter5:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterPendingInvoice:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Invoice", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Invoice", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Invoice", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Invoice")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Pending Invoice"
-                  Width: =130
-            - divFilter6:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterGoodsReceipt:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Goods Receipt & Acceptance", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Goods Receipt & Acceptance", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Goods Receipt & Acceptance", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Goods Receipt & Acceptance")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Goods Receipt"
-                  Width: =120
-            - divFilter7:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterSFU:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Pending Supplier Follow-up", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Pending Supplier Follow-up", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Pending Supplier Follow-up", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Pending Supplier Follow-up")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Supplier Follow-up"
-            - divFilter8:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterCompleted:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Completed", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Completed", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Completed", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Completed")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Completed"
-                  Width: =120
-            - divFilter9:
-                Control: Rectangle@2.3.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Fill: =RGBA(210, 209, 199, 1)
-                  Height: =16
-                  Width: =1
-            - lblFilterRejected:
-                Control: Label@2.5.1
-                Properties:
-                  Align: =Align.Center
-                  Color: =If(gStatusFilter = "Rejected", RGBA(83, 74, 183, 1), RGBA(136, 135, 128, 1))
-                  Fill: =If(gStatusFilter = "Rejected", RGBA(237, 235, 254, 1), RGBA(0, 0, 0, 0))
-                  FontWeight: =If(gStatusFilter = "Rejected", FontWeight.Bold, FontWeight.Semibold)
-                  Height: =24
-                  HoverColor: =RGBA(83, 74, 183, 1)
-                  OnSelect: =Set(gStatusFilter, "Rejected")
-                  PaddingLeft: =8
-                  PaddingRight: =8
-                  Size: =11
-                  Text: ="Rejected"
-                  Width: =120
       - rectFilterBarBorder:
           Control: Rectangle@2.3.0
           Properties:
@@ -334,13 +132,13 @@ Screens:
             Height: =1
             Visible: =Not(IsBlank(gCurrentEmployee.ID))
             Width: =Parent.Width
-            Y: =188
+            Y: =140
       - galRequests:
           Control: Gallery@2.15.0
           Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
           Properties:
             BorderColor: =RGBA(210, 209, 199, 1)
-            Height: =Parent.Height - 188
+            Height: =Parent.Height - 140
             Items: |-
               =SortByColumns(
                   Filter(
@@ -374,15 +172,15 @@ Screens:
                               SFU1AssignedToID.Id = gCurrentEmployee.ID
                           )
                       ),
-                      IsBlank(gStatusFilter) || Status.Value = gStatusFilter
+                      IsEmpty(colStatusFilterChecked) || Status.Value in colStatusFilterChecked
                   ),
                   "ID", SortOrder.Descending
               )
             OnSelect: =Set(gSelectedRequest, ThisItem); If(ThisItem.Status.Value = "Pending Invoice" && (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin"), Navigate(InvoiceSubmissionScreen), Navigate(RequestDetailScreen))
-            TemplateSize: =114
+            TemplateSize: =100
             Visible: =Not(IsBlank(gCurrentEmployee.ID))
             Width: =Parent.Width
-            Y: =188
+            Y: =140
           Children:
             - rectRowHitArea:
                 Control: Rectangle@2.3.0
@@ -397,13 +195,13 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
-                  Height: =114
+                  Height: =100
                   LayoutDirection: =LayoutDirection.Vertical
-                  LayoutGap: =4
-                  PaddingBottom: =10
+                  LayoutGap: =3
+                  PaddingBottom: =6
                   PaddingLeft: =16
                   PaddingRight: =16
-                  PaddingTop: =10
+                  PaddingTop: =6
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
@@ -486,7 +284,7 @@ Screens:
                                     ThisItem.Status.Value = "Pending Supplier Follow-up",
                                     If(
                                         ThisItem.LatestReceiptDecision = "Accepted with Adjustment",
-                                        "Supplier Follow-up (Credit Note)",
+                                        "Procurement Close-out (Credit Note)",
                                         "Goods Receipt (Round " & (Coalesce(ThisItem.ReceiptRoundCount, 0) + 1) & ")"
                                     ),
                                     If(
@@ -557,28 +355,33 @@ Screens:
                         RadiusTopRight: =0
                         Width: =Parent.Width
                       Children:
-                        - btnQuickView:
+                        - btnDoWork:
                             Control: ModernButton@1.0.0
                             Properties:
                               Align: =Align.Center
                               BasePaletteColor: =RGBA(83, 74, 183, 1)
                               FontWeight: =FontWeight.Semibold
                               Height: =28
-                              Icon: ="Info"
                               OnSelect: |-
-                                =Set(
-                                    gQuickViewRequest,
-                                    {
-                                        ID: ThisItem.ID,
-                                        Title: ThisItem.Title,
-                                        Category: Coalesce(ThisItem.Category.Value, ""),
-                                        ProcurementType: Coalesce(ThisItem.ProcurementType.Value, ""),
-                                        ProcurementDescription: Coalesce(ThisItem.ProcurementDescription, ""),
-                                        RequesterInvoiceURL: Coalesce(ThisItem.RequesterInvoiceURL, ""),
-                                        OfficialInvoiceLink: Coalesce(ThisItem.OfficialInvoiceLink, "")
-                                    }
-                                );
-                                Set(gShowQuickView, true)
+                                =Set(gSelectedRequest, ThisItem);
+                                Switch(
+                                    ThisItem.Status.Value,
+                                    "Pending Manager", Navigate(ManagerReviewScreen),
+                                    "Pending Executive", If(
+                                        ThisItem.isExecutivePayment,
+                                        Navigate(ExecutivePaymentScreen),
+                                        Navigate(ExecutiveApprovalScreen)
+                                    ),
+                                    "Pending Procurement", Navigate(ProcurementExecutionScreen),
+                                    "Pending Invoice", Navigate(InvoiceSubmissionScreen),
+                                    "Goods Receipt & Acceptance", Navigate(GoodsReceiptScreen),
+                                    "Pending Supplier Follow-up", If(
+                                        ThisItem.LatestReceiptDecision = "Accepted with Adjustment",
+                                        Navigate(ProcurementFollowUpScreen),
+                                        Navigate(SupplierFollowUpScreen)
+                                    ),
+                                    "Pending Accounting", Navigate(AccountingScreen)
+                                )
                               PaddingBottom: =5
                               PaddingLeft: =12
                               PaddingRight: =12
@@ -587,53 +390,57 @@ Screens:
                               RadiusBottomRight: =4
                               RadiusTopLeft: =4
                               RadiusTopRight: =4
-                              Text: ="Quick View"
-                              VerticalAlign: =VerticalAlign.Middle
-                              Width: =140
-                        - btnViewRequest:
-                            Control: ModernButton@1.0.0
-                            Properties:
-                              Align: =Align.Center
-                              FontWeight: =FontWeight.Semibold
-                              Height: =28
-                              Icon: ="Eye"
-                              OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequestDetailScreen)
-                              PaddingBottom: =5
-                              PaddingLeft: =12
-                              PaddingRight: =12
-                              PaddingTop: =5
-                              RadiusBottomLeft: =4
-                              RadiusBottomRight: =4
-                              RadiusTopLeft: =4
-                              RadiusTopRight: =4
-                              Text: ="View"
-                              VerticalAlign: =VerticalAlign.Middle
-                              Width: =90
-                        - btnSubmitInvoice:
-                            Control: ModernButton@1.0.0
-                            Properties:
-                              Align: =Align.Center
-                              BasePaletteColor: =RGBA(133, 79, 11, 1)
-                              FontWeight: =FontWeight.Semibold
-                              Height: =28
-                              OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequesterInvoiceScreen)
-                              PaddingBottom: =5
-                              PaddingLeft: =12
-                              PaddingRight: =12
-                              PaddingTop: =5
-                              RadiusBottomLeft: =4
-                              RadiusBottomRight: =4
-                              RadiusTopLeft: =4
-                              RadiusTopRight: =4
-                              Text: ="Submit Invoice"
+                              Text: |-
+                                =Switch(
+                                    ThisItem.Status.Value,
+                                    "Pending Manager", "Review Request →",
+                                    "Pending Executive", If(
+                                        ThisItem.isExecutivePayment,
+                                        "Process Payment →",
+                                        "Review Request →"
+                                    ),
+                                    "Pending Procurement", "Start Procurement →",
+                                    "Pending Invoice", "Submit Invoice →",
+                                    "Goods Receipt & Acceptance", "Goods Receipt →",
+                                    "Pending Supplier Follow-up", If(
+                                        ThisItem.LatestReceiptDecision = "Accepted with Adjustment",
+                                        "Procurement Close-out →",
+                                        "Goods Receipt — Round " & (Coalesce(ThisItem.ReceiptRoundCount, 0) + 1) & " →"
+                                    ),
+                                    "Pending Accounting", "Start Accounting →",
+                                    ""
+                                )
                               VerticalAlign: =VerticalAlign.Middle
                               Visible: |-
-                                =ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted &&
-                                (
-                                    gCurrentUser.Role.Value <> "Procurement" && gCurrentUser.Role.Value <> "Admin" ||
-                                    ThisItem.RequesterEmail = gCurrentEmployee.Email
+                                =Switch(
+                                    ThisItem.Status.Value,
+                                    "Pending Manager",
+                                        gCurrentUser.Role.Value = "Admin" ||
+                                        (gCurrentUser.Role.Value = "Manager" && ThisItem.ManagerApproverID.Id = gCurrentEmployee.ID),
+                                    "Pending Executive",
+                                        gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin",
+                                    "Pending Procurement",
+                                        gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin",
+                                    "Pending Invoice",
+                                        (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin") &&
+                                        Not(ThisItem.InvoiceMode.Value = "ViaRequester" || ThisItem.InvoiceMode.Value = "Deferred"),
+                                    "Goods Receipt & Acceptance",
+                                        ThisItem.RequesterEmail = gCurrentEmployee.Email ||
+                                        ThisItem.GRAssignedToID.Id = gCurrentEmployee.ID,
+                                    "Pending Supplier Follow-up", If(
+                                        ThisItem.LatestReceiptDecision = "Accepted with Adjustment",
+                                        gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin",
+                                        ThisItem.LatestReceiptDecision = "Requires Supplier Follow-up" &&
+                                        (ThisItem.RequesterEmail = gCurrentEmployee.Email ||
+                                        ThisItem.SFU1AssignedToID.Id = gCurrentEmployee.ID)
+                                    ),
+                                    "Pending Accounting",
+                                        gCurrentUser.Role.Value = "Accounting" ||
+                                        gCurrentUser.Role.Value = "Executive" ||
+                                        gCurrentUser.Role.Value = "Admin",
+                                    false
                                 )
-                              Width: =160
+                              Width: =260
                         - btnProcessInvoice:
                             Control: ModernButton@1.0.0
                             Properties:
@@ -667,13 +474,88 @@ Screens:
                                 !ThisItem.InvoiceSubmitted &&
                                 (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin")
                               Width: =160
+                        - btnSubmitInvoice:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              Align: =Align.Center
+                              BasePaletteColor: =RGBA(133, 79, 11, 1)
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequesterInvoiceScreen)
+                              PaddingBottom: =5
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              PaddingTop: =5
+                              RadiusBottomLeft: =4
+                              RadiusBottomRight: =4
+                              RadiusTopLeft: =4
+                              RadiusTopRight: =4
+                              Text: ="Submit Invoice"
+                              VerticalAlign: =VerticalAlign.Middle
+                              Visible: |-
+                                =ThisItem.InvoiceMode.Value = "ViaRequester" && !ThisItem.InvoiceSubmitted &&
+                                (
+                                    gCurrentUser.Role.Value <> "Procurement" && gCurrentUser.Role.Value <> "Admin" ||
+                                    ThisItem.RequesterEmail = gCurrentEmployee.Email
+                                )
+                              Width: =160
+                        - conActionsSpacer_HS:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              FillPortions: =1
+                              Height: =1
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                        - btnQuickView:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              Align: =Align.Center
+                              BasePaletteColor: =RGBA(83, 74, 183, 1)
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              Icon: ="Info"
+                              OnSelect: =Set(gQuickViewRequest, ThisItem); Set(gShowQuickView, true)
+                              PaddingBottom: =5
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              PaddingTop: =5
+                              RadiusBottomLeft: =4
+                              RadiusBottomRight: =4
+                              RadiusTopLeft: =4
+                              RadiusTopRight: =4
+                              Text: ="Quick View"
+                              VerticalAlign: =VerticalAlign.Middle
+                              Width: =140
+                        - btnFullDetail:
+                            Control: ModernButton@1.0.0
+                            Properties:
+                              Align: =Align.Center
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              Icon: ="Eye"
+                              OnSelect: =Set(gSelectedRequest, ThisItem); Navigate(RequestDetailScreen)
+                              PaddingBottom: =5
+                              PaddingLeft: =12
+                              PaddingRight: =12
+                              PaddingTop: =5
+                              RadiusBottomLeft: =4
+                              RadiusBottomRight: =4
+                              RadiusTopLeft: =4
+                              RadiusTopRight: =4
+                              Text: ="Full Detail"
+                              VerticalAlign: =VerticalAlign.Middle
+                              Width: =130
             - rectSeparator:
                 Control: Rectangle@2.3.0
                 Properties:
                   Fill: =RGBA(210, 209, 199, 1)
                   Height: =1
                   Width: =Parent.Width
-                  Y: =113
+                  Y: =99
       - rectQuickViewOverlay_HS:
           Control: Rectangle@2.3.0
           Properties:
@@ -689,7 +571,7 @@ Screens:
           Properties:
             DropShadow: =DropShadow.Bold
             Fill: =RGBA(255, 255, 255, 1)
-            Height: =600
+            Height: =660
             LayoutDirection: =LayoutDirection.Vertical
             LayoutGap: =8
             PaddingBottom: =16
@@ -703,7 +585,7 @@ Screens:
             Visible: =gShowQuickView
             Width: =720
             X: =(Parent.Width - 720) / 2
-            Y: =(Parent.Height - 600) / 2
+            Y: =(Parent.Height - 660) / 2
           Children:
             - lblQuickViewTitle_HS:
                 Control: Label@2.5.1
@@ -803,7 +685,7 @@ Screens:
                               Height: =28
                               PaddingLeft: =0
                               Size: =11
-                              Text: =If(IsBlank(gQuickViewRequest.Category), "—", gQuickViewRequest.Category)
+                              Text: =If(IsBlank(gQuickViewRequest.Category.Value), "—", gQuickViewRequest.Category.Value)
                               Width: =320
                               Wrap: =false
                   - colQVProcurementType_HS:
@@ -835,8 +717,129 @@ Screens:
                               Height: =28
                               PaddingLeft: =0
                               Size: =11
-                              Text: =If(IsBlank(gQuickViewRequest.ProcurementType), "—", gQuickViewRequest.ProcurementType)
+                              Text: =If(IsBlank(gQuickViewRequest.ProcurementType.Value), "—", gQuickViewRequest.ProcurementType.Value)
                               Width: =320
+                              Wrap: =false
+            - rowQVIdent_HS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =52
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =16
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - colQVProject_HS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =260
+                      Children:
+                        - lblQVProjectLabel_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Related Project"
+                              Width: =Parent.Width
+                        - lblQVProjectValue_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: |-
+                                =If(
+                                    IsBlank(gQuickViewRequest.ProjectID),
+                                    "—",
+                                    Coalesce(LookUp(Project_List, ProjectID = gQuickViewRequest.ProjectID).Title, "—")
+                                )
+                              Width: =Parent.Width
+                              Wrap: =false
+                  - colQVReqDate_HS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =160
+                      Children:
+                        - lblQVReqDateLabel_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Required Delivery Date"
+                              Width: =Parent.Width
+                        - lblQVReqDateValue_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: |-
+                                =If(
+                                    IsBlank(gQuickViewRequest.RequiredDeliveryDate),
+                                    "—",
+                                    Text(gQuickViewRequest.RequiredDeliveryDate, "dd/mm/yyyy")
+                                )
+                              Width: =Parent.Width
+                              Wrap: =false
+                  - colQVRequester_HS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutGap: =2
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =228
+                      Children:
+                        - lblQVRequesterLabel_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =20
+                              PaddingLeft: =0
+                              Size: =9
+                              Text: ="Requested by"
+                              Width: =Parent.Width
+                        - lblQVRequesterValue_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =28
+                              PaddingLeft: =0
+                              Size: =11
+                              Text: =Coalesce(gQuickViewRequest.RequesterID.Value, gQuickViewRequest.RequesterEmail, "—")
+                              Width: =Parent.Width
                               Wrap: =false
             - rowQVDescription_HS:
                 Control: GroupContainer@1.5.0
@@ -885,7 +888,7 @@ Screens:
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
                   RadiusTopRight: =0
-                  Visible: =gQuickViewRequest.ProcurementType = "Invoice Supplied"
+                  Visible: =gQuickViewRequest.ProcurementType.Value = "Invoice Supplied"
                   Width: =Parent.Width - 40
                 Children:
                   - lblQVRequesterInvoiceLabel_HS:
@@ -906,7 +909,8 @@ Screens:
                         OnSelect: =If(Not(IsBlank(gQuickViewRequest.RequesterInvoiceURL)), Launch(gQuickViewRequest.RequesterInvoiceURL, {}, LaunchTarget.New))
                         PaddingLeft: =0
                         Size: =11
-                        Text: =If(IsBlank(gQuickViewRequest.RequesterInvoiceURL), "—", gQuickViewRequest.RequesterInvoiceURL)
+                        Text: =If(IsBlank(gQuickViewRequest.RequesterInvoiceURL), "—", "Open invoice ↗")
+                        Tooltip: =gQuickViewRequest.RequesterInvoiceURL
                         Underline: =Not(IsBlank(gQuickViewRequest.RequesterInvoiceURL))
                         Width: =Parent.Width
                         Wrap: =false
@@ -943,7 +947,8 @@ Screens:
                         OnSelect: =If(Not(IsBlank(gQuickViewRequest.OfficialInvoiceLink)), Launch(gQuickViewRequest.OfficialInvoiceLink, {}, LaunchTarget.New))
                         PaddingLeft: =0
                         Size: =11
-                        Text: =If(IsBlank(gQuickViewRequest.OfficialInvoiceLink), "—", gQuickViewRequest.OfficialInvoiceLink)
+                        Text: =If(IsBlank(gQuickViewRequest.OfficialInvoiceLink), "—", "Open official invoice ↗")
+                        Tooltip: =gQuickViewRequest.OfficialInvoiceLink
                         Underline: =Not(IsBlank(gQuickViewRequest.OfficialInvoiceLink))
                         Width: =Parent.Width
                         Wrap: =false
@@ -964,18 +969,364 @@ Screens:
                   RadiusTopRight: =0
                   Width: =Parent.Width - 40
                 Children:
-                  - btnQuickViewOpenDetail_HS:
-                      Control: Button@0.0.45
+                  - btnQVDoWork_HS:
+                      Control: ModernButton@1.0.0
                       Properties:
+                        Align: =Align.Center
+                        BasePaletteColor: =RGBA(83, 74, 183, 1)
+                        FontWeight: =FontWeight.Semibold
                         OnSelect: |-
                           =Set(gShowQuickView, false);
-                          Set(gSelectedRequest, LookUp(Procurement_Requests, ID = gQuickViewRequest.ID));
-                          Navigate(RequestDetailScreen)
+                          Set(gSelectedRequest, gQuickViewRequest);
+                          Switch(
+                              gQuickViewRequest.Status.Value,
+                              "Pending Manager", Navigate(ManagerReviewScreen),
+                              "Pending Executive", If(
+                                  gQuickViewRequest.isExecutivePayment,
+                                  Navigate(ExecutivePaymentScreen),
+                                  Navigate(ExecutiveApprovalScreen)
+                              ),
+                              "Pending Procurement", Navigate(ProcurementExecutionScreen),
+                              "Pending Invoice", Navigate(InvoiceSubmissionScreen),
+                              "Goods Receipt & Acceptance", Navigate(GoodsReceiptScreen),
+                              "Pending Supplier Follow-up", If(
+                                  gQuickViewRequest.LatestReceiptDecision = "Accepted with Adjustment",
+                                  Navigate(ProcurementFollowUpScreen),
+                                  Navigate(SupplierFollowUpScreen)
+                              ),
+                              "Pending Accounting", Navigate(AccountingScreen)
+                          )
+                        PaddingBottom: =5
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =5
+                        RadiusBottomLeft: =4
+                        RadiusBottomRight: =4
+                        RadiusTopLeft: =4
+                        RadiusTopRight: =4
+                        Text: |-
+                          =Switch(
+                              gQuickViewRequest.Status.Value,
+                              "Pending Manager", "Review Request →",
+                              "Pending Executive", If(
+                                  gQuickViewRequest.isExecutivePayment,
+                                  "Process Payment →",
+                                  "Review Request →"
+                              ),
+                              "Pending Procurement", "Start Procurement →",
+                              "Pending Invoice", "Submit Invoice →",
+                              "Goods Receipt & Acceptance", "Goods Receipt →",
+                              "Pending Supplier Follow-up", If(
+                                  gQuickViewRequest.LatestReceiptDecision = "Accepted with Adjustment",
+                                  "Procurement Close-out →",
+                                  "Goods Receipt — Round " & (Coalesce(gQuickViewRequest.ReceiptRoundCount, 0) + 1) & " →"
+                              ),
+                              "Pending Accounting", "Start Accounting →",
+                              ""
+                          )
+                        VerticalAlign: =VerticalAlign.Middle
+                        Visible: |-
+                          =Switch(
+                              gQuickViewRequest.Status.Value,
+                              "Pending Manager",
+                                  gCurrentUser.Role.Value = "Admin" ||
+                                  (gCurrentUser.Role.Value = "Manager" && gQuickViewRequest.ManagerApproverID.Id = gCurrentEmployee.ID),
+                              "Pending Executive",
+                                  gCurrentUser.Role.Value = "Executive" || gCurrentUser.Role.Value = "Admin",
+                              "Pending Procurement",
+                                  gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin",
+                              "Pending Invoice",
+                                  (gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin") &&
+                                  Not(gQuickViewRequest.InvoiceMode.Value = "ViaRequester" || gQuickViewRequest.InvoiceMode.Value = "Deferred"),
+                              "Goods Receipt & Acceptance",
+                                  gQuickViewRequest.RequesterEmail = gCurrentEmployee.Email ||
+                                  gQuickViewRequest.GRAssignedToID.Id = gCurrentEmployee.ID,
+                              "Pending Supplier Follow-up", If(
+                                  gQuickViewRequest.LatestReceiptDecision = "Accepted with Adjustment",
+                                  gCurrentUser.Role.Value = "Procurement" || gCurrentUser.Role.Value = "Admin",
+                                  gQuickViewRequest.LatestReceiptDecision = "Requires Supplier Follow-up" &&
+                                  (gQuickViewRequest.RequesterEmail = gCurrentEmployee.Email ||
+                                  gQuickViewRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID)
+                              ),
+                              "Pending Accounting",
+                                  gCurrentUser.Role.Value = "Accounting" ||
+                                  gCurrentUser.Role.Value = "Executive" ||
+                                  gCurrentUser.Role.Value = "Admin",
+                              false
+                          )
+                        Width: =260
+                  - btnQuickViewOpenDetail_HS:
+                      Control: ModernButton@1.0.0
+                      Properties:
+                        Align: =Align.Center
+                        FontWeight: =""
+                        OnSelect: =Set(gShowQuickView, false); Set(gSelectedRequest, gQuickViewRequest); Navigate(RequestDetailScreen)
+                        PaddingBottom: =5
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =5
+                        RadiusBottomLeft: =4
+                        RadiusBottomRight: =4
+                        RadiusTopLeft: =4
+                        RadiusTopRight: =4
                         Text: ="Open Full Detail"
+                        VerticalAlign: =VerticalAlign.Middle
                         Width: =160
                   - btnCloseQuickView_HS:
-                      Control: Button@0.0.45
+                      Control: ModernButton@1.0.0
                       Properties:
+                        Align: =Align.Center
+                        FontWeight: =""
                         OnSelect: =Set(gShowQuickView, false)
+                        PaddingBottom: =5
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =5
+                        RadiusBottomLeft: =4
+                        RadiusBottomRight: =4
+                        RadiusTopLeft: =4
+                        RadiusTopRight: =4
                         Text: ="Close"
+                        VerticalAlign: =VerticalAlign.Middle
                         Width: =100
+      - rectStatusFilterOverlay_HS:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0.5)
+            Height: =Parent.Height
+            OnSelect: =Set(gShowStatusFilter, false)
+            Visible: =gShowStatusFilter
+            Width: =Parent.Width
+      - conStatusFilterDialog_HS:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.Bold
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =460
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =8
+            PaddingBottom: =16
+            PaddingLeft: =20
+            PaddingRight: =20
+            PaddingTop: =16
+            RadiusBottomLeft: =8
+            RadiusBottomRight: =8
+            RadiusTopLeft: =8
+            RadiusTopRight: =8
+            Visible: =gShowStatusFilter
+            Width: =340
+            X: =(Parent.Width - 340) / 2
+            Y: =(Parent.Height - 460) / 2
+          Children:
+            - lblStatusFilterTitle_HS:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(83, 74, 183, 1)
+                  FontWeight: =FontWeight.Bold
+                  Height: =28
+                  PaddingLeft: =0
+                  Size: =12
+                  Text: ="Filter by Status"
+                  Width: =Parent.Width - 40
+            - rectStatusFilterDivider_HS:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Fill: =RGBA(210, 209, 199, 1)
+                  Height: =1
+                  LayoutMinHeight: =1
+                  Width: =Parent.Width - 40
+            - rowStatusFilterActions_HS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =20
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =12
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - btnStatusFilterSelectAll_HS:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(56, 96, 178, 1)
+                        Height: =20
+                        HoverColor: =RGBA(83, 74, 183, 1)
+                        OnSelect: =ClearCollect(colStatusFilterDraft, colStatusFilterOptions_HS)
+                        PaddingLeft: =0
+                        Size: =10
+                        Text: ="Select All"
+                        Underline: =true
+                        Width: =70
+                  - btnStatusFilterClearAll_HS:
+                      Control: Label@2.5.1
+                      Properties:
+                        Color: =RGBA(56, 96, 178, 1)
+                        Height: =20
+                        HoverColor: =RGBA(83, 74, 183, 1)
+                        OnSelect: =Clear(colStatusFilterDraft)
+                        PaddingLeft: =0
+                        Size: =10
+                        Text: ="Clear All"
+                        Underline: =true
+                        Width: =70
+            - galStatusFilterOptions_HS:
+                Control: Gallery@2.15.0
+                Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Items: =colStatusFilterOptions_HS
+                  LayoutMinHeight: =260
+                  TemplateSize: =32
+                  Width: =Parent.Width - 40
+                Children:
+                  - rowStatusFilterOption_HS:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Height: =32
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =8
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Width: =Parent.Width - 20
+                      Children:
+                        - lblStatusFilterCheck_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Center
+                              Color: =If(CountRows(Filter(colStatusFilterDraft, Value = ThisItem.Value)) > 0, RGBA(83, 74, 183, 1), RGBA(180, 178, 168, 1))
+                              Height: =20
+                              OnSelect: |-
+                                =If(
+                                    CountRows(Filter(colStatusFilterDraft, Value = ThisItem.Value)) > 0,
+                                    RemoveIf(colStatusFilterDraft, Value = ThisItem.Value),
+                                    Collect(colStatusFilterDraft, {Value: ThisItem.Value})
+                                )
+                              PaddingLeft: =0
+                              PaddingRight: =0
+                              Size: =14
+                              Text: =If(CountRows(Filter(colStatusFilterDraft, Value = ThisItem.Value)) > 0, "☑", "☐")
+                              Width: =22
+                        - lblStatusFilterOptionText_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              FillPortions: =1
+                              Height: =28
+                              OnSelect: |-
+                                =If(
+                                    CountRows(Filter(colStatusFilterDraft, Value = ThisItem.Value)) > 0,
+                                    RemoveIf(colStatusFilterDraft, Value = ThisItem.Value),
+                                    Collect(colStatusFilterDraft, {Value: ThisItem.Value})
+                                )
+                              PaddingLeft: =4
+                              Size: =11
+                              Text: =ThisItem.Value
+                              Width: =Parent.Width - 78
+                              Wrap: =false
+                        - lblStatusFilterCount_HS:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Right
+                              Color: =RGBA(136, 135, 128, 1)
+                              Height: =28
+                              Size: =10
+                              Text: |-
+                                ="(" & CountRows(
+                                    Filter(
+                                        Switch(gCurrentUser.Role.Value,
+                                            "Manager", Filter(Procurement_Requests,
+                                                ManagerApproverID.Id = gCurrentEmployee.ID ||
+                                                RequesterEmail = User().Email
+                                            ),
+                                            "Procurement", Filter(Procurement_Requests,
+                                                Status.Value = "Pending Procurement" ||
+                                                Status.Value = "Pending Invoice" ||
+                                                Status.Value = "Pending Accounting" ||
+                                                Status.Value = "Goods Receipt & Acceptance" ||
+                                                Status.Value = "Pending Supplier Follow-up" ||
+                                                Status.Value = "Completed" ||
+                                                Status.Value = "Rejected" ||
+                                                RequesterEmail = User().Email
+                                            ),
+                                            "Accounting", Filter(Procurement_Requests,
+                                                Status.Value = "Pending Accounting" ||
+                                                Status.Value = "Goods Receipt & Acceptance" ||
+                                                Status.Value = "Pending Supplier Follow-up" ||
+                                                Status.Value = "Completed" ||
+                                                RequesterEmail = User().Email
+                                            ),
+                                            "Executive", Procurement_Requests,
+                                            "Admin", Procurement_Requests,
+                                            Filter(Procurement_Requests,
+                                                RequesterEmail = User().Email ||
+                                                GRAssignedToID.Id = gCurrentEmployee.ID ||
+                                                SFU1AssignedToID.Id = gCurrentEmployee.ID
+                                            )
+                                        ),
+                                        Status.Value = ThisItem.Value
+                                    )
+                                ) & ")"
+                              Width: =40
+            - rowStatusFilterFooter_HS:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =36
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =8
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width - 40
+                Children:
+                  - btnStatusFilterCancel_HS:
+                      Control: ModernButton@1.0.0
+                      Properties:
+                        Align: =Align.Center
+                        FontWeight: =""
+                        OnSelect: =Set(gShowStatusFilter, false)
+                        PaddingBottom: =5
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =5
+                        RadiusBottomLeft: =4
+                        RadiusBottomRight: =4
+                        RadiusTopLeft: =4
+                        RadiusTopRight: =4
+                        Text: ="Cancel"
+                        VerticalAlign: =VerticalAlign.Middle
+                        Width: =90
+                  - btnStatusFilterApply_HS:
+                      Control: ModernButton@1.0.0
+                      Properties:
+                        Align: =Align.Center
+                        FontWeight: =""
+                        OnSelect: =ClearCollect(colStatusFilterChecked, colStatusFilterDraft); Set(gShowStatusFilter, false)
+                        PaddingBottom: =5
+                        PaddingLeft: =12
+                        PaddingRight: =12
+                        PaddingTop: =5
+                        RadiusBottomLeft: =4
+                        RadiusBottomRight: =4
+                        RadiusTopLeft: =4
+                        RadiusTopRight: =4
+                        Text: ="Apply"
+                        VerticalAlign: =VerticalAlign.Middle
+                        Width: =90
