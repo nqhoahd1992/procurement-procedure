@@ -886,7 +886,8 @@ Screens:
                               Height: =28
                               OnSelect: =If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), Launch(gSelectedRequest.RequesterInvoiceURL, {}, LaunchTarget.New))
                               Size: =11
-                              Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", gSelectedRequest.RequesterInvoiceURL)
+                              Text: =If(IsBlank(gSelectedRequest.RequesterInvoiceURL), "—", "Open invoice ↗")
+                              Tooltip: =gSelectedRequest.RequesterInvoiceURL
                               Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                               Width: =Parent.Width
                               Wrap: =false
@@ -925,7 +926,8 @@ Screens:
                               Height: =28
                               OnSelect: =If(Not(IsBlank(gSelectedRequest.RemittanceURL)), Launch(gSelectedRequest.RemittanceURL, {}, LaunchTarget.New))
                               Size: =11
-                              Text: =If(IsBlank(gSelectedRequest.RemittanceURL), "—", gSelectedRequest.RemittanceURL)
+                              Text: =If(IsBlank(gSelectedRequest.RemittanceURL), "—", "Open remittance advice ↗")
+                              Tooltip: =gSelectedRequest.RemittanceURL
                               Underline: =Not(IsBlank(gSelectedRequest.RemittanceURL))
                               Width: =Parent.Width
                               Wrap: =false
@@ -1002,7 +1004,8 @@ Screens:
                               Height: =48
                               OnSelect: =If(Not(IsBlank(gSelectedRequest.OfficialInvoiceLink)), Launch(gSelectedRequest.OfficialInvoiceLink, {}, LaunchTarget.New))
                               Size: =11
-                              Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", gSelectedRequest.OfficialInvoiceLink)
+                              Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", "Open official invoice ↗")
+                              Tooltip: =gSelectedRequest.OfficialInvoiceLink
                               Underline: =Not(IsBlank(gSelectedRequest.OfficialInvoiceLink))
                               VerticalAlign: =VerticalAlign.Top
                               Width: =Parent.Width
