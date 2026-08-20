@@ -318,7 +318,7 @@ Screens:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(219, 234, 254, 1)
                   FillPortions: =0
-                  Height: =140
+                  Height: =150
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
                   LayoutMinHeight: =200
@@ -391,11 +391,10 @@ Screens:
                   Fill: =RGBA(219, 234, 254, 1)
                   LayoutDirection: =LayoutDirection.Vertical
                   LayoutGap: =4
-                  LayoutMinHeight: =90
+                  LayoutMinHeight: =80
                   PaddingBottom: =12
                   PaddingLeft: =20
                   PaddingRight: =20
-                  PaddingTop: =12
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0
@@ -411,6 +410,7 @@ Screens:
                         PaddingRight: =0
                         Size: =11
                         Text: ="Credit Note"
+                        Visible: =Not(IsBlank(gSelectedRequest.CreditNote))
                         Width: =Parent.Width - 40
                   - lblCreditNoteRefValue_AC:
                       Control: Label@2.5.1
@@ -426,6 +426,7 @@ Screens:
                         Tooltip: =gSelectedRequest.CreditNote
                         Underline: =Not(IsBlank(gSelectedRequest.CreditNote))
                         VerticalAlign: =VerticalAlign.Top
+                        Visible: =Not(IsBlank(gSelectedRequest.CreditNote))
                         Width: =Parent.Width - 40
             - rowChecklistHeader_AC:
                 Control: GroupContainer@1.5.0
