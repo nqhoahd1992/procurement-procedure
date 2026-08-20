@@ -48,12 +48,57 @@ Screens:
         Set(locCreditNoteURL_SFU, "");
         Set(gPendingCreditNoteName_SFU, "")
     Children:
+      - rowHeader_SFU:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(83, 74, 183, 1)
+            Height: =60
+            LayoutAlignItems: =LayoutAlignItems.Center
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingLeft: =20
+            PaddingRight: =20
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width
+          Children:
+            - lblScreenTitle_SFU:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(255, 255, 255, 1)
+                  FontWeight: =FontWeight.Bold
+                  Height: =60
+                  PaddingLeft: =0
+                  Size: =14
+                  Text: ="Max Biocare Procurement - Supplier Follow-up"
+                  Width: =600
+            - lblUserInfo_SFU:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Right
+                  Color: =RGBA(255, 255, 255, 1)
+                  FontWeight: =FontWeight.Semibold
+                  Height: =60
+                  PaddingRight: =0
+                  Size: =12
+                  Text: |-
+                    =If(
+                        IsBlank(gCurrentUser.Role.Value),
+                        gCurrentEmployee.Title,
+                        gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
+                    )
+                  Width: =280
       - conScrollable_SFU:
           Control: GroupContainer@1.5.0
           Variant: AutoLayout
           Properties:
             DropShadow: =DropShadow.None
-            Height: =Parent.Height - 60
+            Y: =60
+            Height: =Parent.Height - 120
             LayoutDirection: =LayoutDirection.Vertical
             LayoutOverflowY: =LayoutOverflow.Scroll
             RadiusBottomLeft: =0
@@ -62,50 +107,6 @@ Screens:
             RadiusTopRight: =0
             Width: =Parent.Width
           Children:
-            - rowHeader_SFU:
-                Control: GroupContainer@1.5.0
-                Variant: AutoLayout
-                Properties:
-                  DropShadow: =DropShadow.None
-                  Fill: =RGBA(83, 74, 183, 1)
-                  Height: =60
-                  LayoutAlignItems: =LayoutAlignItems.Center
-                  LayoutDirection: =LayoutDirection.Horizontal
-                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
-                  PaddingLeft: =20
-                  PaddingRight: =20
-                  RadiusBottomLeft: =0
-                  RadiusBottomRight: =0
-                  RadiusTopLeft: =0
-                  RadiusTopRight: =0
-                  Width: =Parent.Width
-                Children:
-                  - lblScreenTitle_SFU:
-                      Control: Label@2.5.1
-                      Properties:
-                        Color: =RGBA(255, 255, 255, 1)
-                        FontWeight: =FontWeight.Bold
-                        Height: =60
-                        PaddingLeft: =0
-                        Size: =14
-                        Text: ="Max Biocare Procurement - Supplier Follow-up"
-                        Width: =600
-                  - lblUserInfo_SFU:
-                      Control: Label@2.5.1
-                      Properties:
-                        Align: =Align.Right
-                        Color: =RGBA(255, 255, 255, 1)
-                        FontWeight: =FontWeight.Semibold
-                        Height: =60
-                        PaddingRight: =0
-                        Size: =12
-                        Text: |-
-                          =If(
-                              IsBlank(gCurrentUser.Role.Value),
-                              gCurrentEmployee.Title,
-                              gCurrentEmployee.Title & " | " & gCurrentUser.Role.Value
-                          )
-                        Width: =280
             - rowInfoBlock_SFU:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
