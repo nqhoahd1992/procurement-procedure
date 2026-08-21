@@ -198,18 +198,18 @@ Screens:
                   DropShadow: =DropShadow.None
                   Fill: =RGBA(241, 239, 232, 1)
                   LayoutDirection: =LayoutDirection.Vertical
-                  LayoutGap: =4
+                  LayoutGap: =8
                   LayoutMinHeight: |-
-                    =480 +
+                    =564 +
                         If(gSelectedRequest.ProcurementType.Value = "Invoice Supplied", 90, 0) +
-                        If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 70, 0) +
+                        If(gSelectedRequest.ProcurementType.Value = "To be sourced by Procurement", 78, 0) +
                         If(Not(IsBlank(gSelectedRequest.ConditionsText)), 88, 0) +
                         If(Not(IsBlank(gSelectedRequest.AccountingHandlerID)), 68, 0) +
-                        If(Not(IsBlank(gSelectedRequest.UsageExpiryDate)), 60, 0) +
-                        If(CountRows(colRequirementFiles) > 0, 28 + CountRows(colRequirementFiles) * 32 + 8, 0) +
-                        If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 56, 0) +
-                        If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 56, 0) +
-                        If(Not(IsBlank(gSelectedRequest.CreditNote)), 4 + 60, 0)
+                        If(Not(IsBlank(gSelectedRequest.UsageExpiryDate)), 68, 0) +
+                        If(CountRows(colRequirementFiles) > 0, 44 + CountRows(colRequirementFiles) * 32, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RequesterInvoiceURL)), 64, 0) +
+                        If(Not(IsBlank(gSelectedRequest.RemittanceURL)), 64, 0) +
+                        If(Not(IsBlank(gSelectedRequest.CreditNote)), 8 + 60, 0)
                   PaddingBottom: =20
                   PaddingLeft: =20
                   PaddingRight: =20
@@ -1015,7 +1015,7 @@ Screens:
                       Properties:
                         DropShadow: =DropShadow.None
                         FillPortions: =0
-                        Height: =100
+                        Height: =70
                         LayoutDirection: =LayoutDirection.Vertical
                         LayoutGap: =2
                         LayoutMinHeight: =70
@@ -1041,6 +1041,7 @@ Screens:
                               FillPortions: =1
                               FontWeight: =FontWeight.Semibold
                               Height: =48
+                              LayoutMinHeight: =28
                               OnSelect: =If(Not(IsBlank(gSelectedRequest.OfficialInvoiceLink)), Launch(gSelectedRequest.OfficialInvoiceLink, {}, LaunchTarget.New))
                               Size: =11
                               Text: =If(IsBlank(gSelectedRequest.OfficialInvoiceLink), "—", "Open official invoice ↗")

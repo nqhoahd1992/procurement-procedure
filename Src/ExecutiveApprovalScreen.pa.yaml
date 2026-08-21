@@ -81,13 +81,14 @@ Screens:
                 Variant: AutoLayout
                 Properties:
                   DropShadow: =DropShadow.None
+                  LayoutAlignItems: =LayoutAlignItems.Center
                   LayoutDirection: =LayoutDirection.Horizontal
                   LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
                   LayoutMinHeight: =60
-                  PaddingBottom: =8
+                  PaddingBottom: =10
                   PaddingLeft: =20
                   PaddingRight: =20
-                  PaddingTop: =12
+                  PaddingTop: =10
                   RadiusBottomLeft: =0
                   RadiusBottomRight: =0
                   RadiusTopLeft: =0

@@ -69,8 +69,7 @@ Screens:
                   Height: =60
                   PaddingLeft: =0
                   Size: =14
-                  Text: |-
-                    ="Procurement Execution - ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
+                  Text: ="Max Biocare Procurement - Procurement Execution"
                   Width: =654
             - lblUserInfo_PE:
                 Control: Label@2.5.1
@@ -103,7 +102,95 @@ Screens:
             Width: =Parent.Width
             Y: =60
           Children:
-            - rowRequestInfo_PE:
+            - rowBackTitle_5:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =60
+                  LayoutAlignItems: =LayoutAlignItems.Center
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  LayoutMinHeight: =60
+                  PaddingBottom: =10
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =10
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - lblRequestTitleValue_5:
+                      Control: Label@2.5.1
+                      Properties:
+                        FontWeight: =FontWeight.Bold
+                        Height: =36
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        Size: =14
+                        Text: |-
+                          ="ID: " & gSelectedRequest.ID & " - " & gSelectedRequest.Title
+                        Width: =Parent.Width - 300
+                  - lblStatusBadge_EA_4:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: |-
+                          =Switch(gSelectedRequest.Status.Value,
+                            "Pending Manager", RGBA(146, 84, 14, 1),
+                            "Pending Executive", RGBA(175, 74, 20, 1),
+                            "Pending Procurement", RGBA(122, 108, 10, 1),
+                            "Pending Invoice", RGBA(124, 58, 173, 1),
+                            "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
+                            "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
+                            "Pending Accounting", RGBA(158, 44, 108, 1),
+                            "Completed", RGBA(15, 110, 86, 1),
+                            "Rejected", RGBA(163, 45, 45, 1),
+                            RGBA(68, 68, 65, 1)
+                          )
+                        BorderThickness: =1
+                        Color: |-
+                          =Switch(gSelectedRequest.Status.Value,
+                            "Pending Manager", RGBA(146, 84, 14, 1),
+                            "Pending Executive", RGBA(175, 74, 20, 1),
+                            "Pending Procurement", RGBA(122, 108, 10, 1),
+                            "Pending Invoice", RGBA(124, 58, 173, 1),
+                            "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
+                            "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
+                            "Pending Accounting", RGBA(158, 44, 108, 1),
+                            "Completed", RGBA(15, 110, 86, 1),
+                            "Rejected", RGBA(163, 45, 45, 1),
+                            RGBA(68, 68, 65, 1)
+                          )
+                        Fill: |-
+                          =Switch(gSelectedRequest.Status.Value,
+                            "Pending Manager", RGBA(253, 242, 216, 1),
+                            "Pending Executive", RGBA(253, 234, 222, 1),
+                            "Pending Procurement", RGBA(247, 245, 210, 1),
+                            "Pending Invoice", RGBA(240, 228, 252, 1),
+                            "Goods Receipt & Acceptance", RGBA(223, 234, 252, 1),
+                            "Pending Supplier Follow-up", RGBA(219, 241, 249, 1),
+                            "Pending Accounting", RGBA(252, 230, 242, 1),
+                            "Completed", RGBA(222, 245, 236, 1),
+                            "Rejected", RGBA(252, 233, 233, 1),
+                            RGBA(241, 239, 232, 1)
+                          )
+                        FontWeight: =FontWeight.Semibold
+                        Height: =32
+                        PaddingLeft: =8
+                        PaddingRight: =8
+                        Size: =10
+                        Text: |-
+                          =If(
+                              gSelectedRequest.Status.Value = "Pending Executive" && gSelectedRequest.isExecutivePayment,
+                              "Pending Payment From Executive",
+                              gSelectedRequest.Status.Value
+                          )
+                        Width: =220
+            - rowRequestInfo_PE_7:
                 Control: GroupContainer@1.5.0
                 Variant: AutoLayout
                 Properties:
@@ -132,86 +219,7 @@ Screens:
                   RadiusTopRight: =0
                   Width: =Parent.Width
                 Children:
-                  - rowRequestInfoHeader_PE:
-                      Control: GroupContainer@1.5.0
-                      Variant: AutoLayout
-                      Properties:
-                        DropShadow: =DropShadow.None
-                        FillPortions: =0
-                        Height: =32
-                        LayoutAlignItems: =LayoutAlignItems.Center
-                        LayoutDirection: =LayoutDirection.Horizontal
-                        LayoutGap: =12
-                        LayoutMinHeight: =32
-                        PaddingRight: =1
-                        RadiusBottomLeft: =0
-                        RadiusBottomRight: =0
-                        RadiusTopLeft: =0
-                        RadiusTopRight: =0
-                        Width: =Parent.Width - 40
-                      Children:
-                        - lblRequestInfoTitle_PE:
-                            Control: Label@2.5.1
-                            Properties:
-                              FillPortions: =1
-                              FontWeight: =FontWeight.Bold
-                              Height: =28
-                              PaddingLeft: =0
-                              Text: ="Request Details"
-                              Width: =Parent.Width - 260
-                              Wrap: =false
-                        - lblStatusBadge_PE:
-                            Control: Label@2.5.1
-                            Properties:
-                              Align: =Align.Center
-                              BorderColor: |-
-                                =Switch(gSelectedRequest.Status.Value,
-                                    "Pending Manager", RGBA(146, 84, 14, 1),
-                                    "Pending Executive", RGBA(175, 74, 20, 1),
-                                    "Pending Procurement", RGBA(122, 108, 10, 1),
-                                    "Pending Invoice", RGBA(124, 58, 173, 1),
-                                    "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
-                                    "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
-                                    "Pending Accounting", RGBA(158, 44, 108, 1),
-                                    "Completed", RGBA(15, 110, 86, 1),
-                                    "Rejected", RGBA(163, 45, 45, 1),
-                                    RGBA(68, 68, 65, 1)
-                                )
-                              BorderThickness: =1
-                              Color: |-
-                                =Switch(gSelectedRequest.Status.Value,
-                                    "Pending Manager", RGBA(146, 84, 14, 1),
-                                    "Pending Executive", RGBA(175, 74, 20, 1),
-                                    "Pending Procurement", RGBA(122, 108, 10, 1),
-                                    "Pending Invoice", RGBA(124, 58, 173, 1),
-                                    "Goods Receipt & Acceptance", RGBA(37, 92, 178, 1),
-                                    "Pending Supplier Follow-up", RGBA(11, 105, 132, 1),
-                                    "Pending Accounting", RGBA(158, 44, 108, 1),
-                                    "Completed", RGBA(15, 110, 86, 1),
-                                    "Rejected", RGBA(163, 45, 45, 1),
-                                    RGBA(68, 68, 65, 1)
-                                )
-                              Fill: |-
-                                =Switch(gSelectedRequest.Status.Value,
-                                    "Pending Manager", RGBA(253, 242, 216, 1),
-                                    "Pending Executive", RGBA(253, 234, 222, 1),
-                                    "Pending Procurement", RGBA(247, 245, 210, 1),
-                                    "Pending Invoice", RGBA(240, 228, 252, 1),
-                                    "Goods Receipt & Acceptance", RGBA(223, 234, 252, 1),
-                                    "Pending Supplier Follow-up", RGBA(219, 241, 249, 1),
-                                    "Pending Accounting", RGBA(252, 230, 242, 1),
-                                    "Completed", RGBA(222, 245, 236, 1),
-                                    "Rejected", RGBA(252, 233, 233, 1),
-                                    RGBA(241, 239, 232, 1)
-                                )
-                              FontWeight: =FontWeight.Semibold
-                              Height: =32
-                              PaddingLeft: =8
-                              PaddingRight: =8
-                              Size: =10
-                              Text: =gSelectedRequest.Status.Value
-                              Width: =220
-                  - conRequestInfoFields_PE:
+                  - conRequestInfoFields_PE_7:
                       Control: GroupContainer@1.5.0
                       Variant: AutoLayout
                       Properties:
@@ -234,7 +242,7 @@ Screens:
                         RadiusTopRight: =0
                         Width: =Parent.Width - 40
                       Children:
-                        - rowReqInfoA_PE:
+                        - rowReqInfoA_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -250,7 +258,7 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - colReqRequester_PE:
+                              - colReqRequester_PE_8:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -263,7 +271,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =260
                                   Children:
-                                    - lblReqRequesterLabel_PE:
+                                    - lblReqRequesterLabel_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -272,7 +280,7 @@ Screens:
                                           Size: =9
                                           Text: ="Requester"
                                           Width: =260
-                                    - lblReqRequesterValue_PE:
+                                    - lblReqRequesterValue_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -282,7 +290,7 @@ Screens:
                                           Text: =gSelectedRequest.RequesterID.Value
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqDept_PE:
+                              - colReqDept_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -295,7 +303,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =240
                                   Children:
-                                    - lblReqDeptLabel_PE:
+                                    - lblReqDeptLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -304,7 +312,7 @@ Screens:
                                           Size: =9
                                           Text: ="Department"
                                           Width: =240
-                                    - lblReqDeptValue_PE:
+                                    - lblReqDeptValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -314,7 +322,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.Department, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqCategory_PE:
+                              - colReqCategory_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -327,7 +335,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =260
                                   Children:
-                                    - lblReqCategoryLabel_PE:
+                                    - lblReqCategoryLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -336,7 +344,7 @@ Screens:
                                           Size: =9
                                           Text: ="Category"
                                           Width: =260
-                                    - lblReqCategoryValue_PE:
+                                    - lblReqCategoryValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -346,7 +354,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.Category.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqAccordance_PE:
+                              - colReqAccordance_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -359,7 +367,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =260
                                   Children:
-                                    - lblReqAccordanceLabel_PE:
+                                    - lblReqAccordanceLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -368,7 +376,7 @@ Screens:
                                           Size: =9
                                           Text: ="Purchase Accordance"
                                           Width: =260
-                                    - lblReqAccordanceValue_PE:
+                                    - lblReqAccordanceValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -378,7 +386,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.PurchaseAccordance.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                        - rowReqInfoB_PE:
+                        - rowReqInfoB_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -394,7 +402,7 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - colReqProject_PE:
+                              - colReqProject_PE_8:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -407,7 +415,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =340
                                   Children:
-                                    - lblReqProjectLabel_PE:
+                                    - lblReqProjectLabel_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -416,7 +424,7 @@ Screens:
                                           Size: =9
                                           Text: ="Project"
                                           Width: =340
-                                    - lblReqProjectValue_PE:
+                                    - lblReqProjectValue_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -431,7 +439,7 @@ Screens:
                                             )
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqProcType_PE:
+                              - colReqProcType_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -444,7 +452,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =300
                                   Children:
-                                    - lblReqProcTypeLabel_PE:
+                                    - lblReqProcTypeLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -453,7 +461,7 @@ Screens:
                                           Size: =9
                                           Text: ="Procurement Type"
                                           Width: =300
-                                    - lblReqProcTypeValue_PE:
+                                    - lblReqProcTypeValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -463,7 +471,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.ProcurementType.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqInvoiceType_PE:
+                              - colReqInvoiceType_PE_8:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -476,7 +484,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =200
                                   Children:
-                                    - lblReqInvoiceTypeLabel_PE:
+                                    - lblReqInvoiceTypeLabel_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -485,7 +493,7 @@ Screens:
                                           Size: =9
                                           Text: ="Invoice Type"
                                           Width: =200
-                                    - lblReqInvoiceTypeValue_PE:
+                                    - lblReqInvoiceTypeValue_PE_8:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -495,7 +503,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.InvoiceType.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqDeliveryDate_PE:
+                              - colReqDeliveryDate_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -508,7 +516,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =240
                                   Children:
-                                    - lblReqDeliveryDateLabel_PE:
+                                    - lblReqDeliveryDateLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -517,7 +525,7 @@ Screens:
                                           Size: =9
                                           Text: ="Required Delivery Date"
                                           Width: =240
-                                    - lblReqDeliveryDateValue_PE:
+                                    - lblReqDeliveryDateValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -527,7 +535,7 @@ Screens:
                                           Text: =If(IsBlank(gSelectedRequest.RequiredDeliveryDate), "—", Text(gSelectedRequest.RequiredDeliveryDate, "dd/mm/yyyy"))
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                        - rowReqInfoC_PE:
+                        - rowReqInfoC_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -543,7 +551,7 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - colReqCost_PE:
+                              - colReqCost_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -556,7 +564,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =240
                                   Children:
-                                    - lblReqCostLabel_PE:
+                                    - lblReqCostLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -565,7 +573,7 @@ Screens:
                                           Size: =9
                                           Text: ="Estimated Cost"
                                           Width: =240
-                                    - lblReqCostValue_PE:
+                                    - lblReqCostValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -575,7 +583,7 @@ Screens:
                                           Text: =Text(gSelectedRequest.EstimatedCost, "#,###.00") & " " & gSelectedRequest.Currency
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqBudgetRef_PE:
+                              - colReqBudgetRef_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -588,7 +596,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =220
                                   Children:
-                                    - lblReqBudgetRefLabel_PE:
+                                    - lblReqBudgetRefLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -597,7 +605,7 @@ Screens:
                                           Size: =9
                                           Text: ="Budget Reference"
                                           Width: =220
-                                    - lblReqBudgetRefValue_PE:
+                                    - lblReqBudgetRefValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -607,7 +615,7 @@ Screens:
                                           Text: =If(IsBlank(gSelectedRequest.BudgetReference), "—", Text(gSelectedRequest.BudgetReference, "#,###.00"))
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqCostCenter_PE:
+                              - colReqCostCenter_PE_9:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -620,7 +628,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =380
                                   Children:
-                                    - lblReqCostCenterLabel_PE:
+                                    - lblReqCostCenterLabel_PE_9:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -629,7 +637,7 @@ Screens:
                                           Size: =9
                                           Text: ="Cost Center"
                                           Width: =380
-                                    - lblReqCostCenterValue_PE:
+                                    - lblReqCostCenterValue_PE_9:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -639,7 +647,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.CostCenter.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                              - colReqDeliveryLocation_PE:
+                              - colReqDeliveryLocation_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -652,7 +660,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =300
                                   Children:
-                                    - lblReqDeliveryLocationLabel_PE:
+                                    - lblReqDeliveryLocationLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -661,7 +669,7 @@ Screens:
                                           Size: =9
                                           Text: ="Delivery Location"
                                           Width: =300
-                                    - lblReqDeliveryLocationValue_PE:
+                                    - lblReqDeliveryLocationValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -671,7 +679,7 @@ Screens:
                                           Text: =Coalesce(gSelectedRequest.DeliveryLocation.Value, "—")
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                        - rowReqInfoD_PE:
+                        - rowReqInfoD_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -687,7 +695,7 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - colReqSupplier_PE:
+                              - colReqSupplier_PE_7:
                                   Control: GroupContainer@1.5.0
                                   Variant: AutoLayout
                                   Properties:
@@ -700,7 +708,7 @@ Screens:
                                     RadiusTopRight: =0
                                     Width: =420
                                   Children:
-                                    - lblReqSupplierLabel_PE:
+                                    - lblReqSupplierLabel_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           Color: =RGBA(136, 135, 128, 1)
@@ -709,7 +717,7 @@ Screens:
                                           Size: =9
                                           Text: ="Preferred Supplier"
                                           Width: =420
-                                    - lblReqSupplierValue_PE:
+                                    - lblReqSupplierValue_PE_7:
                                         Control: Label@2.5.1
                                         Properties:
                                           FontWeight: =FontWeight.Semibold
@@ -719,7 +727,7 @@ Screens:
                                           Text: =If(IsBlank(gSelectedRequest.PreferredSupplier), "—", gSelectedRequest.PreferredSupplier)
                                           Width: =Parent.Width - 20
                                           Wrap: =false
-                        - rowReqDescription_PE:
+                        - rowReqDescription_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -736,7 +744,7 @@ Screens:
                               RadiusTopRight: =0
                               Width: =Parent.Width
                             Children:
-                              - lblReqDescriptionLabel_PE:
+                              - lblReqDescriptionLabel_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
@@ -745,7 +753,7 @@ Screens:
                                     Size: =9
                                     Text: ="Procurement Description"
                                     Width: =Parent.Width
-                              - lblReqDescriptionValue_PE:
+                              - lblReqDescriptionValue_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     FillPortions: =1
@@ -755,7 +763,7 @@ Screens:
                                     Size: =11
                                     Text: =Coalesce(gSelectedRequest.ProcurementDescription, "—")
                                     Width: =Parent.Width
-                        - rowReqRequirementFiles_PE:
+                        - rowReqRequirementFiles_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -774,7 +782,7 @@ Screens:
                               Visible: =CountRows(colRequirementFiles) > 0
                               Width: =Parent.Width
                             Children:
-                              - lblReqRequirementFilesLabel_PE:
+                              - lblReqRequirementFilesLabel_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
@@ -783,7 +791,7 @@ Screens:
                                     Size: =9
                                     Text: ="Requirement Files (Requester)"
                                     Width: =Parent.Width
-                              - galReqRequirementFiles_PE:
+                              - galReqRequirementFiles_PE_7:
                                   Control: Gallery@2.15.0
                                   Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_ver5.0
                                   Properties:
@@ -795,7 +803,7 @@ Screens:
                                     TemplateSize: =32
                                     Width: =Parent.Width
                                   Children:
-                                    - rowReqRequirementFileItem_PE:
+                                    - rowReqRequirementFileItem_PE_7:
                                         Control: GroupContainer@1.5.0
                                         Variant: AutoLayout
                                         Properties:
@@ -808,7 +816,7 @@ Screens:
                                           PaddingRight: =5
                                           Width: =Parent.Width
                                         Children:
-                                          - lblReqRequirementFileName_PE:
+                                          - lblReqRequirementFileName_PE_7:
                                               Control: Label@2.5.1
                                               Properties:
                                                 Color: =RGBA(56, 96, 178, 1)
@@ -822,7 +830,7 @@ Screens:
                                                 Underline: =true
                                                 Width: =Parent.Width - 100
                                                 Wrap: =false
-                                          - lblReqRequirementFileOpen_PE:
+                                          - lblReqRequirementFileOpen_PE_7:
                                               Control: Label@2.5.1
                                               Properties:
                                                 Align: =Align.Right
@@ -833,7 +841,7 @@ Screens:
                                                 Size: =10
                                                 Text: ="Open ↗"
                                                 Width: =90
-                        - rowReqInvoiceLink_PE:
+                        - rowReqInvoiceLink_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -852,7 +860,7 @@ Screens:
                               Visible: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                               Width: =Parent.Width
                             Children:
-                              - lblReqInvoiceLinkLabel_PE:
+                              - lblReqInvoiceLinkLabel_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
@@ -861,7 +869,7 @@ Screens:
                                     Size: =9
                                     Text: ="Invoice Link (Requester)"
                                     Width: =Parent.Width
-                              - lblReqInvoiceLinkValue_PE:
+                              - lblReqInvoiceLinkValue_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(56, 96, 178, 1)
@@ -874,7 +882,7 @@ Screens:
                                     Underline: =Not(IsBlank(gSelectedRequest.RequesterInvoiceURL))
                                     Width: =Parent.Width
                                     Wrap: =false
-                        - rowReqRemittance_PE:
+                        - rowReqRemittance_PE_7:
                             Control: GroupContainer@1.5.0
                             Variant: AutoLayout
                             Properties:
@@ -893,7 +901,7 @@ Screens:
                               Visible: =Not(IsBlank(gSelectedRequest.RemittanceURL))
                               Width: =Parent.Width
                             Children:
-                              - lblReqRemittanceLabel_PE:
+                              - lblReqRemittanceLabel_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(136, 135, 128, 1)
@@ -902,7 +910,7 @@ Screens:
                                     Size: =9
                                     Text: ="Remittance Advice Document"
                                     Width: =Parent.Width
-                              - lblReqRemittanceURL_PE:
+                              - lblReqRemittanceURL_PE_7:
                                   Control: Label@2.5.1
                                   Properties:
                                     Color: =RGBA(56, 96, 178, 1)
