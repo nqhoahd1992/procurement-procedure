@@ -96,7 +96,11 @@ Required ⚠: `Role`, `IsActive`, `EmployeeID`.
 | `EmployeeID` ⚠ | Lookup→Employee List | `{Id,Value}` (→Title) |
 | `Note` | Text | |
 
-Resolved in `App.OnStart` → `gCurrentUser` / `gUserRole`. Employees absent here default to role `Requester`.
+**`colProcurementUsers`** — a full-table snapshot of `Procurement_User`, `ClearCollect`'d once in `App.OnStart`. Every screen that needs to query this list by a Lookup column's sub-field does it against this collection instead of the live SharePoint table, because `EmployeeID.Id`/`EmployeeID.Value` aren't delegable (same reasoning as the plain-Number mirror columns on `Procurement_Requests` — `ManagerApproverNum`/`GRAssignedToNum`/`SFU1AssignedToNum` — just solved here by snapshotting the whole (small) table instead of adding a mirror column):
+- `App.OnStart` resolves `gCurrentUser` via `LookUp(colProcurementUsers, EmployeeID.Id = gCurrentEmployee.ID)`. Employees absent here default to role `Requester`; role checks elsewhere read `gCurrentUser.Role.Value` directly.
+- `RequestFormScreen`'s `ddManagerApprover_1.Items` does `Sort(Filter(colProcurementUsers, Role.Value = "Manager" && IsActive), EmployeeID.Value, SortOrder.Ascending)` — `Role.Value`/`IsActive` are delegable on the live table, but sorting by `EmployeeID.Value` isn't, so the whole formula runs against the snapshot.
+
+If `Procurement_User` ever grows past the app's non-delegable row cap (default 500), this snapshot silently misses rows beyond the cap — same risk the direct `LookUp`/`Filter` calls already had before this fix, just moved to `OnStart`.
 
 ---
 

@@ -44,9 +44,7 @@ Screens:
             )
         );
         Set(gSFU1DelegationMode, If(IsBlank(gSelectedRequest.SFU1AssignedToID) || gSelectedRequest.SFU1AssignedToID.Id = 0 || gSelectedRequest.SFU1AssignedToID.Id = gCurrentEmployee.ID, "I will receive", "Assign to someone else"));
-        Set(gShowReceiptPhotos, false);
-        Set(locCreditNoteURL_SFU, "");
-        Set(gPendingCreditNoteName_SFU, "")
+        Set(gShowReceiptPhotos, false)
     Children:
       - rowHeader_SFU:
           Control: GroupContainer@1.5.0

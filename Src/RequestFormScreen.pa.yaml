@@ -1213,7 +1213,7 @@ Screens:
                       Properties:
                         Height: =40
                         InputTextPlaceholder: ="Choose an option"
-                        Items: =Sort(Filter(Procurement_User, Role.Value = "Manager" && IsActive), EmployeeID.Value, SortOrder.Ascending)
+                        Items: =Sort(Filter(colProcurementUsers, Role.Value = "Manager" && IsActive), EmployeeID.Value, SortOrder.Ascending)
                         Width: =Parent.Width - 40
                       Children:
                         - EmployeeID1:

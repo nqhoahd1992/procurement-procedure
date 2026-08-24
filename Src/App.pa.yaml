@@ -11,25 +11,17 @@ App:
     OnStart: |-
       =Set(gAppReady, false);
       Set(gCurrentEmployee, LookUp('Employee List', Email = User().Email));
+      ClearCollect(colProcurementUsers, Procurement_User);
       Set(gCurrentUser,
           If(
-              IsBlank(LookUp(Procurement_User, EmployeeID.Id = gCurrentEmployee.ID)),
+              IsBlank(LookUp(colProcurementUsers, EmployeeID.Id = gCurrentEmployee.ID)),
               {Role: {Value: "Requester"}},
-              LookUp(Procurement_User, EmployeeID.Id = gCurrentEmployee.ID)
+              LookUp(colProcurementUsers, EmployeeID.Id = gCurrentEmployee.ID)
           )
       );
-      Set(gUserRole, gCurrentUser.Role.Value);
-      Set(gShowRejectReason, false);
       Set(gParsingInvoice, false);
       Set(gHasInvoiceResult, false);
       Set(gSelectedRequest, Blank());
-      Set(gIsSpecialRole,
-          gCurrentUser.Role.Value = "Manager" ||
-          gCurrentUser.Role.Value = "Executive" ||
-          gCurrentUser.Role.Value = "Procurement" ||
-          gCurrentUser.Role.Value = "Accounting" ||
-          gCurrentUser.Role.Value = "Admin"
-      );
       Set(gGRLogEntry, Blank());
       Set(gGRPendingAttachments, Blank());
       Set(gSFU1LogEntry, Blank());

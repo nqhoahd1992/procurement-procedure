@@ -1551,6 +1551,13 @@ Screens:
                                                             Size: =9
                                                             Text: ="Attachments"
                                                             VerticalAlign: =VerticalAlign.Middle
+                                                            Visible: |-
+                                                              =Switch(ThisItem.StepNumber,
+                                                                3, gGRHasAttachments,
+                                                                4, gSFU1HasAttachments,
+                                                                5, gSFU2HasAttachments,
+                                                                false
+                                                              )
                                                       - btnRRLogDetail:
                                                           Control: ModernButton@1.0.0
                                                           Properties:
@@ -2609,7 +2616,7 @@ Screens:
                   Height: =32
                   PaddingLeft: =0
                   Size: =12
-                  Text: ="Step Details"
+                  Text: =Coalesce(gLogDetailTitle, "Step Details")
                   Width: =Parent.Width - 40
                   Wrap: =false
             - rectLogDlgDivider_RD:
