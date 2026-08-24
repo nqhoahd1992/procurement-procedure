@@ -3,40 +3,7 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Set(gShowQuickView, false); Set(gInvoiceFromPFU, false); Set(gShowStatusFilter, false); Clear(colStatusFilterChecked); Clear(colStatusFilterDraft); ClearCollect(colStatusFilterOptions_HS, ["Pending Manager", "Pending Executive", "Pending Procurement", "Pending Invoice", "Goods Receipt & Acceptance", "Pending Supplier Follow-up", "Pending Accounting", "Completed", "Rejected"]);
-        ClearCollect(
-            colHomeRoleFiltered,
-            Switch(gCurrentUser.Role.Value,
-                "Manager", Filter(Procurement_Requests,
-                    ManagerApproverNum = gCurrentEmployee.ID ||
-                    RequesterEmail = User().Email
-                ),
-                "Procurement", Filter(Procurement_Requests,
-                    Status.Value = "Pending Procurement" ||
-                    Status.Value = "Pending Invoice" ||
-                    Status.Value = "Pending Accounting" ||
-                    Status.Value = "Goods Receipt & Acceptance" ||
-                    Status.Value = "Pending Supplier Follow-up" ||
-                    Status.Value = "Completed" ||
-                    Status.Value = "Rejected" ||
-                    RequesterEmail = User().Email
-                ),
-                "Accounting", Filter(Procurement_Requests,
-                    Status.Value = "Pending Accounting" ||
-                    Status.Value = "Goods Receipt & Acceptance" ||
-                    Status.Value = "Pending Supplier Follow-up" ||
-                    Status.Value = "Completed" ||
-                    RequesterEmail = User().Email
-                ),
-                "Executive", Procurement_Requests,
-                "Admin", Procurement_Requests,
-                Filter(Procurement_Requests,
-                    RequesterEmail = User().Email ||
-                    GRAssignedToNum = gCurrentEmployee.ID ||
-                    SFU1AssignedToNum = gCurrentEmployee.ID
-                )
-            )
-        )
+        =Set(gShowQuickView, false); Set(gInvoiceFromPFU, false); Set(gShowStatusFilter, false); Clear(colStatusFilterChecked); Clear(colStatusFilterDraft)
     Children:
       - lblNoRole:
           Control: Label@2.5.1

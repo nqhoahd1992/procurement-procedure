@@ -8,10 +8,43 @@
 # ************************************************************************************************
 App:
   Properties:
+    Formulas: |-
+      =colStatusFilterOptions_HS = ["Pending Manager", "Pending Executive", "Pending Procurement", "Pending Invoice", "Goods Receipt & Acceptance", "Pending Supplier Follow-up", "Pending Accounting", "Completed", "Rejected"];
+
+      colHomeRoleFiltered = Switch(gCurrentUser.Role.Value,
+          "Manager", Filter(Procurement_Requests,
+              ManagerApproverNum = gCurrentEmployee.ID ||
+              RequesterEmail = User().Email
+          ),
+          "Procurement", Filter(Procurement_Requests,
+              Status.Value = "Pending Procurement" ||
+              Status.Value = "Pending Invoice" ||
+              Status.Value = "Pending Accounting" ||
+              Status.Value = "Goods Receipt & Acceptance" ||
+              Status.Value = "Pending Supplier Follow-up" ||
+              Status.Value = "Completed" ||
+              Status.Value = "Rejected" ||
+              RequesterEmail = User().Email
+          ),
+          "Accounting", Filter(Procurement_Requests,
+              Status.Value = "Pending Accounting" ||
+              Status.Value = "Goods Receipt & Acceptance" ||
+              Status.Value = "Pending Supplier Follow-up" ||
+              Status.Value = "Completed" ||
+              RequesterEmail = User().Email
+          ),
+          "Executive", Procurement_Requests,
+          "Admin", Procurement_Requests,
+          Filter(Procurement_Requests,
+              RequesterEmail = User().Email ||
+              GRAssignedToNum = gCurrentEmployee.ID ||
+              SFU1AssignedToNum = gCurrentEmployee.ID
+          )
+      );
     OnStart: |-
       =Set(gAppReady, false);
       Set(gCurrentEmployee, LookUp('Employee List', Email = User().Email));
-      ClearCollect(colProcurementUsers, Procurement_User);
+      ClearCollect(colProcurementUsers, Filter(Procurement_User, IsActive));
       Set(gCurrentUser,
           If(
               IsBlank(LookUp(colProcurementUsers, EmployeeID.Id = gCurrentEmployee.ID)),
